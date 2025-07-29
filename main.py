@@ -1,16 +1,18 @@
-# This is a sample Python script.
+import asyncio
+import os
 
-# Press Ctrl+F5 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from telebot.async_telebot import AsyncTeleBot
 
+bot = AsyncTeleBot(os.environ['CheatingBot_TELEGRAM_TOKEN'])
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press F9 to toggle the breakpoint.
+@bot.message_handler(commands=['help', 'start'])
+async def send_welcome(message):
+    text = 'Hi, I am EchoBot. \n Write something I will repeat'
+    await bot.reply_to(message, text)
 
+@bot.message_handler(func=lambda message: True)
+async def echo_message(message):
+    await bot.reply_to(message, message.text)
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    asyncio.run(bot.polling())
