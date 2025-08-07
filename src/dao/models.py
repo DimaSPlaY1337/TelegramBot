@@ -32,7 +32,7 @@ engine = create_engine(
     os.getenv("SERVBOT_DATABASE_URL", "sqlite:///servbot.db"),
     echo=True
 )
-
+#alembic revision --autogenerate -m "Added users table"
 AsyncSessionLocal = None
 if SERVBOT_ASYNC_DATABASE_URL := os.getenv("SERVBOT_ASYNC_DATABASE_URL"):
     async_engine = create_async_engine(
