@@ -2,6 +2,8 @@ from src.common import bot
 from src.dao.models import AsyncSessionLocal, User
 
 
+# text = "Hello"
+# await bot.reply_to(message, text)
 @bot.message_handler(commands=['help', 'start'])
 async def send_welcome(message):
     async with AsyncSessionLocal() as session:
