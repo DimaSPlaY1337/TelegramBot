@@ -2,4 +2,4 @@ from src.common import bot
 
 @bot.message_handler(func=lambda message: True)
 async def echo_message(message):
-    await bot.reply_to(message, message.text)
+    await bot.reply_to(message, "Handler")
