@@ -3,6 +3,7 @@ from src.Handlers import globals
 from src.common import bot
 
 order = []
+markup_des = ReplyKeyboardMarkup(resize_keyboard=True)
 
 def continue_kb():
     button1 = KeyboardButton(text="Да")
@@ -18,7 +19,6 @@ def choose_kb():
     button2 = KeyboardButton(text="Levels")
     button3 = KeyboardButton(text="Items")
 
-    markup_des = ReplyKeyboardMarkup(resize_keyboard=True)
     markup_des.add(button1, button2, button3)
 
     return markup_des
@@ -43,7 +43,7 @@ async def order_choice(message):
     if message.text not in order:
         order.append(message.text)
 
-        if len(order) != 3:
+        if len(order) != len(markup_des.keyboard[0]):
             await bot.reply_to(
                 message,
                 "Что то еще?",

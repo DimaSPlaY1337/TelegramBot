@@ -20,7 +20,6 @@ async def choosing_platform(message):
         reply_markup=get_on_start_kb()
     )
 
-
 @bot.message_handler(func=lambda m: m.text in ["Steam", "EpicGames", "Rockstar"])
 async def platform_choice(message):
     # сохраняем выбор в "переменную" (для каждого чата свой)
