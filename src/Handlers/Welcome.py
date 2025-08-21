@@ -1,5 +1,5 @@
-from src.Handlers.ChoosingPlatform import choosing_platform
-from src.Handlers.cliker import steam_cliker
+from src.Clikers.RockstarCliker import rockstar_cliker
+from src.Clikers.SteamCleaker import steam_cliker
 from src.common import bot
 from src.dao.models import AsyncSessionLocal, User
 
@@ -23,4 +23,5 @@ async def send_welcome(message):
         else:
             await bot.reply_to(message, "С возвращением!")
         # await choosing_platform(message)
-        await steam_cliker(message)
+        # await steam_cliker(message)
+        await rockstar_cliker(message)

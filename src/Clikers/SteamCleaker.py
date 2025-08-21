@@ -1,3 +1,4 @@
+import ctypes
 import os
 import time
 import pyautogui
@@ -21,6 +22,7 @@ async def handle_steam_guard(message):
     pyautogui.click(x=guard_x, y=guard_y)
     pyautogui.write(steam_guard, interval=0.05)
     pyautogui.press('enter')
+    await gta_cliker(message)
 
 async def wait_for_steam_open(title="Steam", timeout=30, interval=1):
     """
@@ -31,9 +33,9 @@ async def wait_for_steam_open(title="Steam", timeout=30, interval=1):
     while time.time() < end_time:
         windows = gw.getWindowsWithTitle(title)
         if windows:
-            print("Окно Steam открыто!")
+            print(f"Окно {title} открыто!")
             return windows[0]
-        print("Жду открытия окна Steam...")
+        print(f"Жду открытия окна {title}...")
         time.sleep(interval)
     print("Окно не появилось за отведённое время.")
     return None
@@ -43,6 +45,7 @@ async def wait_for_steam_open(title="Steam", timeout=30, interval=1):
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_steam")
 async def steam_cliker(message):
     os.startfile("C:\\Program Files (x86)\\Steam\\Steam.exe")
+    switch_to_english()
     global guard_x, guard_y
 
     offset_plus_x = 445  # смещение по X от левого верхнего угла окна
@@ -57,7 +60,7 @@ async def steam_cliker(message):
     offset_enter_x = 325  # смещение по X от левого верхнего угла окна
     offset_enter_y = 300  # смещение по Y от левого верхнего угла окна
 
-    win = await wait_for_steam_open()
+    win = await wait_for_steam_open("Steam")
     if win:
         abs_x = win.left + offset_plus_x
         abs_y = win.top + offset_plus_y
@@ -97,3 +100,21 @@ async def steam_cliker(message):
         await bot.send_message(message.chat.id, "Введите код Steam Guard (или другой нужный код):")
     else:
         print("Окно не найдено")
+
+async def gta_cliker(message):
+    os.startfile(r"C:\Users\PC\Desktop\Grand Theft Auto V Enhanced.url")
+    win = await wait_for_steam_open("Grand Theft Auto V Enhanced.url")
+
+def switch_to_english():
+    user32 = ctypes.WinDLL('user32', use_last_error=True)
+    curr_window = user32.GetForegroundWindow()
+    thread_id = user32.GetWindowThreadProcessId(curr_window, 0)
+    klid = user32.GetKeyboardLayout(thread_id)
+    lid = klid & (2**16 - 1)
+    lid_hex = hex(lid)
+    if lid_hex == '0x419':  # если русский
+        pyautogui.keyDown('altleft')
+        pyautogui.press('shiftleft')
+        pyautogui.keyUp('altleft')
+        time.sleep(0.2)  # даём системе переключиться
+        print("Сменили раскладку на английскую!")
