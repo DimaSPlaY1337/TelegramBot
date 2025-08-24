@@ -9,6 +9,14 @@ from src.common import bot
 guard_x = None
 guard_y = None
 
+guard_rock_x = None
+guard_rock_y = None
+
+guard_enter_rock_x = None
+guard_enter_rock_y = None
+
+rock_win = None
+
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "steam_guard")
 async def handle_steam_guard(message):
     steam_guard = message.text  # Здесь — то, что ввел пользователь!
@@ -60,6 +68,7 @@ async def steam_cliker(message):
     offset_enter_x = 325  # смещение по X от левого верхнего угла окна
     offset_enter_y = 300  # смещение по Y от левого верхнего угла окна
 
+    time.sleep(5)
     win = await wait_for_steam_open("Steam")
     if win:
         abs_x = win.left + offset_plus_x
@@ -101,9 +110,36 @@ async def steam_cliker(message):
     else:
         print("Окно не найдено")
 
+@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
+async def handle_rockstar_guard(message):
+    global guard_rock_x, guard_rock_y, guard_enter_rock_x, guard_enter_rock_y
+    rock_guard = message.text  # Здесь — то, что ввел пользователь!
+    print(f"Получили steam guard: {rock_guard}")
+    await bot.send_message(message.chat.id, "Спасибо! Код получен.")
+
+    guard_rock_x = rock_win.left + 318
+    guard_rock_y = rock_win.top + 451
+
+    guard_enter_rock_x = rock_win.left + 542
+    guard_enter_rock_y = rock_win.top + 568
+
+    pyautogui.click(x=guard_rock_x, y=guard_rock_y)
+    pyautogui.write(rock_guard, interval=0.05)
+    pyautogui.click(x=guard_enter_rock_x, y=guard_enter_rock_y)
+
 async def gta_cliker(message):
-    os.startfile(r"C:\Users\PC\Desktop\Grand Theft Auto V Enhanced.url")
-    win = await wait_for_steam_open("Grand Theft Auto V Enhanced.url")
+    global rock_win
+    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
+    # win = await wait_for_steam_open("Grand Theft Auto V Enhanced")
+
+    win = await wait_for_steam_open("Rockstar Games")
+    if win:
+        rock_win = win
+        globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
+        await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
+
+    os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+    win = await wait_for_steam_open("Sunrise")
 
 def switch_to_english():
     user32 = ctypes.WinDLL('user32', use_last_error=True)

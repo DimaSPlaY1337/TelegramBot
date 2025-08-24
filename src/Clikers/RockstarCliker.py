@@ -12,13 +12,13 @@ guard_y = None
 guard_enter_x = None
 guard_enter_y = None
 
-win_left = None
+win_right = None
 win_top = None
 
 async def rockstar_client(message):
-    global win_left, win_top
+    global win_right, win_top
     win = await wait_for_rockstar_open("Rockstar Games")
-    win_left = win.left
+    win_right = win.left
     win_top = win.top
 
     end_time = time.time() + 200
@@ -30,12 +30,14 @@ async def rockstar_client(message):
         time.sleep(1)
     print("Окно client не появилось за отведённое время.")
 
-    pyautogui.click(x=win_left+921, y=win_top+64)
+    settings_button_r = win_right + 992
+    settings_button_t = win_top + 64
+    pyautogui.click(x=settings_button_r, y=settings_button_t)
 
-    battle_eye_x = 1003
-    battle_eye_y = 419
+    battle_eye_x = win_right + 1035
+    battle_eye_y = win_top + 416
     if not await check_pixel(message, battle_eye_x, battle_eye_y, 0x13, 0x15, 0x18):
-        pyautogui.click(x=win_left + battle_eye_x, y=win_top + battle_eye_y)
+        pyautogui.click(x=battle_eye_x, y=battle_eye_y)
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rockstar_guard")
 async def handle_rockstar_guard(message):
@@ -52,7 +54,7 @@ async def handle_rockstar_guard(message):
 
     await rockstar_client(message)
 
-async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
+async def wait_for_rockstar_open(title="Steam", timeout=30, interval=1):
     """
     Ждёт появления окна Steam с заголовком, максимум timeout секунд.
     Возвращает True, если окно найдено, иначе False
@@ -69,9 +71,7 @@ async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
     return None
 
 async def check_pixel(message, x, y, c_x, c_y, c_z):
-    # pixel_color1 = pyautogui.pixel(x+408, y+249)
-    # pixel_color2 = pyautogui.pixel(x + 366, y + 386)
-    pixel_color1 = pyautogui.pixel(win_left + x, win_top + y)
+    pixel_color1 = pyautogui.pixel(win_right + x, win_top + y)
     # Сравниваем с нужным цветом 0x05
     if pixel_color1 == (c_x, c_y, c_z):
         print("Точка совпадает с цветом ошибки!")
@@ -80,9 +80,10 @@ async def check_pixel(message, x, y, c_x, c_y, c_z):
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_rockstar")
 async def rockstar_cliker(message):
+    # C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
     switch_to_english()
-    global guard_x, guard_y, guard_enter_x, guard_enter_y, win_left, win_top
+    global guard_x, guard_y, guard_enter_x, guard_enter_y, win_right, win_top
 
     offset_plus_x = 445  # смещение по X от левого верхнего угла окна
     offset_plus_y = 220  # смещение по Y от левого верхнего угла окна
@@ -98,7 +99,7 @@ async def rockstar_cliker(message):
 
     win = await wait_for_rockstar_open("Rockstar Games - Sign In")
     if win:
-        win_left = win.left
+        win_right = win.right
         win_top = win.top
 
         login_x = win.left + offset_login_x

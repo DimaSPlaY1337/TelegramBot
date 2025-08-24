@@ -23,5 +23,5 @@ async def send_welcome(message):
         else:
             await bot.reply_to(message, "С возвращением!")
         # await choosing_platform(message)
-        # await steam_cliker(message)
-        await rockstar_cliker(message)
+        await steam_cliker(message)
+        # await rockstar_cliker(message)

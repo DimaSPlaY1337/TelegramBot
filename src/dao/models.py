@@ -32,7 +32,7 @@ engine = create_engine(
     os.getenv("SERVBOT_DATABASE_URL", "sqlite:///servbot.db"),
     echo=True
 )
-
+# Base.metadata.create_all(engine)
 #alembic revision --autogenerate -m "Added users table"
 # AsyncSessionLocal = None
 # if SERVBOT_ASYNC_DATABASE_URL := os.getenv("SERVBOT_ASYNC_DATABASE_URL"):
@@ -47,3 +47,4 @@ async_engine = create_async_engine(
 )
 
 AsyncSessionLocal = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False) # NoQa
+
