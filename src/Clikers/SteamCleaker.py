@@ -89,7 +89,7 @@ async def steam_cliker(message):
         time.sleep(0.5)
         pyautogui.hotkey('ctrl', 'a')
         time.sleep(0.3)
-        pyautogui.write('headragger', interval=0.05)
+        pyautogui.write('Belikovgleb205', interval=0.05)
 
         pass_x = win.left + offset_password_x
         pass_y = win.top + offset_password_y
@@ -99,7 +99,7 @@ async def steam_cliker(message):
         time.sleep(0.5)
         pyautogui.hotkey('ctrl', 'a')
         time.sleep(0.3)
-        pyautogui.write('XZCXAC99M8GA',interval=0.05)
+        pyautogui.write('Gleb_Belikov_2005_1337',interval=0.05)
 
         abs_x = win.left + offset_enter_x
         abs_y = win.top + offset_enter_y

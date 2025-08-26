@@ -1,3 +1,4 @@
+from src.Clikers.GTACliker import gta_cliker
 from src.Clikers.RockstarCliker import rockstar_cliker
 from src.Clikers.SteamCleaker import steam_cliker
 from src.common import bot
@@ -23,5 +24,6 @@ async def send_welcome(message):
         else:
             await bot.reply_to(message, "С возвращением!")
         # await choosing_platform(message)
-        await steam_cliker(message)
+        # await steam_cliker(message)
         # await rockstar_cliker(message)
+        await gta_cliker(message)
