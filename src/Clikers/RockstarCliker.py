@@ -4,38 +4,40 @@ import time
 import pyautogui
 from src.Handlers import globals
 import pygetwindow as gw
+
+from src.Handlers.ChoosingPlatform import change_pass_and_login
 from src.common import bot
 
 guard_x = None
 guard_y = None
 
-guard_enter_x = None
-guard_enter_y = None
+guard_write_x = None
+guard_write_y = None
 
 win_left = None
 win_top = None
 
-async def rockstar_client(message):
-    global win_left, win_top
-    win = await wait_for_rockstar_open("Rockstar Games")
-    win_left = win.left
-    win_top = win.top
-
-    end_time = time.time() + 200
-    while time.time() < end_time:
-        if await check_pixel(message, 957, 51, 0xFF, 0xF8, 0xC9):
-            print(f"Окно client открыто!")
-            break
-        print(f"Жду открытия окна client...")
-        time.sleep(1)
-    print("Окно client не появилось за отведённое время.")
-
-    pyautogui.click(x=win_left+921, y=win_top+64)
-
-    battle_eye_x = 1003
-    battle_eye_y = 419
-    if not await check_pixel(message, battle_eye_x, battle_eye_y, 0x13, 0x15, 0x18):
-        pyautogui.click(x=win_left + battle_eye_x, y=win_top + battle_eye_y)
+# async def rockstar_client(message):
+#     global win_left, win_top
+#     win = await wait_for_rockstar_open("Rockstar Games")
+#     win_left = win.left
+#     win_top = win.top
+#
+#     end_time = time.time() + 200
+#     while time.time() < end_time:
+#         if await check_pixel(message, 957, 51, 0xFF, 0xF8, 0xC9):
+#             print(f"Окно client открыто!")
+#             break
+#         print(f"Жду открытия окна client...")
+#         time.sleep(1)
+#     print("Окно client не появилось за отведённое время.")
+#
+#     pyautogui.click(x=win_left+921, y=win_top+64)
+#
+#     battle_eye_x = 1003
+#     battle_eye_y = 419
+#     if not await check_pixel(message, battle_eye_x, battle_eye_y, 0x13, 0x15, 0x18):
+#         pyautogui.click(x=win_left + battle_eye_x, y=win_top + battle_eye_y)
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rockstar_guard")
 async def handle_rockstar_guard(message):
@@ -48,9 +50,9 @@ async def handle_rockstar_guard(message):
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
     pyautogui.click(x=guard_x, y=guard_y)
     pyautogui.write(steam_guard, interval=0.05)
-    pyautogui.click(x=guard_enter_x, y=guard_enter_y)
+    pyautogui.click(x=guard_write_x, y=guard_write_y)
 
-    await rockstar_client(message)
+    # await rockstar_client(message)
 
 async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
     """
@@ -68,24 +70,16 @@ async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
     print("Окно не появилось за отведённое время.")
     return None
 
-async def check_pixel(message, x, y, c_x, c_y, c_z):
-    # pixel_color1 = pyautogui.pixel(x+408, y+249)
-    # pixel_color2 = pyautogui.pixel(x + 366, y + 386)
-    pixel_color1 = pyautogui.pixel(win_left + x, win_top + y)
-    # Сравниваем с нужным цветом 0x05
-    if pixel_color1 == (c_x, c_y, c_z):
-        print("Точка совпадает с цветом ошибки!")
-        return True
-    return False
+async def is_red(x, y, r_min=80, diff_g=50, diff_b=50):
+    r, g, b = pyautogui.pixel(win_left + x, win_top + y)
+    # Проверка: ярко-красный или просто любой "красный"
+    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_rockstar")
 async def rockstar_cliker(message):
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
     switch_to_english()
-    global guard_x, guard_y, guard_enter_x, guard_enter_y, win_left, win_top
-
-    offset_plus_x = 445  # смещение по X от левого верхнего угла окна
-    offset_plus_y = 220  # смещение по Y от левого верхнего угла окна
+    global guard_x, guard_y, guard_write_x, guard_write_y, win_left, win_top
 
     offset_login_x = 250  # смещение по X от левого верхнего угла окна
     offset_login_y = 350  # смещение по Y от левого верхнего угла окна
@@ -107,39 +101,40 @@ async def rockstar_cliker(message):
         guard_x = win.left + 318
         guard_y = win.top + 451
 
-        guard_enter_x = win.left + 542
-        guard_enter_y = win.top + 568
-
         pyautogui.click(x=login_x, y=login_y)
         pyautogui.click(x=login_x, y=login_y)
-        time.sleep(0.5)
-        pyautogui.hotkey('ctrl', 'a')
-        time.sleep(0.3)
-        pyautogui.write('gutierrezstephen1600@outlook.com', interval=0.05)
+        write_data(login_x, login_y, globals.data_for_reg[message.chat.id]["login"])
 
         pass_x = win.left + offset_password_x
         pass_y = win.top + offset_password_y
-        # o13S_JfAwU
+
         pyautogui.click(x=pass_x, y=pass_y)
         pyautogui.click(x=pass_x, y=pass_y)
-        time.sleep(0.3)
-        pyautogui.hotkey('ctrl', 'a')
-        time.sleep(0.3)
-        pyautogui.write('o13S_JfAwU',interval=0.05)
+        write_data(pass_x, pass_y, globals.data_for_reg[message.chat.id]["password"])
 
         abs_x = win.left + offset_enter_x
         abs_y = win.top + offset_enter_y
 
         pyautogui.click(x=abs_x, y=abs_y)
-        if (not await check_pixel(message, 408, 249, 189, 8,8)
-                and not await check_pixel(message, 366, 386, 189,8,8)):
+
+        time.sleep(3)
+        if not is_error():
             globals.user_step[message.chat.id] = {"step": "rockstar_guard"}
             await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
         else:
-            #TO DO
+            win.close()
+            await change_pass_and_login(message)
             await bot.send_message(message.chat.id, "Введите еще раз")
     else:
         print("Окно не найдено")
+
+def write_data(x, y,  data):
+    pyautogui.click(x=x, y=y)
+    pyautogui.click(x=x, y=y)
+    time.sleep(0.5)
+    pyautogui.hotkey('ctrl', 'a')
+    time.sleep(0.3)
+    pyautogui.write(data, interval=0.05)
 
 def switch_to_english():
     user32 = ctypes.WinDLL('user32', use_last_error=True)
@@ -154,3 +149,15 @@ def switch_to_english():
         pyautogui.keyUp('altleft')
         time.sleep(0.2)  # даём системе переключиться
         print("Сменили раскладку на английскую!")
+
+async def is_error():
+    x1, y1 = 51, 339
+    x2, y2 = 121, 352
+    for x in range(x1, x2):
+        for y in range(y1, y2):
+            r, g, b = pyautogui.pixel(x, y)
+            if await is_red(r, g, b):
+                print("Здесь введен неверный пароль или логин")
+                return True
+    return  False
+#TODO перенести все так же как и в steamcleaker

@@ -1,0 +1,197 @@
+import ctypes
+import os
+import time
+import pyautogui
+from src.Handlers import globals
+import pygetwindow as gw
+
+from src.Handlers.ChoosingPlatform import change_pass_and_login
+from src.common import bot
+
+guard_x = None
+guard_y = None
+
+guard_write_x = None
+guard_write_y = None
+
+win_left = None
+win_top = None
+
+counter = 0
+
+@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "epic_guard")
+async def handle_epic_guard(message):
+    epic_guard = message.text  # Здесь — то, что ввел пользователь!
+    print(f"Получили steam guard: {epic_guard}")
+    # Здесь можно:
+    # — записать steam_guard куда надо
+    # — изменить шаг состояния, чтобы не ловить дальше любые сообщения
+    # — продолжить логику (например, отправить steam_guard дальше или завершить процесс)
+    await bot.send_message(message.chat.id, "Спасибо! Код получен.")
+    pyautogui.click(x=guard_write_x, y=guard_write_y)
+    pyautogui.write(epic_guard, interval=0.05)
+    pyautogui.press('enter')
+    globals.user_step[message.chat.id] = {"step": "epic_capcha"}
+
+    await epic_client(message)
+
+async def wait_for_epic_open(title="Steam", timeout=200, interval=1):
+    """
+    Ждёт появления окна Steam с заголовком, максимум timeout секунд.
+    Возвращает True, если окно найдено, иначе False
+    """
+    end_time = time.time() + timeout
+    while time.time() < end_time:
+        windows = gw.getWindowsWithTitle(title)
+        if windows:
+            print(f"Окно {title} открыто!")
+            return windows[0]
+        print(f"Жду открытия окна {title}...")
+        time.sleep(interval)
+    print("Окно не появилось за отведённое время.")
+    return None
+
+def write_data(x, y,  data):
+    pyautogui.click(x=x, y=y)
+    pyautogui.click(x=x, y=y)
+    time.sleep(0.5)
+    pyautogui.hotkey('ctrl', 'a')
+    time.sleep(0.3)
+    pyautogui.write(data, interval=0.05)
+
+@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_rockstar")
+async def epic_cliker(message):
+    os.startfile("C:\\Program Files (x86)\\Epic Games\\Launcher\\Portal\\Binaries\\Win32\\EpicGamesLauncher.exe")
+    switch_to_english()
+    global guard_x, guard_y, guard_write_x, guard_write_y, win_left, win_top
+
+    offset_login_x = 584  # смещение по X от левого верхнего угла окна
+    offset_login_y = 584  # смещение по Y от левого верхнего угла окна
+
+    offset_login_cb_x = 647  # смещение по X от левого верхнего угла окна
+    offset_login_cb_y = 647  # смещение по Y от левого верхнего угла окна
+
+    offset_password_x = 663  # смещение по X от левого верхнего угла окна
+    offset_password_y = 584  # смещение по Y от левого верхнего угла окна
+
+    offset_password_cb_x = 670  # смещение по X от левого верхнего угла окна
+    offset_password_cb_y = 712  # смещение по Y от левого верхнего угла окна
+
+    win = await wait_for_epic_open("Epic Games")
+    if win:
+        win_left = win.left
+        win_top = win.top
+
+        login_x = win.left + offset_login_x
+        login_y = win.top + offset_login_y
+
+        login_cb_x = win.left + offset_login_cb_x
+        login_cb_y = win.top + offset_login_cb_y
+
+        guard_x = win.left + 318
+        guard_y = win.top + 451
+
+        guard_write_x = win.left + 503
+        guard_write_y = win.top + 609
+
+        time.sleep(5)
+        write_data(login_x, login_y, globals.data_for_reg[message.chat.id]["login"])
+
+        pyautogui.click(x=login_cb_x, y=login_cb_y)
+        pyautogui.click(x=login_cb_x, y=login_cb_y)
+
+        if not await is_error():
+
+            pass_x = win.left + offset_password_x
+            pass_y = win.top + offset_password_y
+
+            pyautogui.click(x=pass_x, y=pass_y)
+            pyautogui.click(x=pass_x, y=pass_y)
+
+            write_data(pass_x, pass_y, globals.data_for_reg[message.chat.id]["password"])
+
+            pass_cb_x = win.left + offset_password_cb_x
+            pass_cb_y = win.top + offset_password_cb_y
+
+            pyautogui.click(x=pass_cb_x, y=pass_cb_y)
+
+            if not await is_error():
+                time.sleep(3)
+                globals.user_step[message.chat.id] = {"step": "epic_guard"}
+                await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
+            else:
+                win.close()
+                await change_pass_and_login(message)
+        else:
+            win.close()
+            await change_pass_and_login(message)
+    else:
+        print("Окно не найдено")
+
+def switch_to_english():
+    user32 = ctypes.WinDLL('user32', use_last_error=True)
+    curr_window = user32.GetForegroundWindow()
+    thread_id = user32.GetWindowThreadProcessId(curr_window, 0)
+    klid = user32.GetKeyboardLayout(thread_id)
+    lid = klid & (2**16 - 1)
+    lid_hex = hex(lid)
+    if lid_hex == '0x419':  # если русский
+        pyautogui.keyDown('altleft')
+        pyautogui.press('shiftleft')
+        pyautogui.keyUp('altleft')
+        time.sleep(0.2)  # даём системе переключиться
+        print("Сменили раскладку на английскую!")
+
+async def epic_client(message):
+    await bot.send_message(message.chat.id, "Отправьте любой символ для подтверждения что Capcha пройдена:")
+
+@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "epic_capcha")
+async def epic_capcha(message):
+    global counter
+    if counter == 0:
+        click_x = win_left + 659
+        click_y = win_top + 796
+        pyautogui.click(x=click_x, y=click_y)
+        pyautogui.click(x=click_x, y=click_y)
+        counter = 1
+    elif counter == 1:
+        click_x = win_left + 697
+        click_y = win_top + 686
+        pyautogui.click(x=click_x, y=click_y)
+        pyautogui.click(x=click_x, y=click_y)
+        counter = 2
+    elif counter == 2:
+        click_x = win_left + 679
+        click_y = win_top + 747
+        pyautogui.click(x=click_x, y=click_y)
+        pyautogui.click(x=click_x, y=click_y)
+        counter = 3
+    elif counter == 3:
+        click_x = win_left + 672
+        click_y = win_top + 812
+        pyautogui.click(x=click_x, y=click_y)
+        pyautogui.click(x=click_x, y=click_y)
+        globals.user_step[message.chat.id] = {"step": "epic_start_game"}
+    await epic_client(message)
+
+@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "epic_start_game")
+async def start_game(message):
+    os.startfile(r"C:\Users\PC\Desktop\Grand Theft Auto V Enhanced.url")
+    win = await wait_for_epic_open("Grand Theft Auto V Enhanced.url")
+
+async def is_red(x, y, r_min=80, diff_g=40, diff_b=40):
+    r, g, b = pyautogui.pixel(win_left + x, win_top + y)
+    # Проверка: ярко-красный или просто любой "красный"
+    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
+
+async def is_error():
+    x1, y1 = 448, 613
+    x2, y2 = 696, 627
+    for x in range(x1, x2):
+        for y in range(y1, y2):
+            r, g, b = pyautogui.pixel(x, y)
+            if await is_red(r, g, b):
+                print("Здесь введен неверный пароль или логин")
+                return True
+
+    return False

@@ -1,4 +1,5 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+
 from src.Handlers import globals
 from src.common import bot
 
@@ -22,7 +23,7 @@ def continue_kb():
     return markup_q
 
 
-
+@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "order_choice")
 async def order_description(message):
     globals.user_step[message.chat.id] = {"step": "order_des"}
     await bot.reply_to(
@@ -43,8 +44,18 @@ async def order_output(message):
         f"Items: {data.get('items', 'не задано')}"
     )
 
-    await bot.send_message(chat_id, full_order)
+    await bot.send_message(chat_id, full_order, reply_markup=ReplyKeyboardRemove())
     globals.order = full_order
+
+    if globals.platform == "EpicGames":
+        from src.Clikers import epic_cliker
+        await epic_cliker(message)
+    elif globals.platform == "Rockstar":
+        from src.Clikers import rockstar_cliker
+        await rockstar_cliker(message)
+    elif globals.platform == "Steam":
+        from src.Clikers import steam_cliker
+        await steam_cliker(message)
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "order_des")
 async def order_choice(message):
