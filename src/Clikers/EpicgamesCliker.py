@@ -19,6 +19,8 @@ win_top = None
 
 counter = 0
 
+app_list = []
+
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "epic_guard")
 async def handle_epic_guard(message):
     epic_guard = message.text  # Здесь — то, что ввел пользователь!
@@ -29,11 +31,12 @@ async def handle_epic_guard(message):
     # — продолжить логику (например, отправить steam_guard дальше или завершить процесс)
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
     pyautogui.click(x=guard_write_x, y=guard_write_y)
-    pyautogui.write(epic_guard, interval=0.05)
+    # pyautogui.write(epic_guard, interval=0.05)
     pyautogui.press('enter')
-    globals.user_step[message.chat.id] = {"step": "epic_capcha"}
-
-    await epic_client(message)
+    # globals.user_step[message.chat.id] = {"step": "epic_capcha"}
+    #
+    # await epic_client(message)
+    await close_apps()
 
 async def wait_for_epic_open(title="Steam", timeout=200, interval=1):
     """
@@ -43,9 +46,10 @@ async def wait_for_epic_open(title="Steam", timeout=200, interval=1):
     end_time = time.time() + timeout
     while time.time() < end_time:
         windows = gw.getWindowsWithTitle(title)
-        if windows:
+        exact_windows = [w for w in windows if w.title == title]
+        if exact_windows:
             print(f"Окно {title} открыто!")
-            return windows[0]
+            return exact_windows[0]
         print(f"Жду открытия окна {title}...")
         time.sleep(interval)
     print("Окно не появилось за отведённое время.")
@@ -71,13 +75,16 @@ async def epic_cliker(message):
     offset_login_cb_x = 647  # смещение по X от левого верхнего угла окна
     offset_login_cb_y = 647  # смещение по Y от левого верхнего угла окна
 
-    offset_password_x = 663  # смещение по X от левого верхнего угла окна
-    offset_password_y = 584  # смещение по Y от левого верхнего угла окна
+    offset_password_x = 629  # смещение по X от левого верхнего угла окна
+    offset_password_y = 512  # смещение по Y от левого верхнего угла окна
 
-    offset_password_cb_x = 670  # смещение по X от левого верхнего угла окна
-    offset_password_cb_y = 712  # смещение по Y от левого верхнего угла окна
+    offset_password_cb_x = 629  # смещение по X от левого верхнего угла окна
+    offset_password_cb_y = 619  # смещение по Y от левого верхнего угла окна
 
-    win = await wait_for_epic_open("Epic Games")
+    # windows = gw.getAllWindows()
+    # print([w.title for w in windows])
+
+    win = await wait_for_epic_open("Программа запуска Epic Games")
     if win:
         win_left = win.left
         win_top = win.top
@@ -179,19 +186,70 @@ async def start_game(message):
     os.startfile(r"C:\Users\PC\Desktop\Grand Theft Auto V Enhanced.url")
     win = await wait_for_epic_open("Grand Theft Auto V Enhanced.url")
 
-async def is_red(x, y, r_min=80, diff_g=40, diff_b=40):
-    r, g, b = pyautogui.pixel(win_left + x, win_top + y)
+async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"
     return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
+#!!!
+async def is_green(r, g, b, g_min=80, diff_r=40, diff_b=40):
+    # Проверка: ярко-зелёный или просто явно зелёный цвет
+    return (g > g_min) and (g - r > diff_r) and (g - b > diff_b)
 
 async def is_error():
-    x1, y1 = 448, 613
-    x2, y2 = 696, 627
+    global win_left, win_top
+    x1, y1 = 51, 339
+    x2, y2 = 121, 352
+    rc,  rg, rb = 0, 0, 0
     for x in range(x1, x2):
         for y in range(y1, y2):
-            r, g, b = pyautogui.pixel(x, y)
+            r, g, b = pyautogui.pixel(win_left + x, win_top + y)
             if await is_red(r, g, b):
                 print("Здесь введен неверный пароль или логин")
                 return True
-
     return False
+
+async def epic_exit():
+    global win_left, win_top
+
+    offset_profile_x = 1257  # смещение по X от левого верхнего угла окна
+    offset_profile_y = 78  # смещение по Y от левого верхнего угла окна
+
+    offset_out_x = 952  # смещение по X от левого верхнего угла окна
+    offset_out_y = 689  # смещение по Y от левого верхнего угла окна
+
+    offset_accept_x = 741  # смещение по X от левого верхнего угла окна
+    offset_accept_y = 774  # смещение по Y от левого верхнего угла окна
+
+    windows = gw.getAllWindows()
+    print([w.title for w in windows])
+    time.sleep(1)
+    win = await wait_for_epic_open("Программа запуска Epic Games")
+    win.activate()
+    if win:
+        win_left = win.left
+        win_top = win.top
+
+        abs_x = win_left + offset_profile_x
+        abs_y = win_top + offset_profile_y
+
+        time.sleep(1)  # время на переключение окна
+        pyautogui.click(x=abs_x, y=abs_y)
+
+        login_x = win_left + offset_out_x
+        login_y = win.top + offset_out_y
+
+        time.sleep(1)
+        pyautogui.click(x=login_x, y=login_y)
+
+        win.close()
+    else:
+        print("Окно не найдено")
+
+async def close_apps():
+    global app_list
+    for win in app_list:
+        win.close()
+    await epic_exit()
+
+    # win = await wait_for_epic_open("Программа запуска Epic Games")
+    # if win:
+    #     win.close()

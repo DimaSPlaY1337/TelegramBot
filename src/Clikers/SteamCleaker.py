@@ -22,6 +22,8 @@ guard_enter_rock_y = None
 
 rock_win = None
 
+app_list = []
+
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "steam_guard")
 async def handle_steam_guard(message):
     steam_guard = message.text  # Здесь — то, что ввел пользователь!
@@ -45,9 +47,10 @@ async def wait_for_steam_open(title="Steam", timeout=30, interval=1):
     end_time = time.time() + timeout
     while time.time() < end_time:
         windows = gw.getWindowsWithTitle(title)
-        if windows:
+        exact_windows = [w for w in windows if w.title == title]
+        if exact_windows:
             print(f"Окно {title} открыто!")
-            return windows[0]
+            return exact_windows[0]
         print(f"Жду открытия окна {title}...")
         time.sleep(interval)
     print("Окно не появилось за отведённое время.")
@@ -149,18 +152,23 @@ async def handle_rockstar_guard(message):
     pyautogui.click(x=guard_enter_rock_x, y=guard_enter_rock_y)
 
 async def gta_cliker(message):
-    global rock_win
-    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
+    global rock_win, app_list
+    # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
     # win = await wait_for_steam_open("Grand Theft Auto V Enhanced")
+    # app_list.append(win)
+    #
+    # win = await wait_for_steam_open("Rockstar Games")
+    # if win:
+    #     rock_win = win
+    #     globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
+    #     await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
+    # app_list.append(win)
+    #
+    # os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+    # win = await wait_for_steam_open("Sunrise")
+    # app_list.append(win)
 
-    win = await wait_for_steam_open("Rockstar Games")
-    if win:
-        rock_win = win
-        globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
-        await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
-
-    os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-    win = await wait_for_steam_open("Sunrise")
+    await close_apps()
 
 def switch_to_english():
     user32 = ctypes.WinDLL('user32', use_last_error=True)
@@ -176,12 +184,12 @@ def switch_to_english():
         time.sleep(0.2)  # даём системе переключиться
         print("Сменили раскладку на английскую!")
 
-async def is_red(x, y, r_min=80, diff_g=40, diff_b=40):
-    r, g, b = pyautogui.pixel(win_left + x, win_top + y)
+async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"
     return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
 
 async def is_error():
+    global win_left, win_top
     x1, y1 = 51, 339
     x2, y2 = 121, 352
     for x in range(x1, x2):
@@ -190,5 +198,56 @@ async def is_error():
             if await is_red(r, g, b):
                 print("Здесь введен неверный пароль или логин")
                 return True
-
     return False
+
+async def steam_exit():
+    global win_left, win_top
+
+    offset_profile_x = 200  # смещение по X от левого верхнего угла окна
+    offset_profile_y = 13  # смещение по Y от левого верхнего угла окна
+
+    offset_out_x = 944  # смещение по X от левого верхнего угла окна
+    offset_out_y = 209  # смещение по Y от левого верхнего угла окна
+
+    offset_accept_x = 741  # смещение по X от левого верхнего угла окна
+    offset_accept_y = 774  # смещение по Y от левого верхнего угла окна
+
+    # windows = gw.getAllWindows()
+    # print([w.title for w in windows])
+    win = await wait_for_steam_open("Steam")
+    time.sleep(1)
+    win.activate()
+    if win:
+        win_right = win.right
+        win_top = win.top
+
+        abs_x = win_right - offset_profile_x
+        abs_y = win_top + offset_profile_y
+
+        time.sleep(0.5)  # время на переключение окна
+        pyautogui.click(x=abs_x, y=abs_y)
+
+        login_x = abs_x
+        login_y = win.top + offset_out_y
+
+        pyautogui.click(x=login_x, y=login_y)
+
+        center_x = win.left + win.width // 2 + 100
+        center_y = win.top + win.height // 2 + 75
+
+        time.sleep(0.5)
+        pyautogui.click(x=center_x, y=center_y)
+
+        win.close()
+    else:
+        print("Окно не найдено")
+
+async def close_apps():
+    global app_list
+    for win in app_list:
+        win.close()
+    await steam_exit()
+
+    win = await wait_for_steam_open("Войти в Steam")
+    if win:
+        win.close()

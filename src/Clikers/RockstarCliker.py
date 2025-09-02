@@ -70,11 +70,6 @@ async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
     print("Окно не появилось за отведённое время.")
     return None
 
-async def is_red(x, y, r_min=80, diff_g=50, diff_b=50):
-    r, g, b = pyautogui.pixel(win_left + x, win_top + y)
-    # Проверка: ярко-красный или просто любой "красный"
-    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
-
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_rockstar")
 async def rockstar_cliker(message):
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
@@ -150,14 +145,19 @@ def switch_to_english():
         time.sleep(0.2)  # даём системе переключиться
         print("Сменили раскладку на английскую!")
 
+async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
+    # Проверка: ярко-красный или просто любой "красный"
+    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
+
 async def is_error():
+    global win_left, win_top
     x1, y1 = 51, 339
     x2, y2 = 121, 352
+    rc,  rg, rb = 0, 0, 0
     for x in range(x1, x2):
         for y in range(y1, y2):
-            r, g, b = pyautogui.pixel(x, y)
+            r, g, b = pyautogui.pixel(win_left + x, win_top + y)
             if await is_red(r, g, b):
                 print("Здесь введен неверный пароль или логин")
                 return True
-    return  False
-#TODO перенести все так же как и в steamcleaker
+    return False
