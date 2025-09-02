@@ -27,9 +27,9 @@ async def send_welcome(message):
             await bot.reply_to(message, "С возвращением!")
 
         # await gta_cliker(message)
-        # await choosing_platform(message)
+        await choosing_platform(message)
         # await steam_cliker(message)
         # await rockstar_cliker(message)
         # await epic_cliker(message)
-        globals.user_step[message.chat.id] = {"step": "epic_guard"}
-        await handle_epic_guard(message)
+        # globals.user_step[message.chat.id] = {"step": "epic_guard"}
+        # await handle_epic_guard(message)

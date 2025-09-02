@@ -84,7 +84,7 @@ async def epic_cliker(message):
     # windows = gw.getAllWindows()
     # print([w.title for w in windows])
 
-    win = await wait_for_epic_open("Программа запуска Epic Games")
+    win = await wait_for_epic_open("Epic Games Launcher")
     if win:
         win_left = win.left
         win_top = win.top
@@ -222,13 +222,19 @@ async def epic_exit():
     windows = gw.getAllWindows()
     print([w.title for w in windows])
     time.sleep(1)
-    win = await wait_for_epic_open("Программа запуска Epic Games")
+    # Программа
+    # запуска
+    # Epic
+    # Games
+    win = await wait_for_epic_open("Epic Games Launcher")
     win.activate()
     if win:
+        win.resizeTo(1324, 1400)
         win_left = win.left
         win_top = win.top
 
         abs_x = win_left + offset_profile_x
+
         abs_y = win_top + offset_profile_y
 
         time.sleep(1)  # время на переключение окна
@@ -242,6 +248,7 @@ async def epic_exit():
 
         win.close()
     else:
+
         print("Окно не найдено")
 
 async def close_apps():
