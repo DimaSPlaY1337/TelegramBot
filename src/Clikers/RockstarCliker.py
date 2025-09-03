@@ -3,7 +3,6 @@ import os
 import time
 import pyautogui
 
-from src.Clikers.GTACliker import gta_cliker
 from src.Handlers import globals
 import pygetwindow as gw
 
@@ -71,6 +70,8 @@ async def rockstar_cliker(message):
     if win:
         win.resizeTo(700, 800)
         time.sleep(0.3)
+        win.activate()
+        time.sleep(0.2)
         win_left = win.left
         win_top = win.top
 
@@ -80,15 +81,11 @@ async def rockstar_cliker(message):
         guard_x = win.left + 318
         guard_y = win.top + 451
 
-        pyautogui.click(x=login_x, y=login_y)
-        pyautogui.click(x=login_x, y=login_y)
         write_data(login_x, login_y, globals.data_for_reg[message.chat.id]["login"])
 
         pass_x = win.left + offset_password_x
         pass_y = win.top + offset_password_y
 
-        pyautogui.click(x=pass_x, y=pass_y)
-        pyautogui.click(x=pass_x, y=pass_y)
         write_data(pass_x, pass_y, globals.data_for_reg[message.chat.id]["password"])
 
         abs_x = win.left + offset_enter_x
@@ -96,7 +93,7 @@ async def rockstar_cliker(message):
 
         pyautogui.click(x=abs_x, y=abs_y)
 
-        time.sleep(3)
+        time.sleep(4)
         if (not await is_error(101,186, 141, 204)
                 and not await is_error(123,351, 134, 359)):
             globals.user_step[message.chat.id] = {"step": "rockstar_guard"}
@@ -110,12 +107,12 @@ async def rockstar_cliker(message):
 
 def write_data(x, y,  data):
     pyautogui.click(x=x, y=y)
-    time.sleep(0.2)
+    time.sleep(0.5)
     pyautogui.hotkey('ctrl', 'a')
-    time.sleep(0.2)
+    time.sleep(0.3)
     pyautogui.press('delete')
     time.sleep(0.2)
-    pyautogui.write(data, interval=0.05)
+    pyautogui.write(data, interval=0.01)
 
 def switch_to_english():
     user32 = ctypes.WinDLL('user32', use_last_error=True)
@@ -141,7 +138,7 @@ async def is_error(x1, y1, x2, y2):
     for x in range(x1, x2):
         for y in range(y1, y2):
             r, g, b = pyautogui.pixel(win_left + x, win_top + y)
-            # print(f"Цвет возможной ошибки: {r}, {g}, {b}")
+            print(f"Цвет возможной ошибки: {r}, {g}, {b}")
             if await is_red(r, g, b):
                 print("Здесь введен неверный пароль или логин")
                 return True
@@ -156,11 +153,12 @@ async def rock_exit():
     offset_out_x = 969  # смещение по X от левого верхнего угла окна
     offset_out_y = 336  # смещение по Y от левого верхнего угла окна
 
-    windows = gw.getAllWindows()
-    print([w.title for w in windows])
+    # windows = gw.getAllWindows()
+    # print([w.title for w in windows])
     win = await wait_for_rockstar_open("Rockstar Games Launcher")
     time.sleep(1)
     win.activate()
+    time.sleep(1)
     if win:
         win.resizeTo(1084, 877)
         win_left = win.left
@@ -191,7 +189,7 @@ async def close_apps():
 
 async def launch_prog(message):
     global app_list
-    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
+    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_RE.lnk")
     win_gta = await wait_for_rockstar_open("Grand Theft Auto V Enhanced")
     app_list.append(win_gta)
 
@@ -200,5 +198,6 @@ async def launch_prog(message):
     app_list.append(win_sun)
 
     if win_gta and win_sun:
-        time.sleep(20)
+        time.sleep(100)
+        from src.Clikers.GTACliker import gta_cliker
         await gta_cliker(message)

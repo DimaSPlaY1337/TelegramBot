@@ -28,6 +28,7 @@ def write_text(text, interval=0.2):
         keyboard.release(char)
         time.sleep(interval)
 
+#7000000
 async def gta_cliker(message):
     keyboard = Controller()
     # Последовательность команд (по сообщениям)
@@ -51,30 +52,28 @@ async def gta_cliker(message):
     press_key('enter')
 
     # write order
-    sum = 100000000
+    sum = 7000000
+    # int(globals.order_des[message.chat.id]["amount"])
     order = 75000000
-    if sum > order:
-        keyboard.type(str(order))
-        keyboard.press(Key.enter)
-        keyboard.release(Key.enter)
-        press_key('enter')
+    if sum < order:
+        order = sum
 
-        time.sleep(0.5)
+    keyboard.type(str(order))
+    keyboard.press(Key.enter)
+    keyboard.release(Key.enter)
+    press_key('enter')
 
-        # down
-        press_key('down')
-        press_key('enter')
+    time.sleep(0.5)
 
-        # write(200000000-75000000)
-        result = str(sum - order)
-        keyboard.type(result)
-        keyboard.press(Key.enter)
-        keyboard.release(Key.enter)
-    else:
-        keyboard.type(str(order))
-        keyboard.press(Key.enter)
-        keyboard.release(Key.enter)
-        press_key('enter')
+    # down
+    press_key('down')
+    press_key('enter')
+
+    # write(200000000-75000000)
+    result = str(sum - order)
+    keyboard.type(result)
+    keyboard.press(Key.enter)
+    keyboard.release(Key.enter)
 
     time.sleep(0.5)
 
@@ -131,7 +130,7 @@ async def gta_cliker(message):
     press_key('enter')
 
     # write level
-    order = 1000
+    order = 10 #int(globals.order_des[message.chat.id]["levels"])
     keyboard.press(Key.enter)
     keyboard.release(Key.enter)
     time.sleep(0.5)
@@ -226,6 +225,7 @@ def switch_to_english():
 async def send_screenshot(message):
     with open(r'D:\Repos\gta_screen.png', 'rb') as photo:
         await bot.send_photo(message.chat.id, photo)
+    globals.platform = "Rockstar"
     await close_apps()
 
 async def close_apps():

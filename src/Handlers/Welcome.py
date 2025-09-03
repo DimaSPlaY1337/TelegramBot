@@ -1,4 +1,5 @@
 from src.Clikers.EpicgamesCliker import epic_cliker, handle_epic_guard
+from src.Clikers.GTACliker import gta_cliker, send_screenshot
 from src.Clikers.RockstarCliker import rockstar_cliker, handle_rockstar_guard
 from src.Clikers.SteamCliker import steam_cliker, launch_prog
 from src.Handlers.ChoosingPlatform import choosing_platform
@@ -26,6 +27,7 @@ async def send_welcome(message):
         else:
             await bot.reply_to(message, "С возвращением!")
 
+        await send_screenshot(message)
         # await gta_cliker(message)
         # await choosing_platform(message)
         # await steam_cliker(message)
@@ -33,4 +35,4 @@ async def send_welcome(message):
         # await epic_cliker(message)
         # globals.user_step[message.chat.id] = {"step": "epic_guard"}
         # await handle_epic_guard(message)
-        await handle_rockstar_guard(message)
+        # await handle_rockstar_guard(message)

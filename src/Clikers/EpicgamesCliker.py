@@ -41,6 +41,7 @@ async def handle_epic_guard(message):
     # globals.user_step[message.chat.id] = {"step": "epic_capcha"}
     #
     # await epic_client(message)
+    time.sleep(3)
     if not await is_error(430, 650, 477,700):
         await launch_prog(message)
     else:
@@ -161,39 +162,40 @@ def switch_to_english():
 async def epic_client(message):
     await bot.send_message(message.chat.id, "Отправьте любой символ для подтверждения что Capcha пройдена:")
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "epic_capcha")
-async def epic_capcha(message):
-    global counter
-    if counter == 0:
-        click_x = win_left + 659
-        click_y = win_top + 796
-        pyautogui.click(x=click_x, y=click_y)
-        pyautogui.click(x=click_x, y=click_y)
-        counter = 1
-    elif counter == 1:
-        click_x = win_left + 697
-        click_y = win_top + 686
-        pyautogui.click(x=click_x, y=click_y)
-        pyautogui.click(x=click_x, y=click_y)
-        counter = 2
-    elif counter == 2:
-        click_x = win_left + 679
-        click_y = win_top + 747
-        pyautogui.click(x=click_x, y=click_y)
-        pyautogui.click(x=click_x, y=click_y)
-        counter = 3
-    elif counter == 3:
-        click_x = win_left + 672
-        click_y = win_top + 812
-        pyautogui.click(x=click_x, y=click_y)
-        pyautogui.click(x=click_x, y=click_y)
-        globals.user_step[message.chat.id] = {"step": "epic_start_game"}
-    await epic_client(message)
-
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "epic_start_game")
-async def start_game(message):
-    os.startfile(r"C:\Users\PC\Desktop\Grand Theft Auto V Enhanced.url")
-    win = await wait_for_epic_open("Grand Theft Auto V Enhanced.url")
+# @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "epic_capcha")
+# async def epic_capcha(message):
+#     global counter
+#     if counter == 0:
+#         click_x = win_left + 659
+#         click_y = win_top + 796
+#         pyautogui.click(x=click_x, y=click_y)
+#         pyautogui.click(x=click_x, y=click_y)
+#         counter = 1
+#     elif counter == 1:
+#         click_x = win_left + 697
+#         click_y = win_top + 686
+#         pyautogui.click(x=click_x, y=click_y)
+#         pyautogui.click(x=click_x, y=click_y)
+#         counter = 2
+#     elif counter == 2:
+#         click_x = win_left + 679
+#         click_y = win_top + 747
+#         pyautogui.click(x=click_x, y=click_y)
+#         pyautogui.click(x=click_x, y=click_y)
+#         counter = 3
+#     elif counter == 3:
+#         click_x = win_left + 672
+#         click_y = win_top + 812
+#         pyautogui.click(x=click_x, y=click_y)
+#         pyautogui.click(x=click_x, y=click_y)
+#         globals.user_step[message.chat.id] = {"step": "epic_start_game"}
+#     await epic_client(message)
+#
+# @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "epic_start_game")
+# async def start_game(message):
+#     os.startfile(r"D:\Epic Games\GTAVEnhanced\GTA5_Enhanced.exe")
+#
+#     win = await wait_for_epic_open("Grand Theft Auto V Enhanced.url")
 
 async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"
@@ -254,7 +256,6 @@ async def epic_exit():
 
         win.close()
     else:
-
         print("Окно не найдено")
 
 async def close_apps():
@@ -269,7 +270,9 @@ async def close_apps():
 
 async def launch_prog(message):
     global app_list
-    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
+    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_EE.url")
+    windows = gw.getAllWindows()
+    print([w.title for w in windows])
     win_gta = await wait_for_epic_open("Grand Theft Auto V Enhanced")
     app_list.append(win_gta)
 
@@ -278,5 +281,5 @@ async def launch_prog(message):
     app_list.append(win_sun)
 
     if win_gta and win_sun:
-        time.sleep(20)
+        time.sleep(100)
         await gta_cliker(message)

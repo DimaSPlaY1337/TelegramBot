@@ -3,7 +3,6 @@ import os
 import time
 import pyautogui
 
-from src.Clikers.GTACliker import gta_cliker
 from src.Handlers import globals
 import pygetwindow as gw
 
@@ -176,6 +175,7 @@ async def launch_prog(message):
 
     if win_gta and win_sun:
         time.sleep(20)
+        from src.Clikers.GTACliker import gta_cliker
         await gta_cliker(message)
 
 def switch_to_english():
