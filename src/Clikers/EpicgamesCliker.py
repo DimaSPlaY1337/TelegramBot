@@ -2,11 +2,16 @@ import ctypes
 import os
 import time
 import pyautogui
+
+from src.Clikers.GTACliker import gta_cliker
 from src.Handlers import globals
 import pygetwindow as gw
-
 from src.Handlers.ChoosingPlatform import change_pass_and_login
 from src.common import bot
+
+# проблемы:
+# 1. капча спавниться пока что не пончятно как
+# 2. алгоритмы проходящие капчу надо найти
 
 guard_x = None
 guard_y = None
@@ -31,12 +36,15 @@ async def handle_epic_guard(message):
     # — продолжить логику (например, отправить steam_guard дальше или завершить процесс)
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
     pyautogui.click(x=guard_write_x, y=guard_write_y)
-    # pyautogui.write(epic_guard, interval=0.05)
+    pyautogui.write(epic_guard, interval=0.05)
     pyautogui.press('enter')
     # globals.user_step[message.chat.id] = {"step": "epic_capcha"}
     #
     # await epic_client(message)
-    await close_apps()
+    if not await is_error(430, 650, 477,700):
+        await launch_prog(message)
+    else:
+        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
 
 async def wait_for_epic_open(title="Steam", timeout=200, interval=1):
     """
@@ -58,9 +66,9 @@ async def wait_for_epic_open(title="Steam", timeout=200, interval=1):
 def write_data(x, y,  data):
     pyautogui.click(x=x, y=y)
     pyautogui.click(x=x, y=y)
-    time.sleep(0.5)
+    time.sleep(0.2)
     pyautogui.hotkey('ctrl', 'a')
-    time.sleep(0.3)
+    time.sleep(0.2)
     pyautogui.write(data, interval=0.05)
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_rockstar")
@@ -75,17 +83,18 @@ async def epic_cliker(message):
     offset_login_cb_x = 647  # смещение по X от левого верхнего угла окна
     offset_login_cb_y = 647  # смещение по Y от левого верхнего угла окна
 
-    offset_password_x = 629  # смещение по X от левого верхнего угла окна
-    offset_password_y = 512  # смещение по Y от левого верхнего угла окна
+    offset_password_x = 665  # смещение по X от левого верхнего угла окна
+    offset_password_y = 731  # смещение по Y от левого верхнего угла окна
 
-    offset_password_cb_x = 629  # смещение по X от левого верхнего угла окна
-    offset_password_cb_y = 619  # смещение по Y от левого верхнего угла окна
+    offset_password_cb_x = 643  # смещение по X от левого верхнего угла окна
+    offset_password_cb_y = 847  # смещение по Y от левого верхнего угла окна
 
     # windows = gw.getAllWindows()
     # print([w.title for w in windows])
 
     win = await wait_for_epic_open("Epic Games Launcher")
     if win:
+        win.resizeTo(1324, 1400)
         win_left = win.left
         win_top = win.top
 
@@ -98,8 +107,8 @@ async def epic_cliker(message):
         guard_x = win.left + 318
         guard_y = win.top + 451
 
-        guard_write_x = win.left + 503
-        guard_write_y = win.top + 609
+        guard_write_x = win_left + 560
+        guard_write_y = win_top + 748
 
         time.sleep(5)
         write_data(login_x, login_y, globals.data_for_reg[message.chat.id]["login"])
@@ -107,7 +116,7 @@ async def epic_cliker(message):
         pyautogui.click(x=login_cb_x, y=login_cb_y)
         pyautogui.click(x=login_cb_x, y=login_cb_y)
 
-        if not await is_error():
+        if not await is_error(444, 623, 539, 632):
 
             pass_x = win.left + offset_password_x
             pass_y = win.top + offset_password_y
@@ -122,7 +131,7 @@ async def epic_cliker(message):
 
             pyautogui.click(x=pass_cb_x, y=pass_cb_y)
 
-            if not await is_error():
+            if not await is_error(434, 740, 508, 751):
                 time.sleep(3)
                 globals.user_step[message.chat.id] = {"step": "epic_guard"}
                 await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
@@ -194,10 +203,8 @@ async def is_green(r, g, b, g_min=80, diff_r=40, diff_b=40):
     # Проверка: ярко-зелёный или просто явно зелёный цвет
     return (g > g_min) and (g - r > diff_r) and (g - b > diff_b)
 
-async def is_error():
+async def is_error(x1, y1, x2, y2):
     global win_left, win_top
-    x1, y1 = 51, 339
-    x2, y2 = 121, 352
     rc,  rg, rb = 0, 0, 0
     for x in range(x1, x2):
         for y in range(y1, y2):
@@ -219,9 +226,8 @@ async def epic_exit():
     offset_accept_x = 741  # смещение по X от левого верхнего угла окна
     offset_accept_y = 774  # смещение по Y от левого верхнего угла окна
 
-    windows = gw.getAllWindows()
-    print([w.title for w in windows])
-    time.sleep(1)
+    # windows = gw.getAllWindows()
+    # print([w.title for w in windows])
     # Программа
     # запуска
     # Epic
@@ -260,3 +266,17 @@ async def close_apps():
     # win = await wait_for_epic_open("Программа запуска Epic Games")
     # if win:
     #     win.close()
+
+async def launch_prog(message):
+    global app_list
+    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
+    win_gta = await wait_for_epic_open("Grand Theft Auto V Enhanced")
+    app_list.append(win_gta)
+
+    os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+    win_sun = await wait_for_epic_open("Sunrise")
+    app_list.append(win_sun)
+
+    if win_gta and win_sun:
+        time.sleep(20)
+        await gta_cliker(message)

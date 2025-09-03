@@ -2,6 +2,8 @@ import ctypes
 import os
 import time
 import pyautogui
+
+from src.Clikers.GTACliker import gta_cliker
 from src.Handlers import globals
 import pygetwindow as gw
 
@@ -11,33 +13,10 @@ from src.common import bot
 guard_x = None
 guard_y = None
 
-guard_write_x = None
-guard_write_y = None
+win_left = 0
+win_top = 0
 
-win_left = None
-win_top = None
-
-# async def rockstar_client(message):
-#     global win_left, win_top
-#     win = await wait_for_rockstar_open("Rockstar Games")
-#     win_left = win.left
-#     win_top = win.top
-#
-#     end_time = time.time() + 200
-#     while time.time() < end_time:
-#         if await check_pixel(message, 957, 51, 0xFF, 0xF8, 0xC9):
-#             print(f"Окно client открыто!")
-#             break
-#         print(f"Жду открытия окна client...")
-#         time.sleep(1)
-#     print("Окно client не появилось за отведённое время.")
-#
-#     pyautogui.click(x=win_left+921, y=win_top+64)
-#
-#     battle_eye_x = 1003
-#     battle_eye_y = 419
-#     if not await check_pixel(message, battle_eye_x, battle_eye_y, 0x13, 0x15, 0x18):
-#         pyautogui.click(x=win_left + battle_eye_x, y=win_top + battle_eye_y)
+app_list = []
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rockstar_guard")
 async def handle_rockstar_guard(message):
@@ -48,11 +27,14 @@ async def handle_rockstar_guard(message):
     # — изменить шаг состояния, чтобы не ловить дальше любые сообщения
     # — продолжить логику (например, отправить steam_guard дальше или завершить процесс)
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
-    pyautogui.click(x=guard_x, y=guard_y)
-    pyautogui.write(steam_guard, interval=0.05)
-    pyautogui.click(x=guard_write_x, y=guard_write_y)
+    # pyautogui.click(x=guard_x, y=guard_y)
+    # pyautogui.write(steam_guard, interval=0.05)
+    # pyautogui.click(x=win_left + 538, y= win_top + 563)
 
-    # await rockstar_client(message)
+    if not await is_error(430, 650, 440, 660):#узнать коор ошибки при вводе кода
+        await launch_prog(message)
+    else:
+        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
 
 async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
     """
@@ -74,7 +56,7 @@ async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
 async def rockstar_cliker(message):
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
     switch_to_english()
-    global guard_x, guard_y, guard_write_x, guard_write_y, win_left, win_top
+    global guard_x, guard_y, win_left, win_top
 
     offset_login_x = 250  # смещение по X от левого верхнего угла окна
     offset_login_y = 350  # смещение по Y от левого верхнего угла окна
@@ -87,6 +69,8 @@ async def rockstar_cliker(message):
 
     win = await wait_for_rockstar_open("Rockstar Games - Sign In")
     if win:
+        win.resizeTo(700, 800)
+        time.sleep(0.3)
         win_left = win.left
         win_top = win.top
 
@@ -113,7 +97,8 @@ async def rockstar_cliker(message):
         pyautogui.click(x=abs_x, y=abs_y)
 
         time.sleep(3)
-        if not is_error():
+        if (not await is_error(101,186, 141, 204)
+                and not await is_error(123,351, 134, 359)):
             globals.user_step[message.chat.id] = {"step": "rockstar_guard"}
             await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
         else:
@@ -125,10 +110,11 @@ async def rockstar_cliker(message):
 
 def write_data(x, y,  data):
     pyautogui.click(x=x, y=y)
-    pyautogui.click(x=x, y=y)
-    time.sleep(0.5)
+    time.sleep(0.2)
     pyautogui.hotkey('ctrl', 'a')
-    time.sleep(0.3)
+    time.sleep(0.2)
+    pyautogui.press('delete')
+    time.sleep(0.2)
     pyautogui.write(data, interval=0.05)
 
 def switch_to_english():
@@ -149,15 +135,70 @@ async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"
     return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
 
-async def is_error():
+async def is_error(x1, y1, x2, y2):
     global win_left, win_top
-    x1, y1 = 51, 339
-    x2, y2 = 121, 352
     rc,  rg, rb = 0, 0, 0
     for x in range(x1, x2):
         for y in range(y1, y2):
             r, g, b = pyautogui.pixel(win_left + x, win_top + y)
+            # print(f"Цвет возможной ошибки: {r}, {g}, {b}")
             if await is_red(r, g, b):
                 print("Здесь введен неверный пароль или логин")
                 return True
     return False
+
+async def rock_exit():
+    global win_left, win_top
+
+    offset_profile_x = 1031  # смещение по X от левого верхнего угла окна
+    offset_profile_y = 67  # смещение по Y от левого верхнего угла окна
+
+    offset_out_x = 969  # смещение по X от левого верхнего угла окна
+    offset_out_y = 336  # смещение по Y от левого верхнего угла окна
+
+    windows = gw.getAllWindows()
+    print([w.title for w in windows])
+    win = await wait_for_rockstar_open("Rockstar Games Launcher")
+    time.sleep(1)
+    win.activate()
+    if win:
+        win.resizeTo(1084, 877)
+        win_left = win.left
+        win_top = win.top
+
+        abs_x = win_left + offset_profile_x
+        abs_y = win_top + offset_profile_y
+
+        pyautogui.click(x=abs_x, y=abs_y)
+
+        login_x = win_left + offset_out_x
+        login_y = win_top + offset_out_y
+
+        time.sleep(0.2)
+        pyautogui.click(x=login_x, y=login_y)
+    else:
+        print("Окно не найдено")
+
+async def close_apps():
+    global app_list
+    for win in app_list:
+        win.close()
+    await rock_exit()
+
+    win = await wait_for_rockstar_open("Rockstar Games - Sign In")
+    if win:
+        win.close()
+
+async def launch_prog(message):
+    global app_list
+    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
+    win_gta = await wait_for_rockstar_open("Grand Theft Auto V Enhanced")
+    app_list.append(win_gta)
+
+    os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+    win_sun = await wait_for_rockstar_open("Sunrise")
+    app_list.append(win_sun)
+
+    if win_gta and win_sun:
+        time.sleep(20)
+        await gta_cliker(message)

@@ -2,6 +2,8 @@ import ctypes
 import os
 import time
 import pyautogui
+
+from src.Clikers.GTACliker import gta_cliker
 from src.Handlers import globals
 import pygetwindow as gw
 
@@ -37,7 +39,12 @@ async def handle_steam_guard(message):
     pyautogui.click(x=guard_x, y=guard_y)
     pyautogui.write(steam_guard, interval=0.05)
     pyautogui.press('enter')
-    await gta_cliker(message)
+
+    if not await is_error(430, 650, 440, 660):#узнать коор ошибки при вводе кода
+        await launch_prog(message)
+    else:
+        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
+
 
 async def wait_for_steam_open(title="Steam", timeout=30, interval=1):
     """
@@ -125,7 +132,8 @@ async def steam_cliker(message):
         add_kode_y = win_top + 320
 
         pyautogui.click(x=add_kode_x, y=add_kode_y)
-        if not await is_error():
+
+        if not await is_error(51, 339, 121, 352):
             globals.user_step[message.chat.id] = {"step": "steam_guard"}
             await bot.send_message(message.chat.id, "Введите код Steam Guard (или другой нужный код):")
         else:
@@ -136,39 +144,39 @@ async def steam_cliker(message):
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
 async def handle_rockstar_guard(message):
-    global guard_rock_x, guard_rock_y, guard_enter_rock_x, guard_enter_rock_y
-    rock_guard = message.text  # Здесь — то, что ввел пользователь!
-    print(f"Получили steam guard: {rock_guard}")
+    steam_guard = message.text  # Здесь — то, что ввел пользователь!
+    print(f"Получили steam guard: {steam_guard}")
+
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
+    pyautogui.click(x=guard_x, y=guard_y)
+    pyautogui.write(steam_guard, interval=0.05)
+    pyautogui.click(x=rock_win.left + 538, y= rock_win.top + 563)
 
-    guard_rock_x = rock_win.left + 318
-    guard_rock_y = rock_win.top + 451
+    if await is_error(430, 650, 440, 660):  # узнать коор ошибки при вводе кода
+        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
+    else:
+        globals.user_step[message.chat.id] = {"step": "gta_cliker"}
 
-    guard_enter_rock_x = rock_win.left + 542
-    guard_enter_rock_y = rock_win.top + 568
-
-    pyautogui.click(x=guard_rock_x, y=guard_rock_y)
-    pyautogui.write(rock_guard, interval=0.05)
-    pyautogui.click(x=guard_enter_rock_x, y=guard_enter_rock_y)
-
-async def gta_cliker(message):
+async def launch_prog(message):
     global rock_win, app_list
-    # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
-    # win = await wait_for_steam_open("Grand Theft Auto V Enhanced")
-    # app_list.append(win)
-    #
-    # win = await wait_for_steam_open("Rockstar Games")
-    # if win:
-    #     rock_win = win
-    #     globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
-    #     await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
-    # app_list.append(win)
-    #
-    # os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-    # win = await wait_for_steam_open("Sunrise")
-    # app_list.append(win)
+    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
+    win_gta = await wait_for_steam_open("Grand Theft Auto V Enhanced")
+    app_list.append(win_gta)
 
-    await close_apps()
+    win_rock = await wait_for_steam_open("Rockstar Games")
+    if win_rock:
+        rock_win = win_rock
+        globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
+        await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
+    app_list.append(win_rock)
+
+    os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+    win_sun = await wait_for_steam_open("Sunrise")
+    app_list.append(win_sun)
+
+    if win_gta and win_sun:
+        time.sleep(20)
+        await gta_cliker(message)
 
 def switch_to_english():
     user32 = ctypes.WinDLL('user32', use_last_error=True)
@@ -188,13 +196,13 @@ async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"
     return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
 
-async def is_error():
+async def is_error(x1, y1, x2, y2):
     global win_left, win_top
-    x1, y1 = 51, 339
-    x2, y2 = 121, 352
+    rc,  rg, rb = 0, 0, 0
     for x in range(x1, x2):
         for y in range(y1, y2):
             r, g, b = pyautogui.pixel(win_left + x, win_top + y)
+            # print(f"Цвет возможной ошибки: {r}, {g}, {b}")
             if await is_red(r, g, b):
                 print("Здесь введен неверный пароль или логин")
                 return True
