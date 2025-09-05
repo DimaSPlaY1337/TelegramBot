@@ -21,18 +21,11 @@ guard_rock_y = None
 guard_enter_rock_x = None
 guard_enter_rock_y = None
 
-rock_win = None
-
-app_list = []
-
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "steam_guard")
 async def handle_steam_guard(message):
     steam_guard = message.text  # Здесь — то, что ввел пользователь!
     print(f"Получили steam guard: {steam_guard}")
-    # Здесь можно:
-    # — записать steam_guard куда надо
-    # — изменить шаг состояния, чтобы не ловить дальше любые сообщения
-    # — продолжить логику (например, отправить steam_guard дальше или завершить процесс)
+
     globals.user_step[message.chat.id] = {"step": "complete"}  # или другой шаг, если надо
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
     pyautogui.click(x=guard_x, y=guard_y)
@@ -45,7 +38,7 @@ async def handle_steam_guard(message):
         await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
 
 
-async def wait_for_steam_open(title="Steam", timeout=30, interval=1):
+async def wait_for_steam_open(title="Steam", timeout=15, interval=1):
     """
     Ждёт появления окна Steam с заголовком, максимум timeout секунд.
     Возвращает True, если окно найдено, иначе False
@@ -73,6 +66,12 @@ def write_data(x, y,  data):
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_steam")
 async def steam_cliker(message):
     global win_left, win_top
+    os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
+    win = await wait_for_steam_open("Rockstar Games - Sign In")
+    if win:
+        print("Rockstar в Steam открылся")
+    else:
+        print("Rockstar в Steam не открылся")
     os.startfile("C:\\Program Files (x86)\\Steam\\Steam.exe")
     switch_to_english()
     global guard_x, guard_y
@@ -92,7 +91,7 @@ async def steam_cliker(message):
     # windows = gw.getAllWindows()
     # print([w.title for w in windows])
     time.sleep(0.5)
-    win = await wait_for_steam_open("Войти в Steam")
+    win = await wait_for_steam_open("Войти в Steam") or await wait_for_steam_open("Sign in to Steam")
     if win:
         win_left = win.left
         win_top = win.top
@@ -149,7 +148,7 @@ async def handle_rockstar_guard(message):
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
     pyautogui.click(x=guard_x, y=guard_y)
     pyautogui.write(steam_guard, interval=0.05)
-    pyautogui.click(x=rock_win.left + 538, y= rock_win.top + 563)
+    pyautogui.click(x=globals.rock_win.left + 538, y=globals.rock_win.top + 563)
 
     if await is_error(430, 650, 440, 660):  # узнать коор ошибки при вводе кода
         await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
@@ -157,21 +156,20 @@ async def handle_rockstar_guard(message):
         globals.user_step[message.chat.id] = {"step": "gta_cliker"}
 
 async def launch_prog(message):
-    global rock_win, app_list
     os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
     win_gta = await wait_for_steam_open("Grand Theft Auto V Enhanced")
-    app_list.append(win_gta)
+    globals.app_list.append(win_gta)
 
     win_rock = await wait_for_steam_open("Rockstar Games")
     if win_rock:
-        rock_win = win_rock
+        globals.rock_win = win_rock
         globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
         await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
-    app_list.append(win_rock)
+    globals.app_list.append(win_rock)
 
     os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
     win_sun = await wait_for_steam_open("Sunrise")
-    app_list.append(win_sun)
+    globals.app_list.append(win_sun)
 
     if win_gta and win_sun:
         time.sleep(20)
@@ -217,11 +215,6 @@ async def steam_exit():
     offset_out_x = 944  # смещение по X от левого верхнего угла окна
     offset_out_y = 209  # смещение по Y от левого верхнего угла окна
 
-    offset_accept_x = 741  # смещение по X от левого верхнего угла окна
-    offset_accept_y = 774  # смещение по Y от левого верхнего угла окна
-
-    # windows = gw.getAllWindows()
-    # print([w.title for w in windows])
     win = await wait_for_steam_open("Steam")
     time.sleep(1)
     win.activate()
@@ -251,8 +244,13 @@ async def steam_exit():
         print("Окно не найдено")
 
 async def close_apps():
-    global app_list
-    for win in app_list:
+    # выход из гта
+    pyautogui.hotkey('alt', 'f4')
+    time.sleep(4)
+    pyautogui.press('enter')
+    print("Вышли из GTA")
+
+    for win in globals.app_list:
         win.close()
     await steam_exit()
 

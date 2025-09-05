@@ -27,9 +27,9 @@ async def send_welcome(message):
         else:
             await bot.reply_to(message, "С возвращением!")
 
-        await send_screenshot(message)
+        # await send_screenshot(message)
         # await gta_cliker(message)
-        # await choosing_platform(message)
+        await choosing_platform(message)
         # await steam_cliker(message)
         # await rockstar_cliker(message)
         # await epic_cliker(message)

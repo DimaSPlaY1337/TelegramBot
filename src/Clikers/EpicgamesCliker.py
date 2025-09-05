@@ -4,6 +4,7 @@ import time
 import pyautogui
 
 from src.Clikers.GTACliker import gta_cliker
+from src.Clikers.RockstarCliker import wait_for_rockstar_open
 from src.Handlers import globals
 import pygetwindow as gw
 from src.Handlers.ChoosingPlatform import change_pass_and_login
@@ -66,7 +67,6 @@ async def wait_for_epic_open(title="Steam", timeout=200, interval=1):
 
 def write_data(x, y,  data):
     pyautogui.click(x=x, y=y)
-    pyautogui.click(x=x, y=y)
     time.sleep(0.2)
     pyautogui.hotkey('ctrl', 'a')
     time.sleep(0.2)
@@ -74,6 +74,13 @@ def write_data(x, y,  data):
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_rockstar")
 async def epic_cliker(message):
+    os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
+    win = await wait_for_rockstar_open("Rockstar Games - Sign In")
+    if win:
+        print("Rockstar в Epic открылся")
+    else:
+        print("Rockstar в Epic не открылся")
+
     os.startfile("C:\\Program Files (x86)\\Epic Games\\Launcher\\Portal\\Binaries\\Win32\\EpicGamesLauncher.exe")
     switch_to_english()
     global guard_x, guard_y, guard_write_x, guard_write_y, win_left, win_top
@@ -122,7 +129,6 @@ async def epic_cliker(message):
             pass_x = win.left + offset_password_x
             pass_y = win.top + offset_password_y
 
-            pyautogui.click(x=pass_x, y=pass_y)
             pyautogui.click(x=pass_x, y=pass_y)
 
             write_data(pass_x, pass_y, globals.data_for_reg[message.chat.id]["password"])
@@ -259,8 +265,13 @@ async def epic_exit():
         print("Окно не найдено")
 
 async def close_apps():
-    global app_list
-    for win in app_list:
+    # выход из гта
+    pyautogui.hotkey('alt', 'f4')
+    time.sleep(4)
+    pyautogui.press('enter')
+    print("Вышли из GTA")
+
+    for win in globals.app_list:
         win.close()
     await epic_exit()
 
@@ -276,10 +287,21 @@ async def launch_prog(message):
     win_gta = await wait_for_epic_open("Grand Theft Auto V Enhanced")
     app_list.append(win_gta)
 
+    win_rock = await wait_for_epic_open("Rockstar Games")
+    if win_rock:
+        globals.rock_win = win_rock
+        globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
+        await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
+    globals.app_list.append(win_rock)
+
     os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
     win_sun = await wait_for_epic_open("Sunrise")
     app_list.append(win_sun)
 
     if win_gta and win_sun:
-        time.sleep(100)
+        timeout = 200
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            pyautogui.press('enter')
+            time.sleep(2)
         await gta_cliker(message)

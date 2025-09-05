@@ -15,16 +15,11 @@ guard_y = None
 win_left = 0
 win_top = 0
 
-app_list = []
-
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rockstar_guard")
 async def handle_rockstar_guard(message):
     steam_guard = message.text  # Здесь — то, что ввел пользователь!
     print(f"Получили steam guard: {steam_guard}")
-    # Здесь можно:
-    # — записать steam_guard куда надо
-    # — изменить шаг состояния, чтобы не ловить дальше любые сообщения
-    # — продолжить логику (например, отправить steam_guard дальше или завершить процесс)
+
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
     # pyautogui.click(x=guard_x, y=guard_y)
     # pyautogui.write(steam_guard, interval=0.05)
@@ -178,8 +173,13 @@ async def rock_exit():
         print("Окно не найдено")
 
 async def close_apps():
-    global app_list
-    for win in app_list:
+    # выход из гта
+    pyautogui.hotkey('alt', 'f4')
+    time.sleep(4)
+    pyautogui.press('enter')
+    print("Вышли из GTA")
+
+    for win in globals.app_list:
         win.close()
     await rock_exit()
 
@@ -188,16 +188,19 @@ async def close_apps():
         win.close()
 
 async def launch_prog(message):
-    global app_list
     os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_RE.lnk")
     win_gta = await wait_for_rockstar_open("Grand Theft Auto V Enhanced")
-    app_list.append(win_gta)
+    globals.app_list.append(win_gta)
 
     os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
     win_sun = await wait_for_rockstar_open("Sunrise")
-    app_list.append(win_sun)
+    globals.app_list.append(win_sun)
 
     if win_gta and win_sun:
-        time.sleep(100)
         from src.Clikers.GTACliker import gta_cliker
+        timeout = 200
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            pyautogui.press('enter')
+            time.sleep(2)
         await gta_cliker(message)
