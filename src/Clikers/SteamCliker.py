@@ -93,6 +93,8 @@ async def steam_cliker(message):
     time.sleep(0.5)
     win = await wait_for_steam_open("Войти в Steam") or await wait_for_steam_open("Sign in to Steam")
     if win:
+        win.resizeTo(705, 440)
+
         win_left = win.left
         win_top = win.top
 

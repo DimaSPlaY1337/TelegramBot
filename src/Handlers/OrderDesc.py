@@ -3,10 +3,19 @@ from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 from src.Handlers import globals
 from src.common import bot
 
+def unlocks_kb():
+    button1 = KeyboardButton(text="Standard Unlocks")
+    button2 = KeyboardButton(text="Super Unlocks")
+
+    unlocks_des.add(button1, button2)
+
+unlocks_des = ReplyKeyboardMarkup(resize_keyboard=True)
+unlocks_kb()
+
 def choose_kb():
     button1 = KeyboardButton(text="Money")
     button2 = KeyboardButton(text="Levels")
-    button3 = KeyboardButton(text="Items")
+    button3 = KeyboardButton(text="Unlocks")
 
     markup_des.add(button1, button2, button3)
 
@@ -28,7 +37,7 @@ async def order_description(message):
     globals.user_step[message.chat.id] = {"step": "order_des"}
     await bot.reply_to(
         message,
-        "Состав заказа (деньги, уровни и тд)",
+        "Какие позиции вы хотели бы видеть в вашем заказе?",
         reply_markup=markup_des
     )
 
@@ -41,7 +50,7 @@ async def order_output(message):
         f"Вы выбрали: \n"
         f"Money: {data.get('amount', 'не задано')}\n"
         f"Levels: {data.get('levels', 'не задано')}\n"
-        f"Items: {data.get('items', 'не задано')}"
+        f"Unlocks: {data.get('unlocks', 'не задано')}"
     )
 
     await bot.send_message(chat_id, full_order, reply_markup=ReplyKeyboardRemove())
@@ -75,8 +84,12 @@ async def order_choice(message):
         globals.user_step[chat_id] = {"step": "levels"}
 
     elif message.text == "Items" and "items" not in globals.order_des[chat_id]:
-        await bot.send_message(chat_id, "Введите название предмета:", reply_markup=ReplyKeyboardRemove())
-        globals.user_step[chat_id] = {"step": "items"}
+        await bot.reply_to(
+            message,
+            "Выберете тип Unlocks:",
+            reply_markup=unlocks_des
+        )
+        globals.user_step[chat_id] = {"step": "unlocks"}
 
     else:
         await bot.send_message(chat_id, "Вы это уже выбрали!\nВыберите что-то другое.")
@@ -93,9 +106,9 @@ async def get_levels(message):
     globals.order_des[message.chat.id]["levels"] = message.text
     await order_question(message)
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "items")
+@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "unlocks")
 async def get_items(message):
-    globals.order_des[message.chat.id]["items"] = message.text
+    globals.order_des[message.chat.id]["unlocks"] = message.text
     await order_question(message)
 
 async def order_question(message):

@@ -52,8 +52,10 @@ async def gta_cliker(message):
     press_key('enter')
 
     # write order
-    sum = 7000000
-    # int(globals.order_des[message.chat.id]["amount"])
+    sum = int(globals.order_des[message.chat.id]["amount"])
+    if sum < 7000000:
+        sum = 7000000
+
     order = 75000000
     if sum < order:
         order = sum
