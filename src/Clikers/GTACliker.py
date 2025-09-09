@@ -12,7 +12,7 @@ from src.common import bot
 def press_key(key, times=1):
     for _ in range(times):
         pyautogui.press(key)
-        time.sleep(0.2) # небольшая пауза между нажатиями
+        time.sleep(0.5) # небольшая пауза между нажатиями 0.2
 
 def keyboard_press_key(key, times=1, interval=0.5):
     keyboard = Controller()
@@ -38,113 +38,115 @@ async def gta_cliker(message):
     # 4 down
     press_key('down', 4)
 
-    # enter
-    press_key('enter')
-
-    # enter
-    press_key('enter')
-
-    # galka
-    press_key('enter')
-
-    # 1 down
-    press_key('down', 1)
-    press_key('enter')
-
     # write order
-    sum = int(globals.order_des[message.chat.id]["amount"])
-    if sum < 7000000:
-        sum = 7000000
+    if globals.order_des[message.chat.id]["amount"].isdigit():
+        # enter
+        press_key('enter')
 
-    order = 75000000
-    if sum < order:
-        order = sum
+        # enter
+        press_key('enter')
 
-    keyboard.type(str(order))
-    keyboard.press(Key.enter)
-    keyboard.release(Key.enter)
-    press_key('enter')
+        # galka
+        press_key('enter')
 
-    time.sleep(0.5)
+        # 1 down
+        press_key('down', 1)
+        press_key('enter')
 
-    # down
-    press_key('down')
-    press_key('enter')
+        sum = int(globals.order_des[message.chat.id]["amount"])
+        if sum < 7000000:
+            sum = 7000000
 
-    # write(200000000-75000000)
-    result = str(sum - order)
-    keyboard.type(result)
-    keyboard.press(Key.enter)
-    keyboard.release(Key.enter)
+        order = 75000000
+        if sum < order:
+            order = sum
 
-    time.sleep(0.5)
+        keyboard.type(str(order))
+        keyboard.press(Key.enter)
+        keyboard.release(Key.enter)
+        press_key('enter')
 
-    # backspace
-    press_key('backspace')
+        time.sleep(0.5)
 
-    # Medium safe
-    press_key('down', 5)
-    r, g, b = pyautogui.pixel(2305, 798)
-    while not await is_gray(r,g,b):
+        # down
         press_key('down')
-    press_key('enter')
+        press_key('enter')
 
-    time.sleep(1)
-    x = 2405
-    y = 798
-    while True:
-        # Считываем цвет пикселя
-        r,g,b = pyautogui.pixel(x, y)
-        print(f"Текущий цвет: {r}, {g}, {b}")
+        # write(200000000-75000000)
+        result = str(sum - order)
+        keyboard.type(result)
+        keyboard.press(Key.enter)
+        keyboard.release(Key.enter)
 
-        # Проверка цвета
-        if not await is_red(r,g,b):
-            print("Цвет стал целевым!")
-            break
+        time.sleep(0.5)
 
-    time.sleep(0.2)  # небольшая задержка, чтобы не грузить процессор
-    # check red label disapear, while lable != black: wait
-    # (Это требует проверки содержимого экрана, не реализовано простым pyautogui)
+        # backspace
+        press_key('backspace')
 
-    # 4 up
-    press_key('up', 4)
+        # Medium safe
+        press_key('down', 5)
+        r, g, b = pyautogui.pixel(2305, 798)
+        while not await is_gray(r,g,b):
+            press_key('down')
+        press_key('enter')
 
-    # Казино -> Зациклить
-    press_key('enter')
-    press_key('enter')
-    x = 2404
-    y = 567
+        time.sleep(1)
+        x = 2405
+        y = 798
+        while True:
+            # Считываем цвет пикселя
+            r,g,b = pyautogui.pixel(x, y)
+            print(f"Текущий цвет: {r}, {g}, {b}")
 
-    r, g, b = pyautogui.pixel(x, y)
-    while await is_red(r,g,b):
-        # Считываем цвет пикселя
+            # Проверка цвета
+            if not await is_red(r,g,b):
+                print("Цвет стал целевым!")
+                break
+
+        time.sleep(0.2)  # небольшая задержка, чтобы не грузить процессор
+        # check red label disapear, while lable != black: wait
+        # (Это требует проверки содержимого экрана, не реализовано простым pyautogui)
+
+        # 4 up
+        press_key('up', 4)
+
+        # Казино -> Зациклить
+        press_key('enter')
+        press_key('enter')
+        x = 2404
+        y = 567
+
         r, g, b = pyautogui.pixel(x, y)
-        print(f"Текущий цвет: {r}, {g}, {b}")
-    print("Цвет стал целевым!")
+        while await is_red(r,g,b):
+            # Считываем цвет пикселя
+            r, g, b = pyautogui.pixel(x, y)
+            print(f"Текущий цвет: {r}, {g}, {b}")
+        print("Цвет стал целевым!")
 
 
-    # backspace
-    press_key('backspace')
-    press_key('backspace')
+        # backspace
+        press_key('backspace')
+        press_key('backspace')
 
     # 2 down
     press_key('down', 2)
     press_key('enter')
 
     # write level
-    order = 10 #int(globals.order_des[message.chat.id]["levels"])
-    keyboard.press(Key.enter)
-    keyboard.release(Key.enter)
-    time.sleep(0.5)
-    write_text(order, 0.2)
-    keyboard.press(Key.enter)
-    keyboard.release(Key.enter)
-    time.sleep(0.5)
-    # 1 down
-    press_key('down')
-    press_key('enter')
+    if globals.order_des[message.chat.id]["levels"].isdigit():
+        order = int(globals.order_des[message.chat.id]["levels"])
+        keyboard.press(Key.enter)
+        keyboard.release(Key.enter)
+        time.sleep(0.5)
+        write_text(order, 0.2)
+        keyboard.press(Key.enter)
+        keyboard.release(Key.enter)
+        time.sleep(0.5)
+        # 1 down
+        press_key('down')
+        press_key('enter')
 
-    time.sleep(10)
+        time.sleep(10)
 
     # backspace
     press_key('backspace')
@@ -157,9 +159,11 @@ async def gta_cliker(message):
     press_key('up', 1)
     press_key('enter')
 
-    # down 1
-    press_key('down', 1)
-    press_key('enter')
+    if globals.order_des[message.chat.id]["unlocks"] == "Standard Unlocks":
+        press_key('enter')
+    elif globals.order_des[message.chat.id]["unlocks"] == "Super Unlocks":
+        press_key('down', 1)
+        press_key('enter')
 
     time.sleep(10)
     # clava "o"

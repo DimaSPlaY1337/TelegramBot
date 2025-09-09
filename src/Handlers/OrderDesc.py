@@ -35,6 +35,14 @@ def continue_kb():
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "order_choice")
 async def order_description(message):
     globals.user_step[message.chat.id] = {"step": "order_des"}
+
+    if message.chat.id not in globals.order_des or not isinstance(globals.order_des[message.chat.id], dict):
+        globals.order_des[message.chat.id] = {}
+
+    globals.order_des[message.chat.id]["amount"] = 'не задано'
+    globals.order_des[message.chat.id]["levels"] = 'не задано'
+    globals.order_des[message.chat.id]["unlocks"] = 'не задано'
+
     await bot.reply_to(
         message,
         "Какие позиции вы хотели бы видеть в вашем заказе?",
@@ -70,20 +78,16 @@ async def order_output(message):
 async def order_choice(message):
     chat_id = message.chat.id
 
-    # Если для чата ещё нет записи в order_des — создаём
-    if chat_id not in globals.order_des:
-        globals.order_des[chat_id] = {}
-
     # Проверка: выбрано ли это уже
-    if message.text == "Money" and "amount" not in globals.order_des[chat_id]:
+    if message.text == "Money" and globals.order_des[chat_id]["amount"] != 0:
         await bot.send_message(chat_id, "Введите сумму:", reply_markup=ReplyKeyboardRemove())
         globals.user_step[chat_id] = {"step": "money"}
 
-    elif message.text == "Levels" and "levels" not in globals.order_des[chat_id]:
+    elif message.text == "Levels" and globals.order_des[chat_id]["levels"] != 0:
         await bot.send_message(chat_id, "Введите уровни:", reply_markup=ReplyKeyboardRemove())
         globals.user_step[chat_id] = {"step": "levels"}
 
-    elif message.text == "Items" and "items" not in globals.order_des[chat_id]:
+    elif message.text == "Items" and globals.order_des[chat_id]["unlocks"] != 0:
         await bot.reply_to(
             message,
             "Выберете тип Unlocks:",
@@ -112,7 +116,9 @@ async def get_items(message):
     await order_question(message)
 
 async def order_question(message):
-    if len(globals.order_des[message.chat.id]) != len(markup_des.keyboard[0]):
+    if (globals.order_des[message.chat.id]["levels"] == 'не задано'
+            or globals.order_des[message.chat.id]["unlocks"] == 'не задано'
+            or globals.order_des[message.chat.id]["levels"] == 'не задано'):
         await bot.reply_to(
             message,
             "Что то еще?",

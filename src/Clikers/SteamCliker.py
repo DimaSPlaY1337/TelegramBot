@@ -2,6 +2,7 @@ import ctypes
 import os
 import time
 import pyautogui
+from pynput.keyboard import Controller, Key
 
 from src.Handlers import globals
 import pygetwindow as gw
@@ -38,7 +39,7 @@ async def handle_steam_guard(message):
         await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
 
 
-async def wait_for_steam_open(title="Steam", timeout=15, interval=1):
+async def wait_for_steam_open(title="Steam", timeout=30, interval=1):
     """
     Ждёт появления окна Steam с заголовком, максимум timeout секунд.
     Возвращает True, если окно найдено, иначе False
@@ -67,6 +68,7 @@ def write_data(x, y,  data):
 async def steam_cliker(message):
     global win_left, win_top
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
+    os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
     win = await wait_for_steam_open("Rockstar Games - Sign In")
     if win:
         print("Rockstar в Steam открылся")
@@ -91,7 +93,7 @@ async def steam_cliker(message):
     # windows = gw.getAllWindows()
     # print([w.title for w in windows])
     time.sleep(0.5)
-    win = await wait_for_steam_open("Войти в Steam") or await wait_for_steam_open("Sign in to Steam")
+    win = await wait_for_steam_open("Sign in to Steam") or await wait_for_steam_open("Войти в Steam")
     if win:
         win.resizeTo(705, 440)
 
@@ -159,10 +161,9 @@ async def handle_rockstar_guard(message):
 
 async def launch_prog(message):
     os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
-    win_gta = await wait_for_steam_open("Grand Theft Auto V Enhanced")
-    globals.app_list.append(win_gta)
+    win_gta = await wait_for_steam_open("Grand Theft Auto V", 200)
 
-    win_rock = await wait_for_steam_open("Rockstar Games")
+    win_rock = await wait_for_steam_open("Rockstar Games", 20)
     if win_rock:
         globals.rock_win = win_rock
         globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
@@ -170,13 +171,30 @@ async def launch_prog(message):
     globals.app_list.append(win_rock)
 
     os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-    win_sun = await wait_for_steam_open("Sunrise")
+    win_sun = await wait_for_steam_open("Sunrise", 40)
     globals.app_list.append(win_sun)
 
+    time.sleep(10)
     if win_gta and win_sun:
-        time.sleep(20)
+        end_time = time.time() + 120
+        while time.time() < end_time:
+            keyboard_press_key('enter')
+            win_gta.activate()
+            win_sun.minimize()
+            time.sleep(2.5)
         from src.Clikers.GTACliker import gta_cliker
         await gta_cliker(message)
+
+def keyboard_press_key(key, times=1, interval=0.5):
+    keyboard = Controller()
+    if key == 'enter':
+        key_to_press = Key.enter
+    else:
+        key_to_press = key
+    for _ in range(times):
+        keyboard.press(key_to_press)
+        keyboard.release(key_to_press)
+        time.sleep(interval)
 
 def switch_to_english():
     user32 = ctypes.WinDLL('user32', use_last_error=True)
@@ -253,7 +271,10 @@ async def close_apps():
     print("Вышли из GTA")
 
     for win in globals.app_list:
-        win.close()
+        if win is not None:
+            win.close()
+        else:
+            print("При закрытие окна, оно оказалось None")
     await steam_exit()
 
     win = await wait_for_steam_open("Войти в Steam")
