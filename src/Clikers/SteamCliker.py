@@ -181,6 +181,7 @@ async def launch_prog(message):
     globals.app_list.append(win_rock)
 
     os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+    os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")#TODO
     win_sun = await wait_for_steam_open("Sunrise", 40)
     # globals.app_list.append(win_sun)
 
