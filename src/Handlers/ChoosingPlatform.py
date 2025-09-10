@@ -56,6 +56,12 @@ async def get_password(message):
     )
     # Можно удалить данные, если больше не нужны:
     if not is_changing_data:
+        if message.chat.id not in globals.order_des or not isinstance(globals.order_des[message.chat.id], dict):
+            globals.order_des[message.chat.id] = {}
+
+        globals.order_des[message.chat.id]["amount"] = 'не задано'
+        globals.order_des[message.chat.id]["levels"] = 'не задано'
+        globals.order_des[message.chat.id]["unlocks"] = 'не задано'
         await order_description(message)
     elif globals.platform == "EpicGames":
         from src.Clikers import epic_cliker

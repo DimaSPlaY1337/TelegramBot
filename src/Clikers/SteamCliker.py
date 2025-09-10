@@ -22,6 +22,8 @@ guard_rock_y = None
 guard_enter_rock_x = None
 guard_enter_rock_y = None
 
+gta = None
+
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "steam_guard")
 async def handle_steam_guard(message):
     steam_guard = message.text  # Здесь — то, что ввел пользователь!
@@ -67,13 +69,17 @@ def write_data(x, y,  data):
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_steam")
 async def steam_cliker(message):
     global win_left, win_top
-    os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
-    os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
-    win = await wait_for_steam_open("Rockstar Games - Sign In")
-    if win:
-        print("Rockstar в Steam открылся")
+
+    win_be = None
+    if not await wait_for_steam_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
+        os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
+        win_be = await wait_for_steam_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
     else:
-        print("Rockstar в Steam не открылся")
+        win_be = await wait_for_steam_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+
+    # windows = gw.getAllWindows()
+    # print([w.title for w in windows])
+
     os.startfile("C:\\Program Files (x86)\\Steam\\Steam.exe")
     switch_to_english()
     global guard_x, guard_y
@@ -93,10 +99,11 @@ async def steam_cliker(message):
     # windows = gw.getAllWindows()
     # print([w.title for w in windows])
     time.sleep(0.5)
-    win = await wait_for_steam_open("Sign in to Steam") or await wait_for_steam_open("Войти в Steam")
+    win = await wait_for_steam_open("Sign in to Steam", 100) or await wait_for_steam_open("Войти в Steam", 100                                                                                     )
     if win:
         win.resizeTo(705, 440)
-
+        time.sleep(0.5)
+        win.activate()
         win_left = win.left
         win_top = win.top
 
@@ -160,8 +167,11 @@ async def handle_rockstar_guard(message):
         globals.user_step[message.chat.id] = {"step": "gta_cliker"}
 
 async def launch_prog(message):
-    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_ES.url")
+    global gta
+    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
+    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
     win_gta = await wait_for_steam_open("Grand Theft Auto V", 200)
+    gta = win_gta
 
     win_rock = await wait_for_steam_open("Rockstar Games", 20)
     if win_rock:
@@ -172,13 +182,13 @@ async def launch_prog(message):
 
     os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
     win_sun = await wait_for_steam_open("Sunrise", 40)
-    globals.app_list.append(win_sun)
+    # globals.app_list.append(win_sun)
 
     time.sleep(10)
     if win_gta and win_sun:
-        end_time = time.time() + 120
+        end_time = time.time() + 90
         while time.time() < end_time:
-            keyboard_press_key('enter')
+            # keyboard_press_key('enter')
             win_gta.activate()
             win_sun.minimize()
             time.sleep(2.5)
@@ -266,17 +276,28 @@ async def steam_exit():
 async def close_apps():
     # выход из гта
     pyautogui.hotkey('alt', 'f4')
-    time.sleep(4)
-    pyautogui.press('enter')
+    if gta is not None:
+        gta.activate()
+    time.sleep(7)
+    keyboard_press_key('enter')
     print("Вышли из GTA")
 
+    time.sleep(5)
+
+    win_rock = await wait_for_steam_open("Rockstar Games Launcher", 20) or None
+    if win_rock is not None:
+        win_rock.close()
+
     for win in globals.app_list:
+        print("Закрываем")
         if win is not None:
             win.close()
         else:
             print("При закрытие окна, оно оказалось None")
+    print("Закрываем Steam1")
     await steam_exit()
 
-    win = await wait_for_steam_open("Войти в Steam")
+    print("Закрываем Steam2")
+    win = await wait_for_steam_open("Sign in to Steam", 100) or await wait_for_steam_open("Войти в Steam", 100)
     if win:
         win.close()

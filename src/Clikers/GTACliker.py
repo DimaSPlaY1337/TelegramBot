@@ -12,7 +12,7 @@ from src.common import bot
 def press_key(key, times=1):
     for _ in range(times):
         pyautogui.press(key)
-        time.sleep(0.5) # небольшая пауза между нажатиями 0.2
+        time.sleep(0.2) # небольшая пауза между нажатиями 0.2
 
 def keyboard_press_key(key, times=1, interval=0.5):
     keyboard = Controller()
@@ -231,7 +231,7 @@ def switch_to_english():
 async def send_screenshot(message):
     with open(r'D:\Repos\gta_screen.png', 'rb') as photo:
         await bot.send_photo(message.chat.id, photo)
-    globals.platform = "Rockstar"
+    # globals.platform = "Rockstar"
     await close_apps()
 
 async def close_apps():

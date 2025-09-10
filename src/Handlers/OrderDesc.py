@@ -36,13 +36,6 @@ def continue_kb():
 async def order_description(message):
     globals.user_step[message.chat.id] = {"step": "order_des"}
 
-    if message.chat.id not in globals.order_des or not isinstance(globals.order_des[message.chat.id], dict):
-        globals.order_des[message.chat.id] = {}
-
-    globals.order_des[message.chat.id]["amount"] = 'не задано'
-    globals.order_des[message.chat.id]["levels"] = 'не задано'
-    globals.order_des[message.chat.id]["unlocks"] = 'не задано'
-
     await bot.reply_to(
         message,
         "Какие позиции вы хотели бы видеть в вашем заказе?",
@@ -87,7 +80,7 @@ async def order_choice(message):
         await bot.send_message(chat_id, "Введите уровни:", reply_markup=ReplyKeyboardRemove())
         globals.user_step[chat_id] = {"step": "levels"}
 
-    elif message.text == "Items" and globals.order_des[chat_id]["unlocks"] != 0:
+    elif message.text == "Unlocks" and globals.order_des[chat_id]["unlocks"] != 0:
         await bot.reply_to(
             message,
             "Выберете тип Unlocks:",
@@ -118,7 +111,7 @@ async def get_items(message):
 async def order_question(message):
     if (globals.order_des[message.chat.id]["levels"] == 'не задано'
             or globals.order_des[message.chat.id]["unlocks"] == 'не задано'
-            or globals.order_des[message.chat.id]["levels"] == 'не задано'):
+            or globals.order_des[message.chat.id]["amount"] == 'не задано'):
         await bot.reply_to(
             message,
             "Что то еще?",
