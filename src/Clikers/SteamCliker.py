@@ -315,6 +315,8 @@ async def close_apps():
     if win:
         win.close()
 
+    time.sleep(1)
+
     await close_sunrise()
 
 async def close_sunrise():
