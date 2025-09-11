@@ -168,8 +168,14 @@ async def handle_rockstar_guard(message):
 
 async def launch_prog(message):
     global gta
-    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
-    os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
+
+    if globals.order_des[message.chat.id]["version"] == "Enhanced":
+        os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
+    elif globals.order_des[message.chat.id]["version"] == "Legacy":
+        os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
+    else:
+        print("Ошибка выбора версии GTA")
+
     win_gta = await wait_for_steam_open("Grand Theft Auto V", 200)
     gta = win_gta
 
@@ -180,8 +186,13 @@ async def launch_prog(message):
         await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
     globals.app_list.append(win_rock)
 
-    os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-    os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")#TODO
+    if globals.order_des[message.chat.id]["version"] == "Enhanced":
+        os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+    elif globals.order_des[message.chat.id]["version"] == "Legacy":
+        os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
+    else:
+        print("Ошибка выбора версии Sunrise")
+
     win_sun = await wait_for_steam_open("Sunrise", 40)
     # globals.app_list.append(win_sun)
 
@@ -295,6 +306,7 @@ async def close_apps():
             win.close()
         else:
             print("При закрытие окна, оно оказалось None")
+
     print("Закрываем Steam1")
     await steam_exit()
 
@@ -302,3 +314,23 @@ async def close_apps():
     win = await wait_for_steam_open("Sign in to Steam", 100) or await wait_for_steam_open("Войти в Steam", 100)
     if win:
         win.close()
+
+    await close_sunrise()
+
+async def close_sunrise():
+    win = await wait_for_steam_open("Sunrise", 40)
+    time.sleep(1)
+    win.activate()
+    if win:
+        win.resizeTo(755, 525)
+        time.sleep(0.3)
+        win_right = win.right
+        win_top = win.top
+
+        abs_x = win_right + 743
+        abs_y = win_top + 13
+
+        time.sleep(0.3)  # время на переключение окна
+        pyautogui.click(x=abs_x, y=abs_y)
+    else:
+        print("Окно не найдено")

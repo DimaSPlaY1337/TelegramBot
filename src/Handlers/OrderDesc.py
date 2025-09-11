@@ -32,7 +32,6 @@ def continue_kb():
     return markup_q
 
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "order_choice")
 async def order_description(message):
     globals.user_step[message.chat.id] = {"step": "order_des"}
 
@@ -47,12 +46,9 @@ async def order_output(message):
     data = globals.order_des.get(chat_id, {})
 
     # Формируем текст только для этого пользователя
-    full_order = (
-        f"Вы выбрали: \n"
-        f"Money: {data.get('amount', 'не задано')}\n"
-        f"Levels: {data.get('levels', 'не задано')}\n"
-        f"Unlocks: {data.get('unlocks', 'не задано')}"
-    )
+    full_order = "Вы выбрали:\n"
+    for key, value in data.items():
+        full_order += f"{key}: {value}\n"
 
     await bot.send_message(chat_id, full_order, reply_markup=ReplyKeyboardRemove())
     globals.order = full_order

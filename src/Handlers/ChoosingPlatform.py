@@ -8,6 +8,15 @@ from src.common import bot
 
 is_changing_data = False
 
+def versions_kb():
+    button1 = KeyboardButton(text="Enhanced")
+    button2 = KeyboardButton(text="Legacy")
+
+    versions_des.add(button1, button2)
+
+versions_des = ReplyKeyboardMarkup(resize_keyboard=True)
+versions_kb()
+
 def get_on_start_kb():
     button1 = KeyboardButton(text="Steam")
     button2 = KeyboardButton(text="EpicGames")
@@ -56,13 +65,12 @@ async def get_password(message):
     )
     # Можно удалить данные, если больше не нужны:
     if not is_changing_data:
-        if message.chat.id not in globals.order_des or not isinstance(globals.order_des[message.chat.id], dict):
-            globals.order_des[message.chat.id] = {}
-
-        globals.order_des[message.chat.id]["amount"] = 'не задано'
-        globals.order_des[message.chat.id]["levels"] = 'не задано'
-        globals.order_des[message.chat.id]["unlocks"] = 'не задано'
-        await order_description(message)
+        await bot.reply_to(
+            message,
+            "Выберете версию:",
+            reply_markup=versions_des
+        )
+        globals.user_step[message.chat.id]["step"] = "version_of_game"
     elif globals.platform == "EpicGames":
         from src.Clikers import epic_cliker
         is_changing_data = False
@@ -82,3 +90,21 @@ async def change_pass_and_login(message):
     is_changing_data = True
     globals.user_step[message.chat.id] = {"step": "login"}
     await bot.send_message(message.chat.id, "Введите ваш логин:")
+
+@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "version_of_game")
+async def version_of_game(message):
+
+    if message.chat.id not in globals.order_des or not isinstance(globals.order_des[message.chat.id], dict):
+        globals.order_des[message.chat.id] = {}
+
+    globals.order_des[message.chat.id]["version"] = message.text
+    version = globals.order_des[message.chat.id]["version"]
+    await bot.send_message(
+        message.chat.id, f"Ваша версия игры: {version}"
+    )
+
+    globals.order_des[message.chat.id]["amount"] = 'не задано'
+    globals.order_des[message.chat.id]["levels"] = 'не задано'
+    globals.order_des[message.chat.id]["unlocks"] = 'не задано'
+
+    await order_description(message)
