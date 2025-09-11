@@ -3,6 +3,9 @@ import os
 import time
 import pyautogui
 from pynput.keyboard import Controller, Key
+import win32gui
+import win32con
+import win32api
 
 from src.Handlers import globals
 import pygetwindow as gw
@@ -35,6 +38,7 @@ async def handle_steam_guard(message):
     pyautogui.write(steam_guard, interval=0.05)
     pyautogui.press('enter')
 
+    time.sleep(3)
     if not await is_error(430, 650, 440, 660):#узнать коор ошибки при вводе кода
         await launch_prog(message)
     else:
@@ -69,6 +73,10 @@ def write_data(x, y,  data):
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_steam")
 async def steam_cliker(message):
     global win_left, win_top
+
+    os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
+
+    time.sleep(4)
 
     win_be = None
     if not await wait_for_steam_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
@@ -324,15 +332,29 @@ async def close_sunrise():
     time.sleep(1)
     win.activate()
     if win:
-        win.resizeTo(755, 525)
+        # win.resizeTo(755, 525)
         time.sleep(0.3)
-        win_right = win.right
+        win_right = win.left
         win_top = win.top
 
-        abs_x = win_right + 743
+        abs_x = win_right + 742
         abs_y = win_top + 13
 
         time.sleep(0.3)  # время на переключение окна
-        pyautogui.click(x=abs_x, y=abs_y)
+        lowlevel_click(abs_x, abs_y)
+        print("rjytw")
+
     else:
         print("Окно не найдено")
+
+def lowlevel_click(x, y):
+    ctypes.windll.user32.SetCursorPos(x, y)
+    time.sleep(0.01)
+    ctypes.windll.user32.mouse_event(2, 0, 0, 0, 0)  # MOUSEEVENTF_LEFTDOWN
+    time.sleep(0.01)
+    ctypes.windll.user32.mouse_event(4, 0, 0, 0, 0)  # MOUSEEVENTF_LEFTUP
+
+def post_message_click(hwnd, x, y):
+    lParam = win32api.MAKELONG(x, y)
+    win32gui.PostMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam)
+    win32gui.PostMessage(hwnd, win32con.WM_LBUTTONUP, 0, lParam)
