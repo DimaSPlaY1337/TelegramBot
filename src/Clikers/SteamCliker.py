@@ -1,5 +1,6 @@
 import ctypes
 import os
+import subprocess
 import time
 import pyautogui
 from pynput.keyboard import Controller, Key
@@ -16,9 +17,6 @@ from src.common import bot
 win_left = None
 win_top = None
 
-guard_x = None
-guard_y = None
-
 guard_rock_x = None
 guard_rock_y = None
 
@@ -29,20 +27,33 @@ gta = None
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "steam_guard")
 async def handle_steam_guard(message):
+    global win_left, win_top
+
     steam_guard = message.text  # Здесь — то, что ввел пользователь!
     print(f"Получили steam guard: {steam_guard}")
 
-    globals.user_step[message.chat.id] = {"step": "complete"}  # или другой шаг, если надо
-    await bot.send_message(message.chat.id, "Спасибо! Код получен.")
-    pyautogui.click(x=guard_x, y=guard_y)
-    pyautogui.write(steam_guard, interval=0.05)
-    pyautogui.press('enter')
+    # globals.user_step[message.chat.id] = {"step": "complete"}  # или другой шаг, если надо
+    win = await wait_for_steam_open("Sign in to Steam", 5) or None
+    if win:
+        await bot.send_message(message.chat.id, "Спасибо! Код получен.")
 
-    time.sleep(3)
-    if not await is_error(430, 650, 440, 660):#узнать коор ошибки при вводе кода
-        await launch_prog(message)
+        win_top = win.top
+        win_left = win.left
+
+        pyautogui.click(x=win_left + 469, y=win_top + 185)
+        pyautogui.write(steam_guard, interval=0.05)
+        pyautogui.press('enter')
+
+        time.sleep(2)
+        if not await is_error(266, 151, 293, 161):#узнать коор ошибки при вводе кода
+            await launch_prog(message)
+        else:
+            await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
+            pyautogui.click(x=win_left + 469, y=win_top + 185)
+            pyautogui.press('backspace', 5)
     else:
-        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
+        await launch_prog(message)
+        print("Окно steam guard не найдено")
 
 
 async def wait_for_steam_open(title="Steam", timeout=30, interval=1):
@@ -76,7 +87,10 @@ async def steam_cliker(message):
 
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
 
-    time.sleep(4)
+    # windows = gw.getAllWindows()
+    # print([w.title for w in windows])
+
+    time.sleep(7)
 
     win_be = None
     if not await wait_for_steam_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
@@ -90,7 +104,6 @@ async def steam_cliker(message):
 
     os.startfile("C:\\Program Files (x86)\\Steam\\Steam.exe")
     switch_to_english()
-    global guard_x, guard_y
 
     offset_plus_x = 445  # смещение по X от левого верхнего угла окна
     offset_plus_y = 220  # смещение по Y от левого верхнего угла окна
@@ -104,13 +117,11 @@ async def steam_cliker(message):
     offset_enter_x = 325  # смещение по X от левого верхнего угла окна
     offset_enter_y = 300  # смещение по Y от левого верхнего угла окна
 
-    # windows = gw.getAllWindows()
-    # print([w.title for w in windows])
     time.sleep(0.5)
-    win = await wait_for_steam_open("Sign in to Steam", 100) or await wait_for_steam_open("Войти в Steam", 100                                                                                     )
+    win = await wait_for_steam_open("Sign in to Steam", 100) or await wait_for_steam_open("Войти в Steam", 100)
     if win:
         win.resizeTo(705, 440)
-        time.sleep(0.5)
+        time.sleep(0.2)
         win.activate()
         win_left = win.left
         win_top = win.top
@@ -125,9 +136,9 @@ async def steam_cliker(message):
         login_x = win_left + offset_login_x
         login_y = win.top + offset_login_y
 
-        guard_x = login_x+100
-        guard_y = login_y+10
 
+        win.activate()
+        time.sleep(0.2)
         pyautogui.click(x=login_x, y=login_y)
         pyautogui.click(x=login_x, y=login_y)
         write_data(login_x, login_y, globals.data_for_reg[message.chat.id]["login"])
@@ -135,9 +146,11 @@ async def steam_cliker(message):
         pass_x = win_left + offset_password_x
         pass_y = win.top + offset_password_y
 
-        pyautogui.click(x=pass_x, y=pass_y)
-        pyautogui.click(x=pass_x, y=pass_y)
 
+        win.activate()
+        time.sleep(0.2)
+        pyautogui.click(x=pass_x, y=pass_y)
+        pyautogui.click(x=pass_x, y=pass_y)
         write_data(pass_x, pass_y, globals.data_for_reg[message.chat.id]["password"])
 
         pass_cb_x = win_left + offset_enter_x
@@ -161,33 +174,25 @@ async def steam_cliker(message):
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
 async def handle_rockstar_guard(message):
-    steam_guard = message.text  # Здесь — то, что ввел пользователь!
-    print(f"Получили steam guard: {steam_guard}")
-
-    await bot.send_message(message.chat.id, "Спасибо! Код получен.")
-    pyautogui.click(x=guard_x, y=guard_y)
-    pyautogui.write(steam_guard, interval=0.05)
-    pyautogui.click(x=globals.rock_win.left + 538, y=globals.rock_win.top + 563)
-
-    if await is_error(430, 650, 440, 660):  # узнать коор ошибки при вводе кода
-        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
-    else:
-        globals.user_step[message.chat.id] = {"step": "gta_cliker"}
+    # steam_guard = message.text  # Здесь — то, что ввел пользователь!
+    # print(f"Получили steam guard: {steam_guard}")
+    #
+    # await bot.send_message(message.chat.id, "Спасибо! Код получен.")
+    # pyautogui.click(x=guard_x, y=guard_y)
+    # pyautogui.write(steam_guard, interval=0.05)
+    # pyautogui.click(x=globals.rock_win.left + 538, y=globals.rock_win.top + 563)
+    #
+    # if await is_error(430, 650, 440, 660):  # узнать коор ошибки при вводе кода
+    #     await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
+    # else:
+    #     globals.user_step[message.chat.id] = {"step": "gta_cliker"}
+    time.sleep(120)
+    print(f"Получили steam guard:")50
 
 async def launch_prog(message):
     global gta
 
-    if globals.order_des[message.chat.id]["version"] == "Enhanced":
-        os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
-    elif globals.order_des[message.chat.id]["version"] == "Legacy":
-        os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
-    else:
-        print("Ошибка выбора версии GTA")
-
-    win_gta = await wait_for_steam_open("Grand Theft Auto V", 200)
-    gta = win_gta
-
-    win_rock = await wait_for_steam_open("Rockstar Games", 20)
+    win_rock = await wait_for_steam_open("Rockstar Games - Sign In", 200)
     if win_rock:
         globals.rock_win = win_rock
         globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
@@ -195,11 +200,18 @@ async def launch_prog(message):
     globals.app_list.append(win_rock)
 
     if globals.order_des[message.chat.id]["version"] == "Enhanced":
-        os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+        # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
+        os.startfile("steam://run/3240220")
+        # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "3240220"])
     elif globals.order_des[message.chat.id]["version"] == "Legacy":
-        os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
+        # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
+        os.startfile("steam://run/271590")
+        # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "271590"])
     else:
-        print("Ошибка выбора версии Sunrise")
+        print("Ошибка выбора версии GTA")
+
+    win_gta = await wait_for_steam_open("Grand Theft Auto V", 200)
+    gta = win_gta
 
     win_sun = await wait_for_steam_open("Sunrise", 40)
     # globals.app_list.append(win_sun)
