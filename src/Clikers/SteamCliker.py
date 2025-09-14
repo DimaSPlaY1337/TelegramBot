@@ -41,6 +41,18 @@ async def handle_steam_guard(message):
 
         time.sleep(2)
         if not await is_error(266, 151, 293, 161):#узнать коор ошибки при вводе кода
+            if globals.order_des[message.chat.id]["version"] == "Enhanced":
+                os.startfile("steam://run/3240220")
+                # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
+                # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "3240220"])
+            elif globals.order_des[message.chat.id]["version"] == "Legacy":
+                os.startfile("steam://run/271590")
+                # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
+                # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "271590"])
+            else:
+                print("Ошибка выбора версии GTA")
+
+            time.sleep(15)
             await rockstar_search(message)
         else:
             await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
@@ -221,16 +233,6 @@ async def rockstar_acceptance(message):
 
 async def launch_prog(message):
     global gta
-    if globals.order_des[message.chat.id]["version"] == "Enhanced":
-        os.startfile("steam://run/3240220")
-        # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
-        # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "3240220"])
-    elif globals.order_des[message.chat.id]["version"] == "Legacy":
-        os.startfile("steam://run/271590")
-        # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
-        # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "271590"])
-    else:
-        print("Ошибка выбора версии GTA")
 
     win_gta = await wait_for_steam_open("Grand Theft Auto V", 200)
     gta = win_gta
