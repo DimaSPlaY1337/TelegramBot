@@ -126,23 +126,6 @@ def switch_to_english():
         time.sleep(0.2)  # даём системе переключиться
         print("Сменили раскладку на английскую!")
 
-async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
-    # Проверка: ярко-красный или просто любой "красный"
-    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
-
-def is_gray(r, g, b, diff=3, min_val=24, max_val=35):
-    """
-    Проверяет, является ли цвет тёмно-серым: оттенки типа 1A1A1A, 1D1D1D и похожие.
-    """
-    return (
-        abs(r - g) <= diff and
-        abs(r - b) <= diff and
-        abs(g - b) <= diff and
-        min_val <= r <= max_val and
-        min_val <= g <= max_val and
-        min_val <= b <= max_val
-    )
-
 async def is_error(x1, y1, x2, y2):
     global win_left, win_top
     rc,  rg, rb = 0, 0, 0
@@ -260,23 +243,46 @@ async def launch_prog(message):
         from src.Clikers.GTACliker import gta_cliker
         await gta_cliker(message)
 
+async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
+    # Проверка: ярко-красный или просто любой "красный"
+    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
+
+def is_gray(r, g, b, diff=3, min_val=24, max_val=35):
+    """
+    Проверяет, является ли цвет тёмно-серым: оттенки типа 1A1A1A, 1D1D1D и похожие.
+    """
+    return (
+        abs(r - g) <= diff and
+        abs(r - b) <= diff and
+        abs(g - b) <= diff and
+        min_val <= r <= max_val and
+        min_val <= g <= max_val and
+        min_val <= b <= max_val
+    )
+
 async def close_sunrise():
     win = await wait_for_rockstar_open("Sunrise", 40)
     time.sleep(1)
     win.activate()
-    if win:
-        win.resizeTo(755, 525)
-        time.sleep(0.3)
-        win_right = win.right
-        win_top = win.top
+    pyautogui.hotkey('alt', 'f4')
 
-        abs_x = win_right + 743
-        abs_y = win_top + 13
-
-        time.sleep(0.3)  # время на переключение окна
-        pyautogui.click(x=abs_x, y=abs_y)
-    else:
-        print("Окно не найдено")
+# async def close_sunrise():
+#     win = await wait_for_rockstar_open("Sunrise", 40)
+#     time.sleep(1)
+#     win.activate()
+#     if win:
+#         win.resizeTo(755, 525)
+#         time.sleep(0.3)
+#         win_right = win.right
+#         win_top = win.top
+#
+#         abs_x = win_right + 743
+#         abs_y = win_top + 13
+#
+#         time.sleep(0.3)  # время на переключение окна
+#         pyautogui.click(x=abs_x, y=abs_y)
+#     else:
+#         print("Окно не найдено")
 
 def keyboard_press_key(key, times=1, interval=0.5):
     keyboard = Controller()
