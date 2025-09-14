@@ -130,6 +130,19 @@ async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"
     return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
 
+def is_gray(r, g, b, diff=3, min_val=24, max_val=35):
+    """
+    Проверяет, является ли цвет тёмно-серым: оттенки типа 1A1A1A, 1D1D1D и похожие.
+    """
+    return (
+        abs(r - g) <= diff and
+        abs(r - b) <= diff and
+        abs(g - b) <= diff and
+        min_val <= r <= max_val and
+        min_val <= g <= max_val and
+        min_val <= b <= max_val
+    )
+
 async def is_error(x1, y1, x2, y2):
     global win_left, win_top
     rc,  rg, rb = 0, 0, 0
@@ -231,11 +244,16 @@ async def launch_prog(message):
     win_sun = await wait_for_rockstar_open("Sunrise", 40)
     # globals.app_list.append(win_sun)
 
+    found = False
     time.sleep(10)
     if win_gta and win_sun:
         end_time = time.time() + 90
         while time.time() < end_time:
-            # keyboard_press_key('enter')
+            r, g, b = pyautogui.pixel(2183, 1097)
+            if is_gray(r, g, b) and found == False:
+                keyboard_press_key('enter')
+                print("Нашли серое окно GTA")
+                found = True
             win_gta.activate()
             win_sun.minimize()
             time.sleep(2.5)
