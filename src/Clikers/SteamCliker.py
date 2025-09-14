@@ -31,6 +31,7 @@ async def handle_steam_guard(message):
 
     time.sleep(1)
     pyautogui.click(x=win_left + 353, y=win_top + 320)
+    time.sleep(1)
 
     # globals.user_step[message.chat.id] = {"step": "complete"}  # или другой шаг, если надо
     win = await wait_for_steam_open("Sign in to Steam", 5) or None
