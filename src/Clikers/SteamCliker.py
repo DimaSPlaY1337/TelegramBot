@@ -29,6 +29,9 @@ async def handle_steam_guard(message):
     print(f"Получили steam guard: {steam_guard}")
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
 
+    time.sleep(1)
+    pyautogui.click(x=win_left + 353, y=win_top + 320)
+
     # globals.user_step[message.chat.id] = {"step": "complete"}  # или другой шаг, если надо
     win = await wait_for_steam_open("Sign in to Steam", 5) or None
     if win:
@@ -41,39 +44,30 @@ async def handle_steam_guard(message):
 
         time.sleep(2)
         if not await is_error(266, 151, 293, 161):#узнать коор ошибки при вводе кода
-            if globals.order_des[message.chat.id]["version"] == "Enhanced":
-                os.startfile("steam://run/3240220")
-                # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
-                # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "3240220"])
-            elif globals.order_des[message.chat.id]["version"] == "Legacy":
-                os.startfile("steam://run/271590")
-                # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
-                # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "271590"])
-            else:
-                print("Ошибка выбора версии GTA")
-
-            time.sleep(15)
+            start_game(message)
+            time.sleep(10)
             await rockstar_search(message)
         else:
             await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
             pyautogui.click(x=win_left + 469, y=win_top + 185)
             pyautogui.press('backspace', 5)
     else:
-        if globals.order_des[message.chat.id]["version"] == "Enhanced":
-            os.startfile("steam://run/3240220")
-            # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
-            # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "3240220"])
-        elif globals.order_des[message.chat.id]["version"] == "Legacy":
-            os.startfile("steam://run/271590")
-            # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
-            # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "271590"])
-        else:
-            print("Ошибка выбора версии GTA")
-
+        start_game(message)
         time.sleep(10)
         await rockstar_search(message)
         print("Окно steam guard не найдено")
 
+def start_game(message):
+    if globals.order_des[message.chat.id]["version"] == "Enhanced":
+        os.startfile("steam://run/3240220")
+        # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
+        # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "3240220"])
+    elif globals.order_des[message.chat.id]["version"] == "Legacy":
+        os.startfile("steam://run/271590")
+        # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
+        # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "271590"])
+    else:
+        print("Ошибка выбора версии GTA")
 
 async def wait_for_steam_open(title="Steam", timeout=30, interval=1):
     """
@@ -228,7 +222,7 @@ async def rockstar_acceptance(message):
     global win_left, win_top
 
     time.sleep(15)
-    win_rock = await wait_for_steam_open("Rockstar Games - Sign In", 100)
+    win_rock = await wait_for_steam_open("Rockstar Games Launcher", 100)
     if win_rock:
         win_rock.resizeTo(1024, 600)
         time.sleep(0.5)
