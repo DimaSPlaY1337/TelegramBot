@@ -99,12 +99,11 @@ async def handle_rockstar_guard(message):
 
 def write_data(x, y,  data):
     pyautogui.click(x=x, y=y)
+    pyautogui.click(x=x, y=y)
     time.sleep(0.5)
     pyautogui.hotkey('ctrl', 'a')
     time.sleep(0.3)
-    pyautogui.press('delete')
-    time.sleep(0.2)
-    pyautogui.write(data, interval=0.01)
+    pyautogui.write(data, interval=0.05)
 
 def switch_to_english():
     user32 = ctypes.WinDLL('user32', use_last_error=True)

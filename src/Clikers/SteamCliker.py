@@ -199,10 +199,10 @@ async def rockstar_cliker(message):
     print(f"Получили rock guard: {rock_guard}")
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
 
-    pyautogui.click(x=win_left + 233, y=win_top + 485)
+    pyautogui.click(x=win_left + 233, y=win_top + 475)
     time.sleep(0.2)
     pyautogui.write(rock_guard, interval=0.05)
-    pyautogui.click(x=win_left + 527, y=win_top + 601)
+    pyautogui.click(x=win_left + 527, y=win_top + 622)
 
     time.sleep(6)
     if await is_error(368, 508, 388, 511):  # узнать коор ошибки при вводе кода
