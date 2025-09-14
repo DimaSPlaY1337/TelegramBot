@@ -21,6 +21,8 @@ guard_enter_rock_y = None
 
 gta = None
 
+sign_in_rock_button = None
+
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "steam_guard")
 async def handle_steam_guard(message):
     global win_left, win_top
@@ -61,12 +63,10 @@ async def handle_steam_guard(message):
 def start_game(message):
     if globals.order_des[message.chat.id]["version"] == "Enhanced":
         os.startfile("steam://run/3240220")
-        # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
-        # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "3240220"])
+
     elif globals.order_des[message.chat.id]["version"] == "Legacy":
         os.startfile("steam://run/271590")
-        # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
-        # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "271590"])
+
     else:
         print("Ошибка выбора версии GTA")
 
@@ -188,7 +188,7 @@ async def steam_cliker(message):
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
 async def rockstar_cliker(message):
-    global win_left, win_top
+    global win_left, win_top, sign_in_rock_button
 
     rock_guard = message.text
     print(f"Получили rock guard: {rock_guard}")
@@ -197,21 +197,23 @@ async def rockstar_cliker(message):
     pyautogui.click(x=win_left + 233, y=win_top + 475)
     time.sleep(0.2)
     pyautogui.write(rock_guard, interval=0.05)
-    pyautogui.click(x=win_left + 527, y=win_top + 622)
+    pyautogui.click(x=win_left + 527, y=sign_in_rock_button)
 
     time.sleep(6)
     if await is_error(368, 508, 388, 511):  # узнать коор ошибки при вводе кода
         await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
+        sign_in_rock_button = win_top + 622
     else:
         await rockstar_acceptance(message)
 
 async def rockstar_search(message):
-    global win_left, win_top
+    global win_left, win_top, sign_in_rock_button
 
     win_rock = await wait_for_steam_open("Rockstar Games - Sign In", 100)
     if win_rock:
         win_left = win_rock.left
         win_top = win_rock.top
+        sign_in_rock_button = win_top + 601
 
         globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
         await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
@@ -257,7 +259,7 @@ async def launch_prog(message):
     found = False
     time.sleep(10)
     if win_gta and win_sun:
-        end_time = time.time() + 90
+        end_time = time.time() + 120
         while time.time() < end_time:
             r,g,b = pyautogui.pixel(2183, 1097)
             if is_gray(r,g,b) and found == False:
