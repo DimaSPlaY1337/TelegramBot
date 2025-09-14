@@ -59,6 +59,18 @@ async def handle_steam_guard(message):
             pyautogui.click(x=win_left + 469, y=win_top + 185)
             pyautogui.press('backspace', 5)
     else:
+        if globals.order_des[message.chat.id]["version"] == "Enhanced":
+            os.startfile("steam://run/3240220")
+            # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
+            # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "3240220"])
+        elif globals.order_des[message.chat.id]["version"] == "Legacy":
+            os.startfile("steam://run/271590")
+            # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SL.url")
+            # subprocess.Popen(["C:\\Program Files (x86)\\Steam\\Steam.exe", "-applaunch", "271590"])
+        else:
+            print("Ошибка выбора версии GTA")
+
+        time.sleep(10)
         await rockstar_search(message)
         print("Окно steam guard не найдено")
 
