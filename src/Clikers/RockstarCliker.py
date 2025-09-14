@@ -35,6 +35,14 @@ async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
 async def rockstar_cliker(message):
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
     switch_to_english()
+
+    win_be = None
+    if not await wait_for_rockstar_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
+        os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
+        win_be = await wait_for_rockstar_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+    else:
+        win_be = await wait_for_rockstar_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+
     global win_left, win_top
 
     offset_login_x = 250  # смещение по X от левого верхнего угла окна
@@ -98,7 +106,6 @@ async def handle_rockstar_guard(message):
         await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
 
 def write_data(x, y,  data):
-    pyautogui.click(x=x, y=y)
     pyautogui.click(x=x, y=y)
     time.sleep(0.5)
     pyautogui.hotkey('ctrl', 'a')
