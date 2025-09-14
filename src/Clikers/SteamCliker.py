@@ -174,6 +174,8 @@ async def steam_cliker(message):
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
 async def rockstar_cliker(message):
+    global win_left, win_top
+
     rock_guard = message.text
     print(f"Получили rock guard: {rock_guard}")
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
@@ -387,30 +389,31 @@ async def close_sunrise():
     win = await wait_for_steam_open("Sunrise", 40)
     time.sleep(1)
     win.activate()
-    if win:
-        # win.resizeTo(755, 525)
-        time.sleep(0.3)
-        win_right = win.left
-        win_top = win.top
+    pyautogui.hotkey('alt', 'f4')
+    # if win:
+    #     # win.resizeTo(755, 525)
+    #     time.sleep(0.3)
+    #     win_right = win.left
+    #     win_top = win.top
+    #
+    #     abs_x = win_right + 742
+    #     abs_y = win_top + 13
+    #
+    #     time.sleep(0.3)  # время на переключение окна
+    #     lowlevel_click(abs_x, abs_y)
+    #     print("rjytw")
+    #
+    # else:
+    #     print("Окно не найдено")
 
-        abs_x = win_right + 742
-        abs_y = win_top + 13
-
-        time.sleep(0.3)  # время на переключение окна
-        lowlevel_click(abs_x, abs_y)
-        print("rjytw")
-
-    else:
-        print("Окно не найдено")
-
-def lowlevel_click(x, y):
-    ctypes.windll.user32.SetCursorPos(x, y)
-    time.sleep(0.01)
-    ctypes.windll.user32.mouse_event(2, 0, 0, 0, 0)  # MOUSEEVENTF_LEFTDOWN
-    time.sleep(0.01)
-    ctypes.windll.user32.mouse_event(4, 0, 0, 0, 0)  # MOUSEEVENTF_LEFTUP
-
-def post_message_click(hwnd, x, y):
-    lParam = win32api.MAKELONG(x, y)
-    win32gui.PostMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam)
-    win32gui.PostMessage(hwnd, win32con.WM_LBUTTONUP, 0, lParam)
+# def lowlevel_click(x, y):
+#     ctypes.windll.user32.SetCursorPos(x, y)
+#     time.sleep(0.01)
+#     ctypes.windll.user32.mouse_event(2, 0, 0, 0, 0)  # MOUSEEVENTF_LEFTDOWN
+#     time.sleep(0.01)
+#     ctypes.windll.user32.mouse_event(4, 0, 0, 0, 0)  # MOUSEEVENTF_LEFTUP
+#
+# def post_message_click(hwnd, x, y):
+#     lParam = win32api.MAKELONG(x, y)
+#     win32gui.PostMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam)
+#     win32gui.PostMessage(hwnd, win32con.WM_LBUTTONUP, 0, lParam)
