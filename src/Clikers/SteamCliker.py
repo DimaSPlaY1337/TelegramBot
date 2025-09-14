@@ -46,13 +46,13 @@ async def handle_steam_guard(message):
 
         time.sleep(2)
         if not await is_error(266, 151, 293, 161):#узнать коор ошибки при вводе кода
-            await launch_prog(message)
+            await rockstar_search(message)
         else:
             await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
             pyautogui.click(x=win_left + 469, y=win_top + 185)
             pyautogui.press('backspace', 5)
     else:
-        await launch_prog(message)
+        await rockstar_search(message)
         print("Окно steam guard не найдено")
 
 
@@ -173,32 +173,58 @@ async def steam_cliker(message):
         print("Окно не найдено")
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
-async def handle_rockstar_guard(message):
-    # steam_guard = message.text  # Здесь — то, что ввел пользователь!
-    # print(f"Получили steam guard: {steam_guard}")
-    #
-    # await bot.send_message(message.chat.id, "Спасибо! Код получен.")
-    # pyautogui.click(x=guard_x, y=guard_y)
-    # pyautogui.write(steam_guard, interval=0.05)
-    # pyautogui.click(x=globals.rock_win.left + 538, y=globals.rock_win.top + 563)
-    #
-    # if await is_error(430, 650, 440, 660):  # узнать коор ошибки при вводе кода
-    #     await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
-    # else:
-    #     globals.user_step[message.chat.id] = {"step": "gta_cliker"}
-    time.sleep(120)
-    print(f"Получили steam guard:")50
+async def rockstar_cliker(message):
+    rock_guard = message.text
+    print(f"Получили rock guard: {rock_guard}")
+    await bot.send_message(message.chat.id, "Спасибо! Код получен.")
 
-async def launch_prog(message):
-    global gta
+    win_left = globals.rock_win.left
+    win_top = globals.rock_win.top
 
-    win_rock = await wait_for_steam_open("Rockstar Games - Sign In", 200)
+    r, g, b = pyautogui.pixel(2450, 1107)
+
+    pyautogui.click(x=win_left + 233, y=win_top + 485)
+    time.sleep(0.2)
+    pyautogui.write(rock_guard, interval=0.05)
+    pyautogui.click(x=win_left + 527, y=win_top + 601)
+
+    if await is_error(430, 650, 440, 660):  # узнать коор ошибки при вводе кода
+        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
+    else:
+        await rockstar_acceptance(message, r, g, b)
+
+async def rockstar_search(message):
+    win_rock = await wait_for_steam_open("Rockstar Games - Sign In", 100)
     if win_rock:
         globals.rock_win = win_rock
         globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
         await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
-    globals.app_list.append(win_rock)
+        globals.app_list.append(win_rock)
+    else:
+        await launch_prog(message)
 
+async def rockstar_acceptance(message, r ,g ,b):
+    time.sleep(3)
+    pyautogui.click(x=2450, y=1107)#узнать координаты
+    time.sleep(3)
+    await launch_prog(message)
+
+    # r_after, g_after, b_after = pyautogui.pixel(2450, 1107)
+    # diff_r = abs(r_after - r)
+    # diff_g = abs(g_after - g)
+    # diff_b = abs(b_after - b)
+    # if diff_b == diff_g == diff_r == 15: #узнать offset
+    #     pyautogui.click(x=win_left + 233, y=win_top + 485)
+    #     time.sleep(5)
+    #     await launch_prog(message)
+    # else:
+    #     print("Подтверждение rockstar не появилось")
+
+def is_blackout(r, g, b, diff=15):
+    return abs(r - g) <= diff and abs(r - b) <= diff and abs(g - b) <= diff
+
+async def launch_prog(message):
+    global gta
     if globals.order_des[message.chat.id]["version"] == "Enhanced":
         # os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_SE.url")
         os.startfile("steam://run/3240220")
@@ -213,14 +239,25 @@ async def launch_prog(message):
     win_gta = await wait_for_steam_open("Grand Theft Auto V", 200)
     gta = win_gta
 
-    win_sun = await wait_for_steam_open("Sunrise", 40)
+    if globals.order_des[message.chat.id]["version"] == "Enhanced":
+        os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+    elif globals.order_des[message.chat.id]["version"] == "Legacy":
+        os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
+    else:
+        print("Ошибка выбора версии Sunrise")
+
+    win_sun = await wait_for_steam_open("Sunrise", 100)
     # globals.app_list.append(win_sun)
 
+    found = False
     time.sleep(10)
     if win_gta and win_sun:
         end_time = time.time() + 90
         while time.time() < end_time:
-            # keyboard_press_key('enter')
+            r,g,b = pyautogui.pixel(2183, 1097)
+            if is_gray(r,g,b) and found == False:
+                keyboard_press_key('enter')
+                found = True
             win_gta.activate()
             win_sun.minimize()
             time.sleep(2.5)
@@ -255,6 +292,13 @@ def switch_to_english():
 async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"
     return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
+
+def is_gray(r, g, b, diff=15, min_val=50, max_val=230):
+    # Серый: все каналы примерно равны, а значение не экстремальное
+    return (
+        abs(r - g) <= diff and abs(r - b) <= diff and abs(g - b) <= diff and
+        min_val < r < max_val and min_val < g < max_val and min_val < b < max_val
+    )
 
 async def is_error(x1, y1, x2, y2):
     global win_left, win_top
