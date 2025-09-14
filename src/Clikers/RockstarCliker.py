@@ -10,28 +10,10 @@ import pygetwindow as gw
 from src.Handlers.ChoosingPlatform import change_pass_and_login
 from src.common import bot
 
-guard_x = None
-guard_y = None
-
 win_left = 0
 win_top = 0
 
 gta = None
-
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rockstar_guard")
-async def handle_rockstar_guard(message):
-    steam_guard = message.text  # Здесь — то, что ввел пользователь!
-    print(f"Получили steam guard: {steam_guard}")
-
-    await bot.send_message(message.chat.id, "Спасибо! Код получен.")
-    # pyautogui.click(x=guard_x, y=guard_y)
-    # pyautogui.write(steam_guard, interval=0.05)
-    # pyautogui.click(x=win_left + 538, y= win_top + 563)
-
-    if not await is_error(430, 650, 440, 660):#узнать коор ошибки при вводе кода
-        await launch_prog(message)
-    else:
-        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
 
 async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
     """
@@ -53,7 +35,7 @@ async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
 async def rockstar_cliker(message):
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
     switch_to_english()
-    global guard_x, guard_y, win_left, win_top
+    global win_left, win_top
 
     offset_login_x = 250  # смещение по X от левого верхнего угла окна
     offset_login_y = 350  # смещение по Y от левого верхнего угла окна
@@ -75,9 +57,6 @@ async def rockstar_cliker(message):
 
         login_x = win.left + offset_login_x
         login_y = win.top + offset_login_y
-
-        guard_x = win.left + 318
-        guard_y = win.top + 451
 
         write_data(login_x, login_y, globals.data_for_reg[message.chat.id]["login"])
 
@@ -102,6 +81,21 @@ async def rockstar_cliker(message):
             await bot.send_message(message.chat.id, "Введите еще раз")
     else:
         print("Окно не найдено")
+
+@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rockstar_guard")
+async def handle_rockstar_guard(message):
+    steam_guard = message.text  # Здесь — то, что ввел пользователь!
+    print(f"Получили steam guard: {steam_guard}")
+
+    await bot.send_message(message.chat.id, "Спасибо! Код получен.")
+    pyautogui.click(x=win_left + 318, y=win_top + 451)
+    pyautogui.write(steam_guard, interval=0.05)
+    pyautogui.click(x=win_left + 538, y= win_top + 563)
+
+    if not await is_error(430, 650, 440, 660):#узнать коор ошибки при вводе кода
+        await launch_prog(message)
+    else:
+        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
 
 def write_data(x, y,  data):
     pyautogui.click(x=x, y=y)
@@ -203,6 +197,7 @@ async def close_apps():
 async def launch_prog(message):
     global gta
 
+    #протокола нету как у steam
     if globals.order_des[message.chat.id]["version"] == "Enhanced":
         os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_RE.lnk")
     elif globals.order_des[message.chat.id]["version"] == "Legacy":
@@ -213,7 +208,7 @@ async def launch_prog(message):
     win_gta = await wait_for_rockstar_open("Grand Theft Auto V", 200)
     gta = win_gta
 
-    win_rock = await wait_for_rockstar_open("Rockstar Games", 20)
+    win_rock = await wait_for_rockstar_open("Rockstar Games Launcher", 100)
     # if win_rock:
     #     globals.rock_win = win_rock
     #     globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
