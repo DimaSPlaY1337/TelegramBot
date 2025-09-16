@@ -46,9 +46,11 @@ async def handle_steam_guard(message):
         pyautogui.press('enter')
 
         time.sleep(2)
-        if not await is_error(266, 151, 293, 161):#узнать коор ошибки при вводе кода
+        if not await is_error(266, 151, 293, 161):
             start_game(message)
-            time.sleep(10)
+            time.sleep(5)
+            await steam_EULA()
+            time.sleep(5)
             await rockstar_search(message)
         else:
             await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
@@ -56,9 +58,21 @@ async def handle_steam_guard(message):
             pyautogui.press('backspace', 5)
     else:
         start_game(message)
-        time.sleep(10)
+        time.sleep(5)
+        await steam_EULA()
+        time.sleep(5)
         await rockstar_search(message)
         print("Окно steam guard не найдено")
+
+async def steam_EULA():
+    win = await wait_for_steam_open("Steam", 15) or None
+    if win:
+        win.resizeTo(1280, 800)
+        time.sleep(10)
+        win_left = win.left
+        win_top = win.top
+
+        pyautogui.click(x=win_left + 715, y=win_top + 577)
 
 def start_game(message):
     if globals.order_des[message.chat.id]["version"] == "Enhanced":

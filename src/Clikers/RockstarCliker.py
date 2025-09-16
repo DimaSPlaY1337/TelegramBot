@@ -211,10 +211,6 @@ async def launch_prog(message):
     gta = win_gta
 
     win_rock = await wait_for_rockstar_open("Rockstar Games Launcher", 100)
-    # if win_rock:
-    #     globals.rock_win = win_rock
-    #     globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
-    #     await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
     globals.app_list.append(win_rock)
 
     if globals.order_des[message.chat.id]["version"] == "Enhanced":
@@ -266,24 +262,6 @@ async def close_sunrise():
     win.activate()
     pyautogui.hotkey('alt', 'f4')
 
-# async def close_sunrise():
-#     win = await wait_for_rockstar_open("Sunrise", 40)
-#     time.sleep(1)
-#     win.activate()
-#     if win:
-#         win.resizeTo(755, 525)
-#         time.sleep(0.3)
-#         win_right = win.right
-#         win_top = win.top
-#
-#         abs_x = win_right + 743
-#         abs_y = win_top + 13
-#
-#         time.sleep(0.3)  # время на переключение окна
-#         pyautogui.click(x=abs_x, y=abs_y)
-#     else:
-#         print("Окно не найдено")
-
 def keyboard_press_key(key, times=1, interval=0.5):
     keyboard = Controller()
     if key == 'enter':
@@ -294,43 +272,3 @@ def keyboard_press_key(key, times=1, interval=0.5):
         keyboard.press(key_to_press)
         keyboard.release(key_to_press)
         time.sleep(interval)
-
-
-# async def close_apps():
-#     # выход из гта
-#     pyautogui.hotkey('alt', 'f4')
-#     if gta is not None:
-#         gta.activate()
-#     time.sleep(7)
-#     keyboard_press_key('enter')
-#     print("Вышли из GTA")
-#
-#     for win in globals.app_list:
-#         win.close()
-#     await rock_exit()
-#
-#     win = await wait_for_rockstar_open("Rockstar Games - Sign In")
-#     if win:
-#         win.close()
-#
-#     time.sleep(1)
-#
-#     await close_sunrise()
-
-# async def launch_prog(message):
-#     os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_RE.lnk")
-#     win_gta = await wait_for_rockstar_open("Grand Theft Auto V Enhanced")
-#     globals.app_list.append(win_gta)
-#
-#     os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-#     win_sun = await wait_for_rockstar_open("Sunrise")
-#     globals.app_list.append(win_sun)
-#
-#     if win_gta and win_sun:
-#         from src.Clikers.GTACliker import gta_cliker
-#         timeout = 200
-#         end_time = time.time() + timeout
-#         while time.time() < end_time:
-#             pyautogui.press('enter')
-#             time.sleep(2)
-#         await gta_cliker(message)
