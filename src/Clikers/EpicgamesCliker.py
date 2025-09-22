@@ -4,7 +4,7 @@ import time
 import pyautogui
 from pynput.keyboard import Controller, Key
 
-from src.Clikers.GTACliker import gta_cliker
+from src.Clikers.GTACliker import gta_cliker_exp
 from src.Clikers.RockstarCliker import wait_for_rockstar_open
 from src.Handlers import globals
 import pygetwindow as gw
@@ -328,8 +328,8 @@ async def launch_prog(message):
             win_gta.activate()
             win_sun.minimize()
             time.sleep(2.5)
-        from src.Clikers.GTACliker import gta_cliker
-        await gta_cliker(message)
+        from src.Clikers.GTACliker import gta_cliker_exp
+        await gta_cliker_exp(message)
 
 async def close_sunrise():
     win = await wait_for_rockstar_open("Sunrise", 40)

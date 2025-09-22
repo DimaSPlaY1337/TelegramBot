@@ -4,3 +4,4 @@ user_step = {}
 data_for_reg = {}
 order_des = {}
 app_list = []
+type_of_soft = ""

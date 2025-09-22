@@ -236,8 +236,8 @@ async def launch_prog(message):
             win_gta.activate()
             win_sun.minimize()
             time.sleep(2.5)
-        from src.Clikers.GTACliker import gta_cliker
-        await gta_cliker(message)
+        from src.Clikers.GTACliker import gta_cliker_exp
+        await gta_cliker_exp(message)
 
 async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"

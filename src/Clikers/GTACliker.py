@@ -28,8 +28,17 @@ def write_text(text, interval=0.2):
         keyboard.release(char)
         time.sleep(interval)
 
-#7000000
-async def gta_cliker(message):
+async def gta_cliker_free(message):
+    press_key("num1")
+
+    win_c = await wait_for_open("БЕСПЛАТНЫЙ СОФТ")
+    if win_c:
+        win_top = win_c.top
+        win_left = win_c.left
+
+
+
+async def gta_cliker_exp(message):
     keyboard = Controller()
     # Последовательность команд (по сообщениям)
     # f5
@@ -241,3 +250,20 @@ async def close_apps():
         await RockstarCliker.close_apps()
     elif globals.platform == "Steam":
         await SteamCliker.close_apps()
+
+async def wait_for_open(title="Steam", timeout=30, interval=1):
+    """
+    Ждёт появления окна Steam с заголовком, максимум timeout секунд.
+    Возвращает True, если окно найдено, иначе False
+    """
+    end_time = time.time() + timeout
+    while time.time() < end_time:
+        windows = gw.getWindowsWithTitle(title)
+        exact_windows = [w for w in windows if w.title == title]
+        if exact_windows:
+            print(f"Окно {title} открыто!")
+            return exact_windows[0]
+        print(f"Жду открытия окна {title}...")
+        time.sleep(interval)
+    print("Окно не появилось за отведённое время.")
+    return None

@@ -36,7 +36,7 @@ async def handle_steam_guard(message):
     time.sleep(1)
 
     # globals.user_step[message.chat.id] = {"step": "complete"}  # или другой шаг, если надо
-    win = await wait_for_steam_open("Sign in to Steam", 5) or None
+    win = await wait_for_open("Sign in to Steam", 5) or None
     if win:
         win_top = win.top
         win_left = win.left
@@ -46,26 +46,32 @@ async def handle_steam_guard(message):
         pyautogui.press('enter')
 
         time.sleep(2)
-        if not await is_error(266, 151, 293, 161):
+        if globals.type_of_soft == "Exp":
+            if not await is_error(266, 151, 293, 161):
+                start_game(message)
+                time.sleep(5)
+                await steam_EULA()
+                time.sleep(5)
+                await rockstar_search(message)
+            else:
+                await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
+                pyautogui.click(x=win_left + 469, y=win_top + 185)
+                pyautogui.press('backspace', 5)
+        else:
+            os.startfile("БЕСПЛАТНЫЙ_СОФТ")
+    else:
+        if globals.type_of_soft == "Exp":
             start_game(message)
             time.sleep(5)
             await steam_EULA()
             time.sleep(5)
             await rockstar_search(message)
+            print("Окно steam guard не найдено")
         else:
-            await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
-            pyautogui.click(x=win_left + 469, y=win_top + 185)
-            pyautogui.press('backspace', 5)
-    else:
-        start_game(message)
-        time.sleep(5)
-        await steam_EULA()
-        time.sleep(5)
-        await rockstar_search(message)
-        print("Окно steam guard не найдено")
+            await c_cliker(message)
 
 async def steam_EULA():
-    win = await wait_for_steam_open("Steam", 15) or None
+    win = await wait_for_open("Steam", 15) or None
     if win:
         win.resizeTo(1280, 800)
         time.sleep(10)
@@ -84,7 +90,7 @@ def start_game(message):
     else:
         print("Ошибка выбора версии GTA")
 
-async def wait_for_steam_open(title="Steam", timeout=30, interval=1):
+async def wait_for_open(title="Steam", timeout=30, interval=1):
     """
     Ждёт появления окна Steam с заголовком, максимум timeout секунд.
     Возвращает True, если окно найдено, иначе False
@@ -113,6 +119,11 @@ def write_data(x, y,  data):
 async def steam_cliker(message):
     global win_left, win_top
 
+    if int(globals.order_des[message.chat.id]["amount"]) >= 75000000:
+        globals.type_of_soft = "Exp"
+    else:
+        globals.type_of_soft = "Free"
+
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
 
     # windows = gw.getAllWindows()
@@ -121,11 +132,12 @@ async def steam_cliker(message):
     time.sleep(7)
 
     win_be = None
-    if not await wait_for_steam_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
-        os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
-        win_be = await wait_for_steam_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
-    else:
-        win_be = await wait_for_steam_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+    if globals.type_of_soft == "Exp":
+        if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
+            os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
+            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+        else:
+            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
 
     # windows = gw.getAllWindows()
     # print([w.title for w in windows])
@@ -146,7 +158,7 @@ async def steam_cliker(message):
     offset_enter_y = 300  # смещение по Y от левого верхнего угла окна
 
     time.sleep(0.5)
-    win = await wait_for_steam_open("Sign in to Steam", 100) or await wait_for_steam_open("Войти в Steam", 100)
+    win = await wait_for_open("Sign in to Steam", 100) or await wait_for_open("Войти в Steam", 100)
     if win:
         win.resizeTo(705, 440)
         time.sleep(0.2)
@@ -200,6 +212,28 @@ async def steam_cliker(message):
     else:
         print("Окно не найдено")
 
+async def c_cliker(message):
+    os.startfile(r"БЕСПЛАТНЫЙ СОФТ", 'runas')
+    win = await wait_for_open("БЕСПЛАТНЫЙ СОФТ", 10)
+
+    if win:
+        win.resizeTo("Х", "У")
+        time.sleep(5)
+        if globals.order_des[message.chat.id]["version"] == "Enhanced":
+            pyautogui.click(x="Choose", y="Choose")
+            pyautogui.click(x="GTA_EE", y="GTA_EE")
+        elif globals.order_des[message.chat.id]["version"] == "Legacy":
+            pyautogui.click(x="Choose", y="Choose")
+            pyautogui.click(x="GTA_LE", y="GTA_LE")
+
+        time.sleep(1)
+        pyautogui.click(x="Choose", y="Choose")
+        pyautogui.click(x="Steam", y="Steam")
+
+        time.sleep(1)
+        pyautogui.click(x="StartGame", y="StartGame")
+        await rockstar_search(message)
+
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
 async def rockstar_cliker(message):
     global win_left, win_top, sign_in_rock_button
@@ -223,7 +257,7 @@ async def rockstar_cliker(message):
 async def rockstar_search(message):
     global win_left, win_top, sign_in_rock_button
 
-    win_rock = await wait_for_steam_open("Rockstar Games - Sign In", 100)
+    win_rock = await wait_for_open("Rockstar Games - Sign In", 100)
     if win_rock:
         win_left = win_rock.left
         win_top = win_rock.top
@@ -239,7 +273,7 @@ async def rockstar_acceptance(message):
     global win_left, win_top
 
     time.sleep(15)
-    win_rock = await wait_for_steam_open("Rockstar Games Launcher", 100)
+    win_rock = await wait_for_open("Rockstar Games Launcher", 100)
     if win_rock:
         win_rock.resizeTo(1024, 600)
         time.sleep(0.5)
@@ -257,34 +291,68 @@ async def rockstar_acceptance(message):
 async def launch_prog(message):
     global gta
 
-    win_gta = await wait_for_steam_open("Grand Theft Auto V", 200)
+    win_gta = await wait_for_open("Grand Theft Auto V", 200)
     gta = win_gta
 
-    if globals.order_des[message.chat.id]["version"] == "Enhanced":
-        os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-    elif globals.order_des[message.chat.id]["version"] == "Legacy":
-        os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
-    else:
-        print("Ошибка выбора версии Sunrise")
+    win_sun = None
+    if globals.type_of_soft == "Exp":
+        if globals.order_des[message.chat.id]["version"] == "Enhanced":
+            os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+        elif globals.order_des[message.chat.id]["version"] == "Legacy":
+            os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
+        else:
+            print("Ошибка выбора версии Sunrise")
 
-    win_sun = await wait_for_steam_open("Sunrise", 100)
-    # globals.app_list.append(win_sun)
+        win_sun = await wait_for_open("Sunrise", 100)
+        # globals.app_list.append(win_sun)
 
-    found = False
-    time.sleep(10)
-    if win_gta and win_sun:
-        end_time = time.time() + 120
-        while time.time() < end_time:
-            r,g,b = pyautogui.pixel(2183, 1097)
-            if is_gray(r,g,b) and found == False:
-                keyboard_press_key('enter')
-                print("Нашли серое окно GTA")
-                found = True
-            win_gta.activate()
-            win_sun.minimize()
-            time.sleep(2.5)
-        from src.Clikers.GTACliker import gta_cliker
-        await gta_cliker(message)
+        found = False
+        time.sleep(10)
+        if win_gta and win_sun:
+            end_time = time.time() + 120
+            while time.time() < end_time:
+                r,g,b = pyautogui.pixel(2183, 1097)
+                if is_gray(r,g,b) and found == False:
+                    keyboard_press_key('enter')
+                    print("Нашли серое окно GTA")
+                    found = True
+                win_gta.activate()
+                win_sun.minimize()
+                time.sleep(2.5)
+            from src.Clikers.GTACliker import gta_cliker_exp
+            await gta_cliker_exp(message)
+    elif globals.type_of_soft == "Free":
+        win_c = await wait_for_open("Cherax", 100)
+
+        found = False
+        time.sleep(10)
+        if win_gta and win_c:
+            end_time = time.time() + 60
+            while time.time() < end_time:
+                r, g, b = pyautogui.pixel(2183, 1097)
+                if is_gray(r, g, b) and found == False:
+                    keyboard_press_key('enter')
+                    print("Нашли серое окно GTA")
+                    found = True
+                win_gta.activate()
+                win_c.minimize()
+                time.sleep(2.5)
+
+        keyboard_press_key('enter')  # пропустить
+        time.sleep(5)
+        pyautogui.click(x="story", y="story")
+        time.sleep(1)
+        keyboard_press_key('enter')
+
+        if win_gta and win_c:
+            end_time = time.time() + 30
+            while time.time() < end_time:
+                win_gta.activate()
+                win_c.minimize()
+                time.sleep(2.5)
+
+        from src.Clikers.GTACliker import gta_cliker_free
+        await gta_cliker_free(message)
 
 def keyboard_press_key(key, times=1, interval=0.5):
     keyboard = Controller()
@@ -349,7 +417,7 @@ async def steam_exit():
     offset_out_x = 944  # смещение по X от левого верхнего угла окна
     offset_out_y = 209  # смещение по Y от левого верхнего угла окна
 
-    win = await wait_for_steam_open("Steam")
+    win = await wait_for_open("Steam")
     time.sleep(1)
     win.activate()
     if win:
@@ -388,7 +456,7 @@ async def close_apps():
 
     time.sleep(5)
 
-    win_rock = await wait_for_steam_open("Rockstar Games Launcher", 20) or None
+    win_rock = await wait_for_open("Rockstar Games Launcher", 20) or None
     if win_rock is not None:
         win_rock.close()
 
@@ -403,7 +471,7 @@ async def close_apps():
     await steam_exit()
 
     print("Закрываем Steam2")
-    win = await wait_for_steam_open("Sign in to Steam", 100) or await wait_for_steam_open("Войти в Steam", 100)
+    win = await wait_for_open("Sign in to Steam", 100) or await wait_for_open("Войти в Steam", 100)
     if win:
         win.close()
 
@@ -412,7 +480,7 @@ async def close_apps():
     await close_sunrise()
 
 async def close_sunrise():
-    win = await wait_for_steam_open("Sunrise", 40)
+    win = await wait_for_open("Sunrise", 40)
     time.sleep(1)
     win.activate()
     pyautogui.hotkey('alt', 'f4')
