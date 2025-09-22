@@ -182,13 +182,6 @@ async def close_apps():
 
     time.sleep(5)
 
-    for win in globals.app_list:
-        print("Закрываем")
-        if win is not None:
-            win.close()
-        else:
-            print("При закрытие окна, оно оказалось None")
-
     print("Закрываем rock1")
     await rock_exit()
 
@@ -211,7 +204,6 @@ async def launch_prog(message):
     gta = win_gta
 
     win_rock = await wait_for_rockstar_open("Rockstar Games Launcher", 100)
-    globals.app_list.append(win_rock)
 
     if globals.order_des[message.chat.id]["version"] == "Enhanced":
         os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
@@ -221,7 +213,6 @@ async def launch_prog(message):
         print("Ошибка выбора версии Sunrise")
 
     win_sun = await wait_for_rockstar_open("Sunrise", 40)
-    # globals.app_list.append(win_sun)
 
     found = False
     time.sleep(10)

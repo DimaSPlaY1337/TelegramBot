@@ -125,7 +125,7 @@ async def steam_cliker(message):
         else:
             globals.type_of_soft = "Free"
     else:
-        globals.type_of_soft = "Exp"
+        globals.type_of_soft = "Free"
 
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
 
@@ -141,9 +141,6 @@ async def steam_cliker(message):
             win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
         else:
             win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
-
-    # windows = gw.getAllWindows()
-    # print([w.title for w in windows])
 
     os.startfile("C:\\Program Files (x86)\\Steam\\Steam.exe")
     switch_to_english()
@@ -268,7 +265,6 @@ async def rockstar_search(message):
 
         globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
         await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
-        globals.app_list.append(win_rock)
     else:
         await launch_prog(message)
 
@@ -307,7 +303,6 @@ async def launch_prog(message):
             print("Ошибка выбора версии Sunrise")
 
         win_sun = await wait_for_open("Sunrise", 100)
-        # globals.app_list.append(win_sun)
 
         found = False
         time.sleep(10)
@@ -462,13 +457,6 @@ async def close_apps():
     win_rock = await wait_for_open("Rockstar Games Launcher", 20) or None
     if win_rock is not None:
         win_rock.close()
-
-    for win in globals.app_list:
-        print("Закрываем")
-        if win is not None:
-            win.close()
-        else:
-            print("При закрытие окна, оно оказалось None")
 
     print("Закрываем Steam1")
     await steam_exit()
