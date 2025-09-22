@@ -119,10 +119,11 @@ def write_data(x, y,  data):
 async def steam_cliker(message):
     global win_left, win_top
 
-    if int(globals.order_des[message.chat.id]["amount"]) >= 75000000:
-        globals.type_of_soft = "Exp"
-    else:
-        globals.type_of_soft = "Free"
+    if globals.order_des[message.chat.id]["amount"] != 'не задано':
+        if int(globals.order_des[message.chat.id]["amount"]) >= 75000000:
+            globals.type_of_soft = "Exp"
+        else:
+            globals.type_of_soft = "Free"
 
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
 
