@@ -119,7 +119,7 @@ def write_data(x, y,  data):
 async def steam_cliker(message):
     global win_left, win_top
 
-    if globals.order_des[message.chat.id]["amount"] != 'не задано':
+    if globals.order_des[message.chat.id]["amount"].isdigit():
         if int(globals.order_des[message.chat.id]["amount"]) >= 75000000:
             globals.type_of_soft = "Exp"
         else:
@@ -386,7 +386,7 @@ async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"
     return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
 
-def is_gray(r, g, b, diff=3, min_val=24, max_val=35):
+def is_gray(r, g, b, diff=3, min_val=26, max_val=159):
     """
     Проверяет, является ли цвет тёмно-серым: оттенки типа 1A1A1A, 1D1D1D и похожие.
     """
