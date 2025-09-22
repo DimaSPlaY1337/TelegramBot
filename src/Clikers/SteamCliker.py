@@ -124,6 +124,8 @@ async def steam_cliker(message):
             globals.type_of_soft = "Exp"
         else:
             globals.type_of_soft = "Free"
+    else:
+        globals.type_of_soft = "Exp"
 
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
 
