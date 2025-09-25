@@ -4,6 +4,7 @@ import time
 import pyautogui
 from pynput.keyboard import Controller, Key
 
+from src.Clikers.Cherax_cliker import c_cliker
 from src.Handlers import globals
 import pygetwindow as gw
 
@@ -15,7 +16,7 @@ win_top = 0
 
 gta = None
 
-async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
+async def wait_for_open(title="Steam", timeout=200, interval=1):
     """
     Ждёт появления окна Steam с заголовком, максимум timeout секунд.
     Возвращает True, если окно найдено, иначе False
@@ -33,15 +34,24 @@ async def wait_for_rockstar_open(title="Steam", timeout=200, interval=1):
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_rockstar")
 async def rockstar_cliker(message):
+    if globals.order_des[message.chat.id]["amount"].isdigit():
+        if int(globals.order_des[message.chat.id]["amount"]) >= 75000000:
+            globals.type_of_soft = "Exp"
+        else:
+            globals.type_of_soft = "Free"
+    else:
+        globals.type_of_soft = "Free"
+
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
     switch_to_english()
 
     win_be = None
-    if not await wait_for_rockstar_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
-        os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
-        win_be = await wait_for_rockstar_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
-    else:
-        win_be = await wait_for_rockstar_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+    if globals.type_of_soft == "Exp":
+        if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
+            os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
+            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+        else:
+            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
 
     global win_left, win_top
 
@@ -54,7 +64,7 @@ async def rockstar_cliker(message):
     offset_enter_x = 520  # смещение по X от левого верхнего угла окна
     offset_enter_y = 520  # смещение по Y от левого верхнего угла окна
 
-    win = await wait_for_rockstar_open("Rockstar Games - Sign In")
+    win = await wait_for_open("Rockstar Games - Sign In")
     if win:
         win.resizeTo(700, 800)
         time.sleep(0.3)
@@ -81,8 +91,19 @@ async def rockstar_cliker(message):
         time.sleep(4)
         if (not await is_error(101,186, 141, 204)
                 and not await is_error(123,351, 134, 359)):
-            globals.user_step[message.chat.id] = {"step": "rockstar_guard"}
-            await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
+            time.sleep(5)
+
+            win = await wait_for_open("Rockstar Games - Sign In", 5) or None
+            if win:
+                win_top = win.top
+                win_left = win.left
+                globals.user_step[message.chat.id] = {"step": "rockstar_guard"}
+                await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
+            else:
+                if globals.type_of_soft == "Exp":
+                    await launch_prog(message)
+                else:
+                    await c_cliker(message)
         else:
             win.close()
             await change_pass_and_login(message)
@@ -100,10 +121,16 @@ async def handle_rockstar_guard(message):
     pyautogui.write(steam_guard, interval=0.05)
     pyautogui.click(x=win_left + 538, y= win_top + 563)
 
-    if not await is_error(430, 650, 440, 660):#узнать коор ошибки при вводе кода
-        await launch_prog(message)
+    if globals.type_of_soft == "Exp":
+        if not await is_error(430, 650, 440, 660):#узнать коор ошибки при вводе кода
+            await launch_prog(message)
+        else:
+            await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
     else:
-        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
+        if not await is_error(430, 650, 440, 660):#узнать коор ошибки при вводе кода
+            await c_cliker(message)
+        else:
+            await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
 
 def write_data(x, y,  data):
     pyautogui.click(x=x, y=y)
@@ -149,7 +176,7 @@ async def rock_exit():
 
     # windows = gw.getAllWindows()
     # print([w.title for w in windows])
-    win = await wait_for_rockstar_open("Rockstar Games Launcher")
+    win = await wait_for_open("Rockstar Games Launcher")
     time.sleep(1)
     win.activate()
     time.sleep(1)
@@ -200,10 +227,10 @@ async def launch_prog(message):
     else:
         print("Ошибка выбора версии GTA")
 
-    win_gta = await wait_for_rockstar_open("Grand Theft Auto V", 200)
+    win_gta = await wait_for_open("Grand Theft Auto V", 200)
     gta = win_gta
 
-    win_rock = await wait_for_rockstar_open("Rockstar Games Launcher", 100)
+    win_rock = await wait_for_open("Rockstar Games Launcher", 100)
 
     if globals.order_des[message.chat.id]["version"] == "Enhanced":
         os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
@@ -212,7 +239,7 @@ async def launch_prog(message):
     else:
         print("Ошибка выбора версии Sunrise")
 
-    win_sun = await wait_for_rockstar_open("Sunrise", 40)
+    win_sun = await wait_for_open("Sunrise", 40)
 
     found = False
     time.sleep(10)
@@ -248,7 +275,7 @@ def is_gray(r, g, b, diff=3, min_val=26, max_val=159):
     )
 
 async def close_sunrise():
-    win = await wait_for_rockstar_open("Sunrise", 40)
+    win = await wait_for_open("Sunrise", 40)
     time.sleep(1)
     win.activate()
     pyautogui.hotkey('alt', 'f4')

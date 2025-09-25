@@ -5,7 +5,7 @@ import pyautogui
 from pynput.keyboard import Controller, Key
 
 from src.Clikers.GTACliker import gta_cliker_exp
-from src.Clikers.RockstarCliker import wait_for_rockstar_open
+from src.Clikers.RockstarCliker import wait_for_open
 from src.Handlers import globals
 import pygetwindow as gw
 from src.Handlers.ChoosingPlatform import change_pass_and_login
@@ -76,7 +76,7 @@ def write_data(x, y,  data):
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_rockstar")
 async def epic_cliker(message):
     os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
-    win = await wait_for_rockstar_open("Rockstar Games - Sign In")
+    win = await wait_for_open("Rockstar Games - Sign In")
     if win:
         print("Rockstar в Epic открылся")
     else:
@@ -300,10 +300,10 @@ async def launch_prog(message):
     else:
         print("Ошибка выбора версии GTA")
 
-    win_gta = await wait_for_rockstar_open("Grand Theft Auto V", 200)
+    win_gta = await wait_for_open("Grand Theft Auto V", 200)
     gta = win_gta
 
-    win_rock = await wait_for_rockstar_open("Rockstar Games", 20)
+    win_rock = await wait_for_open("Rockstar Games", 20)
     if win_rock:
         globals.rock_win = win_rock
         globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
@@ -317,7 +317,7 @@ async def launch_prog(message):
     else:
         print("Ошибка выбора версии Sunrise")
 
-    win_sun = await wait_for_rockstar_open("Sunrise", 40)
+    win_sun = await wait_for_open("Sunrise", 40)
     # globals.app_list.append(win_sun)
 
     time.sleep(10)
@@ -332,7 +332,7 @@ async def launch_prog(message):
         await gta_cliker_exp(message)
 
 async def close_sunrise():
-    win = await wait_for_rockstar_open("Sunrise", 40)
+    win = await wait_for_open("Sunrise", 40)
     time.sleep(1)
     win.activate()
     if win:
