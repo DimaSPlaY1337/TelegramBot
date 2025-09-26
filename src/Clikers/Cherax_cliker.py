@@ -18,7 +18,6 @@ async def c_cliker(message):
         win_top = win.top
         win_left = win.left
 
-        win.resizeTo(900, 600)
         time.sleep(3)
         pyautogui.click(x=win_left + 127, y=win_top + 175)
         if globals.order_des[message.chat.id]["version"] == "Enhanced":

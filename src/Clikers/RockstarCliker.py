@@ -63,6 +63,7 @@ async def rockstar_cliker(message):
     offset_enter_x = 520  # смещение по X от левого верхнего угла окна
     offset_enter_y = 520  # смещение по Y от левого верхнего угла окна
 
+    time.sleep(0.5)
     win = await wait_for_open("Rockstar Games - Sign In")
     if win:
         win.resizeTo(700, 800)
