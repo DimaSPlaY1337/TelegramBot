@@ -1,6 +1,6 @@
 import ctypes
 import os
-from datetime import time
+import time
 import pygetwindow as gw
 import pyautogui
 
