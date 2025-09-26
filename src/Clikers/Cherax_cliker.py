@@ -11,7 +11,7 @@ from src.common import bot
 
 async def c_cliker(message):
     global win_left, win_top
-    os.startfile(r"БЕСПЛАТНЫЙ СОФТ", 'runas')
+    os.startfile(r"C:\Users\gamePC\Desktop\CheraxLoader.exe", 'runas')
     win = await wait_for_open("Cherax Loader", 100)
 
     if win:
