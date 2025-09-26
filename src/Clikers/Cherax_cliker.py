@@ -27,9 +27,9 @@ async def c_cliker(message):
 
         click(x=win_left + 94, y=win_top + 207)
         if globals.platform == "Steam":
-            click(x=win_left + 96, y=win_top + 241)
+            click(x=win_left + 106, y=win_top + 238)
         elif globals.platform == "Rockstar":
-            click(x=win_left + 86, y=win_top + 267, times=1, t = 3)
+            click(x=win_left + 110, y=win_top + 303, times=1, t = 3)
 
         click(x=win_left + 91, y=win_top + 265, times=1, t = 0.2)
 
