@@ -155,7 +155,7 @@ async def cherax_cliker(message):
     time.sleep(1)
     await send_screenshot(message)
 
-def is_green(r, g, b, min_g=150, max_g=160, diff_rg=30, diff_bg=10):
+async def is_green(r, g, b, min_g=150, max_g=160, diff_rg=30, diff_bg=10):
     """
     Находит зеленоватый цвет наподобие #889E98:
     - Зеленый больше других компонент.
