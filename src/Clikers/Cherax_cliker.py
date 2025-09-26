@@ -18,24 +18,22 @@ async def c_cliker(message):
         win_top = win.top
         win_left = win.left
 
-        time.sleep(3)
-        pyautogui.click(x=win_left + 127, y=win_top + 175)
+        time.sleep(10)
+        click(x=win_left + 127, y=win_top + 175)
         if globals.order_des[message.chat.id]["version"] == "Enhanced":
-            pyautogui.click(x=win_left + 83, y=win_top + 207)
+            click(x=win_left + 83, y=win_top + 207)
         elif globals.order_des[message.chat.id]["version"] == "Legacy":
-            pyautogui.click(x=win_left + 117, y=win_top + 222)
+            click(x=win_left + 117, y=win_top + 222)
 
-        time.sleep(1)
-        pyautogui.click(x=win_left + 94, y=win_top + 207)
+        click(x=win_left + 94, y=win_top + 207)
         if globals.platform == "Steam":
-            pyautogui.click(x=win_left + 96, y=win_top + 241)
+            click(x=win_left + 96, y=win_top + 241)
         elif globals.platform == "Rockstar":
-            pyautogui.click(x=win_left + 86, y=win_top + 267)
+            click(x=win_left + 86, y=win_top + 267, times=1, t = 3)
 
-        time.sleep(3)
         pyautogui.click(x=win_left + 91, y=win_top + 265)
 
-        win_rock = await wait_for_open("Rockstar Games - Sign In", 100)
+        win_rock = await wait_for_open("Rockstar Games Launcher", 100)
         if win_rock:
             win_left = win_rock.left
             win_top = win_rock.top
@@ -44,10 +42,9 @@ async def c_cliker(message):
             time.sleep(1)
             win.activate()
             time.sleep(5)
-            pyautogui.click(x=win_left + 905, y=win_top + 395)
+            click(x=win_left + 905, y=win_top + 395, times=1, t = 3)
 
         #запускается игра
-        time.sleep(3)
         await gta_cliker(message)
 
 async def gta_cliker(message):
