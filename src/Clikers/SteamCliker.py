@@ -168,7 +168,7 @@ async def steam_cliker(message):
             else:
                 if globals.type_of_soft == "Exp":
                     start_game(message)
-                    time.sleep(5)
+                    time.sleep(2)
                     await steam_EULA()
                     time.sleep(5)
                     await rockstar_search(message)
@@ -208,7 +208,7 @@ async def handle_steam_guard(message):
     if globals.type_of_soft == "Exp":
         if not await is_error(266, 151, 293, 161):
             start_game(message)
-            time.sleep(5)
+            time.sleep(2)
             await steam_EULA()
             time.sleep(5)
             await rockstar_search(message)
@@ -223,17 +223,6 @@ async def handle_steam_guard(message):
             await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
             pyautogui.click(x=win_left + 469, y=win_top + 185)
             pyautogui.press('backspace', 5)
-
-    # else:
-    #     if globals.type_of_soft == "Exp":
-    #         start_game(message)
-    #         time.sleep(5)
-    #         await steam_EULA()
-    #         time.sleep(5)
-    #         await rockstar_search(message)
-    #         print("Окно steam guard не найдено")
-    #     else:
-    #         await c_cliker(message)
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
 async def rockstar_cliker(message):
@@ -272,7 +261,7 @@ async def rockstar_search(message):
 async def rockstar_acceptance(message):
     global win_left, win_top
 
-    time.sleep(15)
+    time.sleep(12)
     win_rock = await wait_for_open("Rockstar Games Launcher", 100)
     if win_rock:
         win_rock.resizeTo(1024, 600)
@@ -308,7 +297,7 @@ async def launch_prog(message):
         found = False
         time.sleep(10)
         if win_gta and win_sun:
-            end_time = time.time() + 120
+            end_time = time.time() + 110
             while time.time() < end_time:
                 r,g,b = pyautogui.pixel(2183, 1097)
                 if is_gray(r,g,b) and found == False:

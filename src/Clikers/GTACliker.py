@@ -12,7 +12,7 @@ from src.common import bot
 def press_key(key, times=1):
     for _ in range(times):
         pyautogui.press(key)
-        time.sleep(0.2) # небольшая пауза между нажатиями 0.2
+        time.sleep(0.3) # небольшая пауза между нажатиями 0.2
 
 def keyboard_press_key(key, times=1, interval=0.5):
     keyboard = Controller()
