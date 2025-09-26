@@ -31,7 +31,7 @@ async def c_cliker(message):
         elif globals.platform == "Rockstar":
             click(x=win_left + 86, y=win_top + 267, times=1, t = 3)
 
-        pyautogui.click(x=win_left + 91, y=win_top + 265)
+        click(x=win_left + 91, y=win_top + 265, times=1, t = 0.2)
 
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
         if win_rock:
