@@ -51,6 +51,7 @@ async def c_cliker(message):
             click(x=win_left + 905, y=win_top + 395, times=1, t = 3)
 
         #запускается игра
+        time.sleep(10)
         await gta_cliker(message)
 
 async def gta_cliker(message):
