@@ -22,16 +22,22 @@ async def c_cliker(message):
         click(x=win_left + 127, y=win_top + 175)
         if globals.order_des[message.chat.id]["version"] == "Enhanced":
             click(x=win_left + 83, y=win_top + 207)
+
+            click(x=win_left + 94, y=win_top + 207)
+            if globals.platform == "Steam":
+                click(x=win_left + 96, y=win_top + 239)
+            elif globals.platform == "Rockstar":
+                click(x=win_left + 108, y=win_top + 267, times=1, t=3)
         elif globals.order_des[message.chat.id]["version"] == "Legacy":
             click(x=win_left + 117, y=win_top + 222)
 
-        click(x=win_left + 94, y=win_top + 207)
-        if globals.platform == "Steam":
-            click(x=win_left + 106, y=win_top + 238)
-        elif globals.platform == "Rockstar":
-            click(x=win_left + 110, y=win_top + 303, times=1, t = 3)
+            click(x=win_left + 94, y=win_top + 207)
+            if globals.platform == "Steam":
+                click(x=win_left + 106, y=win_top + 238)
+            elif globals.platform == "Rockstar":
+                click(x=win_left + 110, y=win_top + 303, times=1, t = 3)
 
-        click(x=win_left + 91, y=win_top + 265, times=1, t = 0.2)
+        click(x=win_left + 91, y=win_top + 265, times=3, t = 0.2)
 
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
         if win_rock:
