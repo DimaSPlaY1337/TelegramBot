@@ -259,7 +259,7 @@ async def launch_prog(message):
 
 async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"
-    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
+    return r==189 and g==8 and b==8
 
 def is_gray(r, g, b, diff=3, min_val=26, max_val=159):
     """
