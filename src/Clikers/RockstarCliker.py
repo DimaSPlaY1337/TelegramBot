@@ -46,12 +46,11 @@ async def rockstar_cliker(message):
     switch_to_english()
 
     win_be = None
-    if globals.type_of_soft == "Exp":
-        if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
-            os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
-            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
-        else:
-            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+    if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
+        os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
+        win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+    else:
+        win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
 
     global win_left, win_top
 

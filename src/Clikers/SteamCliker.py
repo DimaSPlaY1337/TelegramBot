@@ -89,12 +89,11 @@ async def steam_cliker(message):
     time.sleep(7)
 
     win_be = None
-    if globals.type_of_soft == "Exp":
-        if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
-            os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
-            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
-        else:
-            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+    if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
+        os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
+        win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+    else:
+        win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
 
     os.startfile("C:\\Program Files (x86)\\Steam\\Steam.exe")
     switch_to_english()
