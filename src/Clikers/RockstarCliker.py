@@ -215,6 +215,7 @@ async def close_apps():
     time.sleep(1)
 
     await close_sunrise()
+    print("Цикл завершён")
 
 async def launch_prog(message):
     global gta

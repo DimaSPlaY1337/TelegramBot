@@ -457,6 +457,7 @@ async def close_apps():
     time.sleep(1)
 
     await close_sunrise()
+    print("Цикл завершён")
 
 async def close_sunrise():
     win = await wait_for_open("Sunrise", 40)
