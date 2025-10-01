@@ -276,19 +276,13 @@ async def close_apps():
 
     time.sleep(5)
 
-    for win in globals.app_list:
-        print("Закрываем")
-        if win is not None:
-            win.close()
-        else:
-            print("При закрытие окна, оно оказалось None")
-
     print("Закрываем epic1")
     await epic_exit()
 
     time.sleep(1)
 
     await close_sunrise()
+    print("Цикл завершён")
 
 async def launch_prog(message):
     global gta

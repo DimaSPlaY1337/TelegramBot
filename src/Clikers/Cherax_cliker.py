@@ -39,6 +39,8 @@ async def c_cliker(message):
 
         click(x=win_left + 91, y=win_top + 265, times=3, t = 0.2)
 
+        await rockstar_search(message)
+
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
         if win_rock:
             win_left = win_rock.left
@@ -224,3 +226,49 @@ async def close_apps():
         await RockstarCliker.close_apps()
     elif globals.platform == "Steam":
         await SteamCliker.close_apps()
+
+@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_c_guard")
+async def rockstar_cliker(message):
+    global win_left, win_top, sign_in_rock_button
+
+    rock_guard = message.text
+    print(f"Получили rock guard: {rock_guard}")
+    await bot.send_message(message.chat.id, "Спасибо! Код получен.")
+
+    pyautogui.click(x=win_left + 233, y=win_top + 475)
+    time.sleep(0.2)
+    pyautogui.write(rock_guard, interval=0.05)
+    pyautogui.click(x=win_left + 527, y=sign_in_rock_button)
+
+    time.sleep(6)
+    if await is_error(368, 508, 388, 511):  # узнать коор ошибки при вводе кода
+        await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
+        sign_in_rock_button = win_top + 622
+
+async def rockstar_search(message):
+    global win_left, win_top, sign_in_rock_button
+
+    win_rock = await wait_for_open("Rockstar Games - Sign In", 100)
+    if win_rock:
+        win_left = win_rock.left
+        win_top = win_rock.top
+        sign_in_rock_button = win_top + 601
+
+        globals.user_step[message.chat.id] = {"step": "rock_c_guard"}
+        await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
+
+async def is_error(x1, y1, x2, y2):
+    global win_left, win_top
+    rc,  rg, rb = 0, 0, 0
+    for x in range(x1, x2):
+        for y in range(y1, y2):
+            r, g, b = pyautogui.pixel(win_left + x, win_top + y)
+            # print(f"Цвет возможной ошибки: {r}, {g}, {b}")
+            if await is_red(r, g, b):
+                print("Здесь введен неверный пароль или логин")
+                return True
+    return False
+
+async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
+    # Проверка: ярко-красный или просто любой "красный"
+    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
