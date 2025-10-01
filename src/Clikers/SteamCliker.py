@@ -168,7 +168,6 @@ async def steam_cliker(message):
             else:
                 if globals.type_of_soft == "Exp":
                     start_game(message)
-                    time.sleep(2)
                     await steam_EULA()
                     time.sleep(5)
                     await rockstar_search(message)
@@ -208,7 +207,6 @@ async def handle_steam_guard(message):
     if globals.type_of_soft == "Exp":
         if not await is_error(266, 151, 293, 161):
             start_game(message)
-            time.sleep(2)
             await steam_EULA()
             time.sleep(5)
             await rockstar_search(message)
@@ -297,7 +295,7 @@ async def launch_prog(message):
         found = False
         time.sleep(10)
         if win_gta and win_sun:
-            end_time = time.time() + 110
+            end_time = time.time() + 85
             while time.time() < end_time:
                 r,g,b = pyautogui.pixel(2183, 1097)
                 if is_gray(r,g,b) and found == False:
@@ -464,4 +462,8 @@ async def close_sunrise():
     win = await wait_for_open("Sunrise", 40)
     time.sleep(1)
     win.activate()
+    pyautogui.hotkey('alt', 'f4')
+    time.sleep(0.3)
+    pyautogui.hotkey('alt', 'f4')
+    time.sleep(0.3)
     pyautogui.hotkey('alt', 'f4')
