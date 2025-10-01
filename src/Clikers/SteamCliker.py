@@ -11,8 +11,8 @@ import pygetwindow as gw
 from src.Handlers.ChoosingPlatform import change_pass_and_login
 from src.common import bot
 
-win_left = None
-win_top = None
+win_left = 0
+win_top = 0
 
 guard_rock_x = None
 guard_rock_y = None
@@ -282,63 +282,63 @@ async def launch_prog(message):
     gta = win_gta
 
     win_sun = None
-    if globals.type_of_soft == "Exp":
-        if globals.order_des[message.chat.id]["version"] == "Enhanced":
-            os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-        elif globals.order_des[message.chat.id]["version"] == "Legacy":
-            os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
-        else:
-            print("Ошибка выбора версии Sunrise")
+    # if globals.type_of_soft == "Exp":
+    if globals.order_des[message.chat.id]["version"] == "Enhanced":
+        os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
+    elif globals.order_des[message.chat.id]["version"] == "Legacy":
+        os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
+    else:
+        print("Ошибка выбора версии Sunrise")
 
-        win_sun = await wait_for_open("Sunrise", 100)
+    win_sun = await wait_for_open("Sunrise", 100)
 
-        found = False
-        time.sleep(10)
-        if win_gta and win_sun:
-            end_time = time.time() + 85
-            while time.time() < end_time:
-                r,g,b = pyautogui.pixel(2183, 1097)
-                if is_gray(r,g,b) and found == False:
-                    keyboard_press_key('enter')
-                    print("Нашли серое окно GTA")
-                    found = True
-                win_gta.activate()
-                win_sun.minimize()
-                time.sleep(2.5)
-            from src.Clikers.GTACliker import gta_cliker_exp
-            await gta_cliker_exp(message)
-    elif globals.type_of_soft == "Free":
-        win_c = await wait_for_open("Cherax", 100)
-
-        found = False
-        time.sleep(10)
-        if win_gta and win_c:
-            end_time = time.time() + 60
-            while time.time() < end_time:
-                r, g, b = pyautogui.pixel(2183, 1097)
-                if is_gray(r, g, b) and found == False:
-                    keyboard_press_key('enter')
-                    print("Нашли серое окно GTA")
-                    found = True
-                win_gta.activate()
-                win_c.minimize()
-                time.sleep(2.5)
-
-        keyboard_press_key('enter')  # пропустить
-        time.sleep(5)
-        pyautogui.click(x="story", y="story")#todo
-        time.sleep(1)
-        keyboard_press_key('enter')
-
-        if win_gta and win_c:
-            end_time = time.time() + 30
-            while time.time() < end_time:
-                win_gta.activate()
-                win_c.minimize()
-                time.sleep(2.5)
-
-        from src.Clikers.GTACliker import gta_cliker_free
-        await gta_cliker_free(message)
+    found = False
+    time.sleep(10)
+    if win_gta and win_sun:
+        end_time = time.time() + 85
+        while time.time() < end_time:
+            r,g,b = pyautogui.pixel(2183, 1097)
+            if is_gray(r,g,b) and found == False:
+                keyboard_press_key('enter')
+                print("Нашли серое окно GTA")
+                found = True
+            win_gta.activate()
+            win_sun.minimize()
+            time.sleep(2.5)
+        from src.Clikers.GTACliker import gta_cliker_exp
+        await gta_cliker_exp(message)
+    # elif globals.type_of_soft == "Free":
+    #     win_c = await wait_for_open("Cherax", 100)
+    #
+    #     found = False
+    #     time.sleep(10)
+    #     if win_gta and win_c:
+    #         end_time = time.time() + 60
+    #         while time.time() < end_time:
+    #             r, g, b = pyautogui.pixel(2183, 1097)
+    #             if is_gray(r, g, b) and found == False:
+    #                 keyboard_press_key('enter')
+    #                 print("Нашли серое окно GTA")
+    #                 found = True
+    #             win_gta.activate()
+    #             win_c.minimize()
+    #             time.sleep(2.5)
+    #
+    #     keyboard_press_key('enter')  # пропустить
+    #     time.sleep(5)
+    #     pyautogui.click(x="story", y="story")#todo
+    #     time.sleep(1)
+    #     keyboard_press_key('enter')
+    #
+    #     if win_gta and win_c:
+    #         end_time = time.time() + 30
+    #         while time.time() < end_time:
+    #             win_gta.activate()
+    #             win_c.minimize()
+    #             time.sleep(2.5)
+    #
+    #     from src.Clikers.GTACliker import gta_cliker_free
+    #     await gta_cliker_free(message)
 
 def keyboard_press_key(key, times=1, interval=0.5):
     keyboard = Controller()
