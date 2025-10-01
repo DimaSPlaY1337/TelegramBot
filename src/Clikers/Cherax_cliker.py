@@ -198,7 +198,7 @@ def keyboard_press_key(key, times=1, interval=0.5):
         keyboard.release(key_to_press)
         time.sleep(interval)
 
-def click(x, y, times=1, t: float = 2):
+def click(x, y, times=1, t=2):
     for _ in range(times):
         pyautogui.click(x,y)
         time.sleep(t) # небольшая пауза между нажатиями 0.2
