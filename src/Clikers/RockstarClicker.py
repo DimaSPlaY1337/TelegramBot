@@ -1,3 +1,4 @@
+import src.common as common
 from src.common import *
 from src.Clikers.PlatformClicker import PlatformClicker
 from src.Clikers.input_utils import *
@@ -46,12 +47,12 @@ class RockstarClicker(PlatformClicker):
             login_x = win.left + offset_login_x
             login_y = win.top + offset_login_y
 
-            write_data(login_x, login_y, data_for_reg[message.chat.id]["login"])
+            write_data(login_x, login_y, common.data_for_reg[message.chat.id]["login"])
 
             pass_x = win.left + offset_password_x
             pass_y = win.top + offset_password_y
 
-            write_data(pass_x, pass_y, data_for_reg[message.chat.id]["password"])
+            write_data(pass_x, pass_y, common.data_for_reg[message.chat.id]["password"])
 
             abs_x = win.left + offset_enter_x
             abs_y = win.top + offset_enter_y
@@ -67,10 +68,10 @@ class RockstarClicker(PlatformClicker):
                 if win:
                     win_top = win.top
                     win_left = win.left
-                    user_step[message.chat.id] = {"step": "rockstar_guard"}
+                    common.user_step[message.chat.id] = {"step": "rockstar_guard"}
                     await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
                 else:
-                    if type_of_soft == "Exp":
+                    if common.type_of_soft == "Exp":
                         await self.launch_prog(message)
                     else:
                         await c_cliker(message)
@@ -81,7 +82,7 @@ class RockstarClicker(PlatformClicker):
         else:
             print("Окно не найдено")
 
-    @bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "rockstar_guard")
+    @bot.message_handler(func=lambda m: common.user_step.get(m.chat.id, {}).get("step") == "rockstar_guard")
     async def plat_guard(self, message):
         guard = message.text  # Здесь — то, что ввел пользователь!
         print(f"Получили steam guard: {guard}")
@@ -91,7 +92,7 @@ class RockstarClicker(PlatformClicker):
         pyautogui.write(guard, interval=0.05)
         pyautogui.click(x=win_left + 538, y=win_top + 563)
 
-        if type_of_soft == "Exp":
+        if common.type_of_soft == "Exp":
             if not await is_error(430, 650, 440, 660):  # узнать коор ошибки при вводе кода
                 await self.launch_prog(message)
             else:
@@ -104,9 +105,9 @@ class RockstarClicker(PlatformClicker):
 
     async def launch_prog(self, message):
         # протокола нету как у steam
-        if order_des[message.chat.id]["version"] == "Enhanced":
+        if common.order_des[message.chat.id]["version"] == "Enhanced":
             os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_RE.lnk")
-        elif order_des[message.chat.id]["version"] == "Legacy":
+        elif common.order_des[message.chat.id]["version"] == "Legacy":
             os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_RL.lnk")
         else:
             print("Ошибка выбора версии GTA")
@@ -116,9 +117,9 @@ class RockstarClicker(PlatformClicker):
 
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
 
-        if order_des[message.chat.id]["version"] == "Enhanced":
+        if common.order_des[message.chat.id]["version"] == "Enhanced":
             os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-        elif order_des[message.chat.id]["version"] == "Legacy":
+        elif common.order_des[message.chat.id]["version"] == "Legacy":
             os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
         else:
             print("Ошибка выбора версии Sunrise")

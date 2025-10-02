@@ -3,7 +3,8 @@ import pyautogui
 import time
 from pynput.keyboard import Controller, Key
 
-from src.common import *
+import src.common as common
+from src.common import bot
 
 async def gta_cliker_free(message):
     press_key("num1")
@@ -18,7 +19,7 @@ async def gta_cliker_exp(message):
     press_key('down', 4)
 
     # write order
-    if order_des[message.chat.id]["amount"].isdigit():
+    if common.order_des[message.chat.id]["amount"].isdigit():
         # enter
         press_key('enter')
 
@@ -32,7 +33,7 @@ async def gta_cliker_exp(message):
         press_key('down', 1)
         press_key('enter')
 
-        sum = int(order_des[message.chat.id]["amount"])
+        sum = int(common.order_des[message.chat.id]["amount"])
         if sum < 7000000:
             sum = 7000000
 
@@ -112,8 +113,8 @@ async def gta_cliker_exp(message):
     press_key('enter')
 
     # write level
-    if order_des[message.chat.id]["levels"].isdigit():
-        order = int(order_des[message.chat.id]["levels"])
+    if common.order_des[message.chat.id]["levels"].isdigit():
+        order = int(common.order_des[message.chat.id]["levels"])
         keyboard.press(Key.enter)
         keyboard.release(Key.enter)
         time.sleep(0.5)
@@ -138,9 +139,9 @@ async def gta_cliker_exp(message):
     press_key('up', 1)
     press_key('enter')
 
-    if order_des[message.chat.id]["unlocks"] == "Standard Unlocks":
+    if common.order_des[message.chat.id]["unlocks"] == "Standard Unlocks":
         press_key('enter')
-    elif order_des[message.chat.id]["unlocks"] == "Super Unlocks":
+    elif common.order_des[message.chat.id]["unlocks"] == "Super Unlocks":
         press_key('down', 1)
         press_key('enter')
 
@@ -181,4 +182,4 @@ async def send_screenshot(message):
     with open(r'D:\Repos\gta_screen.png', 'rb') as photo:
         await bot.send_photo(message.chat.id, photo)
     # platform = "Rockstar"
-    await clicker.close_apps()
+    await common.clicker.close_apps()
