@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from src.Clikers.input_utils import *
-from src.common import bot
+from src.common import *
 
 class PlatformClicker(ABC):
 
@@ -11,13 +11,15 @@ class PlatformClicker(ABC):
         self.is_changing_data = False
 
     async def plat_clicker(self, message):
-        if globals.order_des[message.chat.id]["amount"].isdigit():
-            if int(globals.order_des[message.chat.id]["amount"]) >= 75000000:
-                globals.type_of_soft = "Exp"
+        global type_of_soft
+
+        if order_des[message.chat.id]["amount"].isdigit():
+            if int(order_des[message.chat.id]["amount"]) >= 75000000:
+                type_of_soft = "Exp"
             else:
-                globals.type_of_soft = "Free"
+                type_of_soft = "Free"
         else:
-            globals.type_of_soft = "Free"
+            type_of_soft = "Free"
 
     @abstractmethod
     async def plat_guard(self, message):
@@ -45,7 +47,7 @@ class PlatformClicker(ABC):
         time.sleep(0.3)
         pyautogui.hotkey('alt', 'f4')
 
-    @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
+    @bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
     async def rockstar_cliker(self, message):
         global win_left, win_top, sign_in_rock_button
 
@@ -74,7 +76,7 @@ class PlatformClicker(ABC):
             win_top = win_rock.top
             sign_in_rock_button = win_top + 601
 
-            globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
+            user_step[message.chat.id] = {"step": "rock_steam_guard"}
             await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
         else:
             await self.launch_prog(message)
@@ -99,8 +101,8 @@ class PlatformClicker(ABC):
         await self.launch_prog(message)
 
     async def change_pass_and_login(self, message):
-        globals.is_changing_data = True
-        globals.user_step[message.chat.id] = {"step": "login"}
+        is_changing_data = True
+        user_step[message.chat.id] = {"step": "login"}
         await bot.send_message(message.chat.id, "Введите ваш логин:")
 
     win_left = 0

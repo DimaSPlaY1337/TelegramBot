@@ -3,8 +3,7 @@ from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 from src.Clikers.RockstarClicker import RockstarClicker
 from src.Clikers.SteamClicker import SteamClicker
 from src.Clikers.EpicgamesClicker import EpicgamesClicker
-from src.Handlers import globals
-from src.common import bot
+from src.common import *
 
 def unlocks_kb():
     button1 = KeyboardButton(text="Standard Unlocks")
@@ -36,7 +35,7 @@ def continue_kb():
 
 
 async def order_description(message):
-    globals.user_step[message.chat.id] = {"step": "order_des"}
+    user_step[message.chat.id] = {"step": "order_des"}
 
     await bot.reply_to(
         message,
@@ -46,7 +45,7 @@ async def order_description(message):
 
 async def order_output(message):
     chat_id = message.chat.id
-    data = globals.order_des.get(chat_id, {})
+    data = order_des.get(chat_id, {})
 
     # Формируем текст только для этого пользователя
     full_order = "Вы выбрали:\n"
@@ -54,72 +53,71 @@ async def order_output(message):
         full_order += f"{key}: {value}\n"
 
     await bot.send_message(chat_id, full_order, reply_markup=ReplyKeyboardRemove())
-    globals.order = full_order
 
-    if globals.platform == "Steam":
-        globals.clicker = SteamClicker()
-    elif globals.platform == "EpicGames":
-        globals.clicker = EpicgamesClicker()
-    elif globals.platform == "Rockstar":
-        globals.clicker = RockstarClicker()
+    if platform == "Steam":
+        clicker = SteamClicker()
+    elif platform == "EpicGames":
+        clicker = EpicgamesClicker()
+    elif platform == "Rockstar":
+        clicker = RockstarClicker()
 
-    await globals.clicker.plat_clicker(message)
+    await clicker.plat_clicker(message)
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "order_des")
+@bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "order_des")
 async def order_choice(message):
     chat_id = message.chat.id
 
     # Проверка: выбрано ли это уже
-    if message.text == "Money" and globals.order_des[chat_id]["amount"] != 0:
+    if message.text == "Money" and order_des[chat_id]["amount"] != 0:
         await bot.send_message(chat_id, "Введите сумму:", reply_markup=ReplyKeyboardRemove())
-        globals.user_step[chat_id] = {"step": "money"}
+        user_step[chat_id] = {"step": "money"}
 
-    elif message.text == "Levels" and globals.order_des[chat_id]["levels"] != 0:
+    elif message.text == "Levels" and order_des[chat_id]["levels"] != 0:
         await bot.send_message(chat_id, "Введите уровни:", reply_markup=ReplyKeyboardRemove())
-        globals.user_step[chat_id] = {"step": "levels"}
+        user_step[chat_id] = {"step": "levels"}
 
-    elif message.text == "Unlocks" and globals.order_des[chat_id]["unlocks"] != 0:
+    elif message.text == "Unlocks" and order_des[chat_id]["unlocks"] != 0:
         await bot.reply_to(
             message,
             "Выберете тип Unlocks:",
             reply_markup=unlocks_des
         )
-        globals.user_step[chat_id] = {"step": "unlocks"}
+        user_step[chat_id] = {"step": "unlocks"}
 
     else:
         await bot.send_message(chat_id, "Вы это уже выбрали!\nВыберите что-то другое.")
         await order_description(message)
 
 # --- Обработчики шагов ---
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "money")
+@bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "money")
 async def get_money(message):
-    globals.order_des[message.chat.id]["amount"] = message.text
+    order_des[message.chat.id]["amount"] = message.text
     await order_question(message)
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "levels")
+@bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "levels")
 async def get_levels(message):
-    globals.order_des[message.chat.id]["levels"] = message.text
+    order_des[message.chat.id]["levels"] = message.text
     await order_question(message)
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "unlocks")
+@bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "unlocks")
 async def get_items(message):
-    globals.order_des[message.chat.id]["unlocks"] = message.text
+    order_des[message.chat.id]["unlocks"] = message.text
     await order_question(message)
 
 async def order_question(message):
-    if (globals.order_des[message.chat.id]["levels"] == 'не задано'
-            or globals.order_des[message.chat.id]["unlocks"] == 'не задано'
-            or globals.order_des[message.chat.id]["amount"] == 'не задано'):
+    if (order_des[message.chat.id]["levels"] == 'не задано'
+            or order_des[message.chat.id]["unlocks"] == 'не задано'
+            or order_des[message.chat.id]["amount"] == 'не задано'):
         await bot.reply_to(
             message,
             "Что то еще?",
             reply_markup=continue_kb()
         )
-        globals.user_step[message.chat.id] = {"step": "order_con"}
+        user_step[message.chat.id] = {"step": "order_con"}
     else:
         await order_output(message)
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "order_con")
+@bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "order_con")
 async def order_continue(message):
     if message.text == "Да":
         await order_description(message)

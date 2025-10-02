@@ -1,5 +1,4 @@
-import os
-from src.common import bot
+from src.common import *
 from src.Clikers.PlatformClicker import PlatformClicker
 from src.Clikers.input_utils import *
 from src.Clikers.Cherax_cliker import c_cliker
@@ -10,6 +9,7 @@ class SteamClicker(PlatformClicker):
         super().__init__()
 
     async def plat_clicker(self, message):
+        global win_left, win_top
         await super().plat_clicker(message)
 
         os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
@@ -61,7 +61,7 @@ class SteamClicker(PlatformClicker):
             time.sleep(0.2)
             pyautogui.click(x=login_x, y=login_y)
             pyautogui.click(x=login_x, y=login_y)
-            write_data(login_x, login_y, globals.data_for_reg[message.chat.id]["login"])
+            write_data(login_x, login_y, data_for_reg[message.chat.id]["login"])
 
             pass_x = win_left + offset_password_x
             pass_y = win.top + offset_password_y
@@ -70,7 +70,7 @@ class SteamClicker(PlatformClicker):
             time.sleep(0.2)
             pyautogui.click(x=pass_x, y=pass_y)
             pyautogui.click(x=pass_x, y=pass_y)
-            write_data(pass_x, pass_y, globals.data_for_reg[message.chat.id]["password"])
+            write_data(pass_x, pass_y, data_for_reg[message.chat.id]["password"])
 
             pass_cb_x = win_left + offset_enter_x
             pass_cb_y = win.top + offset_enter_y
@@ -89,10 +89,10 @@ class SteamClicker(PlatformClicker):
                 if win:
                     win_top = win.top
                     win_left = win.left
-                    globals.user_step[message.chat.id] = {"step": "steam_guard"}
+                    user_step[message.chat.id] = {"step": "steam_guard"}
                     await bot.send_message(message.chat.id, "Введите код Steam Guard (или другой нужный код):")
                 else:
-                    if globals.type_of_soft == "Exp":
+                    if type_of_soft == "Exp":
                         self.start_game(message)
                         await self.steam_EULA()
                         time.sleep(5)
@@ -108,10 +108,10 @@ class SteamClicker(PlatformClicker):
             print("Окно не найдено")
 
     def start_game(self, message):
-        if globals.order_des[message.chat.id]["version"] == "Enhanced":
+        if order_des[message.chat.id]["version"] == "Enhanced":
             os.startfile("steam://run/3240220")
 
-        elif globals.order_des[message.chat.id]["version"] == "Legacy":
+        elif order_des[message.chat.id]["version"] == "Legacy":
             os.startfile("steam://run/271590")
 
         else:
@@ -127,7 +127,7 @@ class SteamClicker(PlatformClicker):
 
             pyautogui.click(x=win_left + 715, y=win_top + 577)
 
-    @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "steam_guard")
+    @bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "steam_guard")
     async def plat_guard(self, message):
         guard = message.text  # Здесь — то, что ввел пользователь!
         print(f"Получили steam guard: {guard}")
@@ -142,7 +142,7 @@ class SteamClicker(PlatformClicker):
         pyautogui.press('enter')
 
         time.sleep(2)
-        if globals.type_of_soft == "Exp":
+        if type_of_soft == "Exp":
             if not await is_error(266, 151, 293, 161):
                 self.start_game(message)
                 await self.steam_EULA()
@@ -165,9 +165,9 @@ class SteamClicker(PlatformClicker):
         gta = win_gta
 
         win_sun = None
-        if globals.order_des[message.chat.id]["version"] == "Enhanced":
+        if order_des[message.chat.id]["version"] == "Enhanced":
             os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-        elif globals.order_des[message.chat.id]["version"] == "Legacy":
+        elif order_des[message.chat.id]["version"] == "Legacy":
             os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
         else:
             print("Ошибка выбора версии Sunrise")

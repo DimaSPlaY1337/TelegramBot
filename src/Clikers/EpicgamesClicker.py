@@ -1,7 +1,6 @@
-import os
-from src.common import bot
 from src.Clikers.PlatformClicker import PlatformClicker
 from src.Clikers.input_utils import *
+from src.common import *
 
 class EpicgamesClicker(PlatformClicker):
 
@@ -9,6 +8,7 @@ class EpicgamesClicker(PlatformClicker):
         super().__init__()
 
     async def plat_clicker(self, message):
+        global win_left, win_top
         await super().plat_clicker(message)
 
         os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
@@ -20,7 +20,6 @@ class EpicgamesClicker(PlatformClicker):
 
         os.startfile("C:\\Program Files (x86)\\Epic Games\\Launcher\\Portal\\Binaries\\Win32\\EpicGamesLauncher.exe")
         switch_to_english()
-        global guard_x, guard_y, guard_write_x, guard_write_y, win_left, win_top
 
         offset_login_x = 584  # смещение по X от левого верхнего угла окна
         offset_login_y = 584  # смещение по Y от левого верхнего угла окна
@@ -56,7 +55,7 @@ class EpicgamesClicker(PlatformClicker):
             guard_write_y = win_top + 748
 
             time.sleep(5)
-            write_data(login_x, login_y, globals.data_for_reg[message.chat.id]["login"])
+            write_data(login_x, login_y, data_for_reg[message.chat.id]["login"])
 
             pyautogui.click(x=login_cb_x, y=login_cb_y)
             pyautogui.click(x=login_cb_x, y=login_cb_y)
@@ -68,7 +67,7 @@ class EpicgamesClicker(PlatformClicker):
 
                 pyautogui.click(x=pass_x, y=pass_y)
 
-                write_data(pass_x, pass_y, globals.data_for_reg[message.chat.id]["password"])
+                write_data(pass_x, pass_y, data_for_reg[message.chat.id]["password"])
 
                 pass_cb_x = win.left + offset_password_cb_x
                 pass_cb_y = win.top + offset_password_cb_y
@@ -77,7 +76,7 @@ class EpicgamesClicker(PlatformClicker):
 
                 if not await is_error(434, 740, 508, 751):
                     time.sleep(3)
-                    globals.user_step[message.chat.id] = {"step": "epic_guard"}
+                    user_step[message.chat.id] = {"step": "epic_guard"}
                     await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
                 else:
                     win.close()
@@ -88,7 +87,7 @@ class EpicgamesClicker(PlatformClicker):
         else:
             print("Окно не найдено")
 
-    @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "epic_guard")
+    @bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "epic_guard")
     async def plat_guard(self, message):
         guard = message.text  # Здесь — то, что ввел пользователь!
         print(f"Получили steam guard: {guard}")
@@ -105,9 +104,9 @@ class EpicgamesClicker(PlatformClicker):
             await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
 
     async def launch_prog(self, message):
-        if globals.order_des[message.chat.id]["version"] == "Enhanced":
+        if order_des[message.chat.id]["version"] == "Enhanced":
             os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_EE.url")
-        elif globals.order_des[message.chat.id]["version"] == "Legacy":
+        elif order_des[message.chat.id]["version"] == "Legacy":
             os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_EL.url")
         else:
             print("Ошибка выбора версии GTA")
@@ -117,20 +116,20 @@ class EpicgamesClicker(PlatformClicker):
 
         win_rock = await wait_for_open("Rockstar Games", 20)
         if win_rock:
-            globals.rock_win = win_rock
-            globals.user_step[message.chat.id] = {"step": "rock_steam_guard"}
+            rock_win = win_rock
+            user_step[message.chat.id] = {"step": "rock_steam_guard"}
             await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
-        globals.app_list.append(win_rock)
+        app_list.append(win_rock)
 
-        if globals.order_des[message.chat.id]["version"] == "Enhanced":
+        if order_des[message.chat.id]["version"] == "Enhanced":
             os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-        elif globals.order_des[message.chat.id]["version"] == "Legacy":
+        elif order_des[message.chat.id]["version"] == "Legacy":
             os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
         else:
             print("Ошибка выбора версии Sunrise")
 
         win_sun = await wait_for_open("Sunrise", 40)
-        # globals.app_list.append(win_sun)
+        # app_list.append(win_sun)
 
         time.sleep(10)
         if win_gta and win_sun:

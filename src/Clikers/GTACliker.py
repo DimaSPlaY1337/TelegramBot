@@ -3,9 +3,7 @@ import pyautogui
 import time
 from pynput.keyboard import Controller, Key
 
-from src.Handlers import globals
-
-from src.common import bot
+from src.common import *
 
 async def gta_cliker_free(message):
     press_key("num1")
@@ -20,7 +18,7 @@ async def gta_cliker_exp(message):
     press_key('down', 4)
 
     # write order
-    if globals.order_des[message.chat.id]["amount"].isdigit():
+    if order_des[message.chat.id]["amount"].isdigit():
         # enter
         press_key('enter')
 
@@ -34,7 +32,7 @@ async def gta_cliker_exp(message):
         press_key('down', 1)
         press_key('enter')
 
-        sum = int(globals.order_des[message.chat.id]["amount"])
+        sum = int(order_des[message.chat.id]["amount"])
         if sum < 7000000:
             sum = 7000000
 
@@ -114,8 +112,8 @@ async def gta_cliker_exp(message):
     press_key('enter')
 
     # write level
-    if globals.order_des[message.chat.id]["levels"].isdigit():
-        order = int(globals.order_des[message.chat.id]["levels"])
+    if order_des[message.chat.id]["levels"].isdigit():
+        order = int(order_des[message.chat.id]["levels"])
         keyboard.press(Key.enter)
         keyboard.release(Key.enter)
         time.sleep(0.5)
@@ -140,9 +138,9 @@ async def gta_cliker_exp(message):
     press_key('up', 1)
     press_key('enter')
 
-    if globals.order_des[message.chat.id]["unlocks"] == "Standard Unlocks":
+    if order_des[message.chat.id]["unlocks"] == "Standard Unlocks":
         press_key('enter')
-    elif globals.order_des[message.chat.id]["unlocks"] == "Super Unlocks":
+    elif order_des[message.chat.id]["unlocks"] == "Super Unlocks":
         press_key('down', 1)
         press_key('enter')
 
@@ -182,5 +180,5 @@ async def gta_cliker_exp(message):
 async def send_screenshot(message):
     with open(r'D:\Repos\gta_screen.png', 'rb') as photo:
         await bot.send_photo(message.chat.id, photo)
-    # globals.platform = "Rockstar"
-    await globals.clicker.close_apps()
+    # platform = "Rockstar"
+    await clicker.close_apps()

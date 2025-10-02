@@ -1,8 +1,7 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
-from src.Handlers import globals
 from src.Handlers.OrderDesc import order_description
-from src.common import bot
+from src.common import *
 
 def versions_kb():
     button1 = KeyboardButton(text="Enhanced")
@@ -27,63 +26,65 @@ async def choosing_platform(message):
         "Какая платформа игры? (Steam, EpicGames, Rockstar)",
         reply_markup=get_on_start_kb()
     )
-    globals.user_step[message.chat.id] = {"step": "choose_platform"}
+    user_step[message.chat.id] = {"step": "choose_platform"}
 
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "choose_platform" and m.text in ["Steam", "EpicGames", "Rockstar"])
+@bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "choose_platform" and m.text in ["Steam", "EpicGames", "Rockstar"])
 async def platform_choice(message):
-    globals.platform = message.text
+    platform = message.text
 
-    await bot.send_message(message.chat.id, f"Вы выбрали: {globals.platform}", reply_markup=ReplyKeyboardRemove())
+    await bot.send_message(message.chat.id, f"Вы выбрали: {platform}", reply_markup=ReplyKeyboardRemove())
     await bot.send_message(message.chat.id, "Введите ваш логин:")
 
     # Меняем шаг на "ожидание логина"
-    globals.user_step[message.chat.id] = {"step": "login"}
-    globals.data_for_reg[message.chat.id] = {"login": ""}
+    user_step[message.chat.id] = {"step": "login"}
+    data_for_reg[message.chat.id] = {"login": ""}
 
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "login")
+@bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "login")
 async def get_login(message):
-    globals.data_for_reg[message.chat.id]["login"] = message.text
-    globals.user_step[message.chat.id]["step"] = "password"
+    data_for_reg[message.chat.id]["login"] = message.text
+    user_step[message.chat.id]["step"] = "password"
     await bot.send_message(
         message.chat.id, "Введите ваш пароль:", reply_markup=ReplyKeyboardRemove()
     )
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "password")
+@bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "password")
 async def get_password(message):
-    globals.data_for_reg[message.chat.id]["password"] = message.text
-    login = globals.data_for_reg[message.chat.id]["login"]
-    password = globals.data_for_reg[message.chat.id]["password"]
+    global is_changing_data
+
+    data_for_reg[message.chat.id]["password"] = message.text
+    login = data_for_reg[message.chat.id]["login"]
+    password = data_for_reg[message.chat.id]["password"]
     await bot.send_message(
         message.chat.id, f"Спасибо, ваши данные:\nЛогин: {login}\nПароль: {password}"
     )
     # Можно удалить данные, если больше не нужны:
-    if not globals.is_changing_data:
+    if not is_changing_data:
         await bot.reply_to(
                 message,
                 "Выберете версию:",
                 reply_markup=versions_des
             )
-        globals.user_step[message.chat.id]["step"] = "version_of_game"
+        user_step[message.chat.id]["step"] = "version_of_game"
     else:
-        globals.is_changing_data = False
-        await globals.clicker.plat_clicker(message)
+        is_changing_data = False
+        await clicker.plat_clicker(message)
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "version_of_game")
+@bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "version_of_game")
 async def version_of_game(message):
 
-    if message.chat.id not in globals.order_des or not isinstance(globals.order_des[message.chat.id], dict):
-        globals.order_des[message.chat.id] = {}
+    if message.chat.id not in order_des or not isinstance(order_des[message.chat.id], dict):
+        order_des[message.chat.id] = {}
 
-    globals.order_des[message.chat.id]["version"] = message.text
-    version = globals.order_des[message.chat.id]["version"]
+    order_des[message.chat.id]["version"] = message.text
+    version = order_des[message.chat.id]["version"]
     await bot.send_message(
         message.chat.id, f"Ваша версия игры: {version}"
     )
 
-    globals.order_des[message.chat.id]["amount"] = 'не задано'
-    globals.order_des[message.chat.id]["levels"] = 'не задано'
-    globals.order_des[message.chat.id]["unlocks"] = 'не задано'
+    order_des[message.chat.id]["amount"] = 'не задано'
+    order_des[message.chat.id]["levels"] = 'не задано'
+    order_des[message.chat.id]["unlocks"] = 'не задано'
 
     await order_description(message)

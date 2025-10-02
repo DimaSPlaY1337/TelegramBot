@@ -2,9 +2,7 @@ import ctypes
 import time
 import pygetwindow as gw
 import pyautogui
-from src.Handlers import globals
 from pynput.keyboard import Controller, Key
-
 
 def write_text(text, interval=0.2):
     keyboard = Controller()

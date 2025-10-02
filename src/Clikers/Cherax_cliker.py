@@ -1,10 +1,8 @@
-import os
 from src.Clikers.input_utils import *
 import pyautogui
 
-from src.Handlers import globals
 from pynput.keyboard import KeyCode
-from src.common import bot
+from src.common import *
 
 
 async def c_cliker(message):
@@ -18,26 +16,26 @@ async def c_cliker(message):
 
         time.sleep(10)
         click(x=win_left + 127, y=win_top + 175)
-        if globals.order_des[message.chat.id]["version"] == "Enhanced":
+        if order_des[message.chat.id]["version"] == "Enhanced":
             click(x=win_left + 83, y=win_top + 207)
 
             click(x=win_left + 94, y=win_top + 207)
-            if globals.platform == "Steam":
+            if platform == "Steam":
                 click(x=win_left + 96, y=win_top + 239)
-            elif globals.platform == "Rockstar":
+            elif platform == "Rockstar":
                 click(x=win_left + 108, y=win_top + 267, times=1, t=3)
-        elif globals.order_des[message.chat.id]["version"] == "Legacy":
+        elif order_des[message.chat.id]["version"] == "Legacy":
             click(x=win_left + 117, y=win_top + 222)
 
             click(x=win_left + 94, y=win_top + 207)
-            if globals.platform == "Steam":
+            if platform == "Steam":
                 click(x=win_left + 106, y=win_top + 238)
-            elif globals.platform == "Rockstar":
+            elif platform == "Rockstar":
                 click(x=win_left + 110, y=win_top + 303, times=1, t = 3)
 
         click(x=win_left + 91, y=win_top + 265, times=3, t = 0.2)
 
-        await globals.clicker.rockstar_search(message)
+        await clicker.rockstar_search(message)
 
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
         if win_rock:
@@ -95,9 +93,9 @@ async def cherax_cliker(message):
     click(x=492, y=178)
 
     #крутим деньги
-    if globals.order_des[message.chat.id]["amount"].isdigit():
+    if order_des[message.chat.id]["amount"].isdigit():
         r, g, b = pyautogui.pixel(161, 411)
-        order = int(globals.order_des[message.chat.id]["amount"])
+        order = int(order_des[message.chat.id]["amount"])
         if r == g == b == 255:
             click(x=492, y=178, times=1, t=1)
             pyautogui.hotkey('ctrl', 'a')
@@ -118,8 +116,8 @@ async def cherax_cliker(message):
 
     time.sleep(1)
     #крутим уровень
-    if globals.order_des[message.chat.id]["levels"].isdigit():
-        order = int(globals.order_des[message.chat.id]["levels"])
+    if order_des[message.chat.id]["levels"].isdigit():
+        order = int(order_des[message.chat.id]["levels"])
         click(x=88, y=344)
 
         click(x=130, y=167)
@@ -141,9 +139,9 @@ async def cherax_cliker(message):
 
     time.sleep(1)
     click(77, 356)
-    if globals.order_des[message.chat.id]["unlocks"] == "Standard Unlocks":
+    if order_des[message.chat.id]["unlocks"] == "Standard Unlocks":
         print("Делаем unlocks")
-    elif globals.order_des[message.chat.id]["unlocks"] == "Super Unlocks":
+    elif order_des[message.chat.id]["unlocks"] == "Super Unlocks":
         print("Делаем unlocks")
 
     time.sleep(1)
@@ -159,10 +157,10 @@ async def cherax_cliker(message):
 async def send_screenshot(message):
     with open(r'D:\Repos\gta_screen.png', 'rb') as photo:
         await bot.send_photo(message.chat.id, photo)
-    # globals.platform = "Rockstar"
-    await globals.clicker.close_apps()
+    # platform = "Rockstar"
+    await clicker.close_apps()
 
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_c_guard")
+@bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "rock_c_guard")
 async def rockstar_cliker(message):
     global win_left, win_top, sign_in_rock_button
 
@@ -189,5 +187,5 @@ async def rockstar_search(message):
         win_top = win_rock.top
         sign_in_rock_button = win_top + 601
 
-        globals.user_step[message.chat.id] = {"step": "rock_c_guard"}
+        user_step[message.chat.id] = {"step": "rock_c_guard"}
         await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
