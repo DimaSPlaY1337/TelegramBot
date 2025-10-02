@@ -1,12 +1,8 @@
-from sqlalchemy import false
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
-from src.Clikers import *
 from src.Handlers import globals
 from src.Handlers.OrderDesc import order_description
 from src.common import bot
-
-is_changing_data = False
 
 def versions_kb():
     button1 = KeyboardButton(text="Enhanced")
@@ -56,7 +52,6 @@ async def get_login(message):
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "password")
 async def get_password(message):
-    global is_changing_data
     globals.data_for_reg[message.chat.id]["password"] = message.text
     login = globals.data_for_reg[message.chat.id]["login"]
     password = globals.data_for_reg[message.chat.id]["password"]
@@ -64,32 +59,16 @@ async def get_password(message):
         message.chat.id, f"Спасибо, ваши данные:\nЛогин: {login}\nПароль: {password}"
     )
     # Можно удалить данные, если больше не нужны:
-    if not is_changing_data:
+    if not globals.is_changing_data:
         await bot.reply_to(
-            message,
-            "Выберете версию:",
-            reply_markup=versions_des
-        )
+                message,
+                "Выберете версию:",
+                reply_markup=versions_des
+            )
         globals.user_step[message.chat.id]["step"] = "version_of_game"
-    elif globals.platform == "EpicGames":
-        from src.Clikers import epic_cliker
-        is_changing_data = False
-        await epic_cliker(message)
-    elif globals.platform == "Rockstar":
-        from src.Clikers import rockstar_cliker
-        is_changing_data = False
-        await rockstar_cliker(message)
-    elif globals.platform == "Steam":
-        from src.Clikers import steam_cliker
-        is_changing_data = False
-        await steam_cliker(message)
-
-
-async def change_pass_and_login(message):
-    global is_changing_data
-    is_changing_data = True
-    globals.user_step[message.chat.id] = {"step": "login"}
-    await bot.send_message(message.chat.id, "Введите ваш логин:")
+    else:
+        globals.is_changing_data = False
+        await globals.clicker.plat_clicker(message)
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "version_of_game")
 async def version_of_game(message):

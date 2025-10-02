@@ -1,32 +1,11 @@
-import ctypes
+from src.Clikers.input_utils import *
 import pyautogui
 import time
 from pynput.keyboard import Controller, Key
 
-from src.Clikers import EpicgamesCliker, RockstarCliker, SteamCliker
 from src.Handlers import globals
 
 from src.common import bot
-
-
-def press_key(key, times=1):
-    for _ in range(times):
-        pyautogui.press(key)
-        time.sleep(0.3) # небольшая пауза между нажатиями 0.2
-
-def keyboard_press_key(key, times=1, interval=0.5):
-    keyboard = Controller()
-    for _ in range(times):
-        keyboard.press(key)
-        keyboard.release(key)
-        time.sleep(interval)
-
-def write_text(text, interval=0.2):
-    keyboard = Controller()
-    for char in str(text):
-        keyboard.press(char)
-        keyboard.release(char)
-        time.sleep(interval)
 
 async def gta_cliker_free(message):
     press_key("num1")
@@ -200,46 +179,8 @@ async def gta_cliker_exp(message):
     time.sleep(1)
     await send_screenshot(message)
 
-async def is_gray(r, g, b, diff=11):
-    """
-    Проверяет, является ли цвет (r, g, b) серым.
-    Аргумент diff — допустимый максимальный допуск между компонентами.
-    Для идеального серого все компоненты равны, но на практике допускается небольшое отклонение.
-    """
-    print(f" Цвет поля: {r}, {g}, {b}")
-    return abs(r - g) <= diff and abs(r - b) <= diff and abs(g - b) <= diff
-
-
-async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
-    # Проверка: ярко-красный или просто любой "красный"
-    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
-
-def switch_to_english():
-    user32 = ctypes.WinDLL('user32', use_last_error=True)
-    curr_window = user32.GetForegroundWindow()
-    thread_id = user32.GetWindowThreadProcessId(curr_window, 0)
-    klid = user32.GetKeyboardLayout(thread_id)
-    lid = klid & (2**16 - 1)
-    lid_hex = hex(lid)
-    if lid_hex == '0x419':  # если русский
-        pyautogui.keyDown('altleft')
-        pyautogui.press('shiftleft')
-        time.sleep(0.3)
-        pyautogui.keyUp('altleft')
-        time.sleep(0.3)  # даём системе переключиться
-        print("Сменили раскладку на английскую!")
-
-
 async def send_screenshot(message):
     with open(r'D:\Repos\gta_screen.png', 'rb') as photo:
         await bot.send_photo(message.chat.id, photo)
     # globals.platform = "Rockstar"
-    await close_apps()
-
-async def close_apps():
-    if globals.platform == "EpicGames":
-        await EpicgamesCliker.close_apps()
-    elif globals.platform == "Rockstar":
-        await RockstarCliker.close_apps()
-    elif globals.platform == "Steam":
-        await SteamCliker.close_apps()
+    await globals.clicker.close_apps()

@@ -1,14 +1,10 @@
-import ctypes
 import os
-import time
-import pyautogui
-from pynput.keyboard import Controller, Key
+from src.Clikers.input_utils import *
 
 from src.Clikers.Cherax_cliker import c_cliker
 from src.Handlers import globals
 import pygetwindow as gw
 
-from src.Handlers.ChoosingPlatform import change_pass_and_login
 from src.common import bot
 
 win_left = 0
@@ -16,23 +12,6 @@ win_top = 0
 
 gta = None
 
-async def wait_for_open(title="Steam", timeout=200, interval=1):
-    """
-    Ждёт появления окна Steam с заголовком, максимум timeout секунд.
-    Возвращает True, если окно найдено, иначе False
-    """
-    end_time = time.time() + timeout
-    while time.time() < end_time:
-        windows = gw.getWindowsWithTitle(title)
-        if windows:
-            print(f"Окно {title} открыто!")
-            return windows[0]
-        print(f"Жду открытия окна {title}...")
-        time.sleep(interval)
-    print("Окно не появилось за отведённое время.")
-    return None
-
-@bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_rockstar")
 async def rockstar_cliker(message):
     if globals.order_des[message.chat.id]["amount"].isdigit():
         if int(globals.order_des[message.chat.id]["amount"]) >= 75000000:
@@ -112,13 +91,13 @@ async def rockstar_cliker(message):
         print("Окно не найдено")
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rockstar_guard")
-async def handle_rockstar_guard(message):
-    steam_guard = message.text  # Здесь — то, что ввел пользователь!
-    print(f"Получили steam guard: {steam_guard}")
+async def rockstar_guard(message):
+    guard = message.text  # Здесь — то, что ввел пользователь!
+    print(f"Получили steam guard: {guard}")
 
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
     pyautogui.click(x=win_left + 318, y=win_top + 451)
-    pyautogui.write(steam_guard, interval=0.05)
+    pyautogui.write(guard, interval=0.05)
     pyautogui.click(x=win_left + 538, y= win_top + 563)
 
     if globals.type_of_soft == "Exp":
@@ -131,39 +110,6 @@ async def handle_rockstar_guard(message):
             await c_cliker(message)
         else:
             await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
-
-def write_data(x, y,  data):
-    pyautogui.click(x=x, y=y)
-    time.sleep(0.5)
-    pyautogui.hotkey('ctrl', 'a')
-    time.sleep(0.3)
-    pyautogui.write(data, interval=0.05)
-
-def switch_to_english():
-    user32 = ctypes.WinDLL('user32', use_last_error=True)
-    curr_window = user32.GetForegroundWindow()
-    thread_id = user32.GetWindowThreadProcessId(curr_window, 0)
-    klid = user32.GetKeyboardLayout(thread_id)
-    lid = klid & (2**16 - 1)
-    lid_hex = hex(lid)
-    if lid_hex == '0x419':  # если русский
-        pyautogui.keyDown('altleft')
-        pyautogui.press('shiftleft')
-        pyautogui.keyUp('altleft')
-        time.sleep(0.2)  # даём системе переключиться
-        print("Сменили раскладку на английскую!")
-
-async def is_error(x1, y1, x2, y2):
-    global win_left, win_top
-    rc,  rg, rb = 0, 0, 0
-    for x in range(x1, x2):
-        for y in range(y1, y2):
-            r, g, b = pyautogui.pixel(win_left + x, win_top + y)
-            print(f"Цвет возможной ошибки: {r}, {g}, {b}")
-            if await is_red(r, g, b):
-                print("Здесь введен неверный пароль или логин")
-                return True
-    return False
 
 async def rock_exit():
     global win_left, win_top
@@ -258,36 +204,8 @@ async def launch_prog(message):
         from src.Clikers.GTACliker import gta_cliker_exp
         await gta_cliker_exp(message)
 
-async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
-    # Проверка: ярко-красный или просто любой "красный"
-    return r==189 and g==8 and b==8
-
-def is_gray(r, g, b, diff=3, min_val=26, max_val=159):
-    """
-    Проверяет, является ли цвет тёмно-серым: оттенки типа 1A1A1A, 1D1D1D и похожие.
-    """
-    return (
-        abs(r - g) <= diff and
-        abs(r - b) <= diff and
-        abs(g - b) <= diff and
-        min_val <= r <= max_val and
-        min_val <= g <= max_val and
-        min_val <= b <= max_val
-    )
-
 async def close_sunrise():
     win = await wait_for_open("Sunrise", 40)
     time.sleep(1)
     win.activate()
     pyautogui.hotkey('alt', 'f4')
-
-def keyboard_press_key(key, times=1, interval=0.5):
-    keyboard = Controller()
-    if key == 'enter':
-        key_to_press = Key.enter
-    else:
-        key_to_press = key
-    for _ in range(times):
-        keyboard.press(key_to_press)
-        keyboard.release(key_to_press)
-        time.sleep(interval)

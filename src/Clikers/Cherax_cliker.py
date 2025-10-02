@@ -1,11 +1,9 @@
-import ctypes
 import os
-import time
-import pygetwindow as gw
+from src.Clikers.input_utils import *
 import pyautogui
 
 from src.Handlers import globals
-from pynput.keyboard import Controller, Key, KeyCode
+from pynput.keyboard import KeyCode
 from src.common import bot
 
 
@@ -39,7 +37,7 @@ async def c_cliker(message):
 
         click(x=win_left + 91, y=win_top + 265, times=3, t = 0.2)
 
-        await rockstar_search(message)
+        await globals.clicker.rockstar_search(message)
 
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
         if win_rock:
@@ -158,74 +156,11 @@ async def cherax_cliker(message):
     time.sleep(1)
     await send_screenshot(message)
 
-async def is_green(r, g, b, min_g=150, max_g=160, diff_rg=30, diff_bg=10):
-    """
-    Находит зеленоватый цвет наподобие #889E98:
-    - Зеленый больше других компонент.
-    - Зеленый между min_g и max_g.
-    - Разница Green-Red и Green-Blue не превышает diff_rg/diff_bg.
-    """
-    return (
-        min_g <= g <= max_g and
-        abs(g - r) <= diff_rg and
-        abs(g - b) <= diff_bg and
-        g > r and g > b
-    )
-
-
-async def wait_for_open(title="Steam", timeout=200, interval=1):
-    """
-    Ждёт появления окна Steam с заголовком, максимум timeout секунд.
-    Возвращает True, если окно найдено, иначе False
-    """
-    end_time = time.time() + timeout
-    while time.time() < end_time:
-        windows = gw.getWindowsWithTitle(title)
-        if windows:
-            print(f"Окно {title} открыто!")
-            return windows[0]
-        print(f"Жду открытия окна {title}...")
-        time.sleep(interval)
-    print("Окно не появилось за отведённое время.")
-    return None
-
-def keyboard_press_key(key, times=1, interval=0.5):
-    keyboard = Controller()
-    if key == 'enter':
-        key_to_press = Key.enter
-    else:
-        key_to_press = key
-    for _ in range(times):
-        keyboard.press(key_to_press)
-        keyboard.release(key_to_press)
-        time.sleep(interval)
-
-def click(x, y, times=1, t=2):
-    for _ in range(times):
-        pyautogui.click(x,y)
-        time.sleep(t) # небольшая пауза между нажатиями 0.2
-
-def write_text(text, interval=0.2):
-    keyboard = Controller()
-    for char in str(text):
-        keyboard.press(char)
-        keyboard.release(char)
-        time.sleep(interval)
-
 async def send_screenshot(message):
     with open(r'D:\Repos\gta_screen.png', 'rb') as photo:
         await bot.send_photo(message.chat.id, photo)
     # globals.platform = "Rockstar"
-    await close_apps()
-
-async def close_apps():
-    from src.Clikers import EpicgamesCliker, RockstarCliker, SteamCliker
-    if globals.platform == "EpicGames":
-        await EpicgamesCliker.close_apps()
-    elif globals.platform == "Rockstar":
-        await RockstarCliker.close_apps()
-    elif globals.platform == "Steam":
-        await SteamCliker.close_apps()
+    await globals.clicker.close_apps()
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "rock_c_guard")
 async def rockstar_cliker(message):
@@ -256,19 +191,3 @@ async def rockstar_search(message):
 
         globals.user_step[message.chat.id] = {"step": "rock_c_guard"}
         await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
-
-async def is_error(x1, y1, x2, y2):
-    global win_left, win_top
-    rc,  rg, rb = 0, 0, 0
-    for x in range(x1, x2):
-        for y in range(y1, y2):
-            r, g, b = pyautogui.pixel(win_left + x, win_top + y)
-            # print(f"Цвет возможной ошибки: {r}, {g}, {b}")
-            if await is_red(r, g, b):
-                print("Здесь введен неверный пароль или логин")
-                return True
-    return False
-
-async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
-    # Проверка: ярко-красный или просто любой "красный"
-    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)

@@ -1,10 +1,5 @@
-from src.Clikers.EpicgamesCliker import epic_cliker, handle_epic_guard
-from src.Clikers.GTACliker import gta_cliker_exp, send_screenshot
-from src.Clikers.RockstarCliker import rockstar_cliker, handle_rockstar_guard
-from src.Clikers.SteamCliker import steam_cliker, launch_prog
 from src.Handlers.ChoosingPlatform import choosing_platform
 from src.common import bot
-from src.Handlers import globals
 from src.dao.models import AsyncSessionLocal, User
 
 

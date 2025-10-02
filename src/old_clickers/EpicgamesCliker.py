@@ -1,14 +1,8 @@
-import ctypes
 import os
-import time
-import pyautogui
-from pynput.keyboard import Controller, Key
+from src.Clikers.input_utils import *
 
-from src.Clikers.GTACliker import gta_cliker_exp
-from src.Clikers.RockstarCliker import wait_for_open
+from src.old_clickers.RockstarCliker import wait_for_open
 from src.Handlers import globals
-import pygetwindow as gw
-from src.Handlers.ChoosingPlatform import change_pass_and_login
 from src.common import bot
 
 # проблемы:
@@ -29,49 +23,20 @@ counter = 0
 app_list = []
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "epic_guard")
-async def handle_epic_guard(message):
-    epic_guard = message.text  # Здесь — то, что ввел пользователь!
-    print(f"Получили steam guard: {epic_guard}")
-    # Здесь можно:
-    # — записать steam_guard куда надо
-    # — изменить шаг состояния, чтобы не ловить дальше любые сообщения
-    # — продолжить логику (например, отправить steam_guard дальше или завершить процесс)
+async def epic_guard(message):
+    guard = message.text  # Здесь — то, что ввел пользователь!
+    print(f"Получили steam guard: {guard}")
+
     await bot.send_message(message.chat.id, "Спасибо! Код получен.")
     pyautogui.click(x=guard_write_x, y=guard_write_y)
-    pyautogui.write(epic_guard, interval=0.05)
+    pyautogui.write(guard, interval=0.05)
     pyautogui.press('enter')
-    # globals.user_step[message.chat.id] = {"step": "epic_capcha"}
-    #
-    # await epic_client(message)
+
     time.sleep(3)
     if not await is_error(430, 650, 477,700):
         await launch_prog(message)
     else:
         await bot.send_message(message.chat.id, "Код введен неверно, введите еще раз.")
-
-async def wait_for_epic_open(title="Steam", timeout=200, interval=1):
-    """
-    Ждёт появления окна Steam с заголовком, максимум timeout секунд.
-    Возвращает True, если окно найдено, иначе False
-    """
-    end_time = time.time() + timeout
-    while time.time() < end_time:
-        windows = gw.getWindowsWithTitle(title)
-        exact_windows = [w for w in windows if w.title == title]
-        if exact_windows:
-            print(f"Окно {title} открыто!")
-            return exact_windows[0]
-        print(f"Жду открытия окна {title}...")
-        time.sleep(interval)
-    print("Окно не появилось за отведённое время.")
-    return None
-
-def write_data(x, y,  data):
-    pyautogui.click(x=x, y=y)
-    time.sleep(0.2)
-    pyautogui.hotkey('ctrl', 'a')
-    time.sleep(0.2)
-    pyautogui.write(data, interval=0.05)
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "cliker_rockstar")
 async def epic_cliker(message):
@@ -101,7 +66,7 @@ async def epic_cliker(message):
     # windows = gw.getAllWindows()
     # print([w.title for w in windows])
 
-    win = await wait_for_epic_open("Epic Games Launcher")
+    win = await wait_for_open("Epic Games Launcher")
     if win:
         win.resizeTo(1324, 1400)
         win_left = win.left
@@ -152,20 +117,6 @@ async def epic_cliker(message):
     else:
         print("Окно не найдено")
 
-def switch_to_english():
-    user32 = ctypes.WinDLL('user32', use_last_error=True)
-    curr_window = user32.GetForegroundWindow()
-    thread_id = user32.GetWindowThreadProcessId(curr_window, 0)
-    klid = user32.GetKeyboardLayout(thread_id)
-    lid = klid & (2**16 - 1)
-    lid_hex = hex(lid)
-    if lid_hex == '0x419':  # если русский
-        pyautogui.keyDown('altleft')
-        pyautogui.press('shiftleft')
-        pyautogui.keyUp('altleft')
-        time.sleep(0.2)  # даём системе переключиться
-        print("Сменили раскладку на английскую!")
-
 async def epic_client(message):
     await bot.send_message(message.chat.id, "Отправьте любой символ для подтверждения что Capcha пройдена:")
 
@@ -204,25 +155,6 @@ async def epic_client(message):
 #
 #     win = await wait_for_epic_open("Grand Theft Auto V Enhanced.url")
 
-async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
-    # Проверка: ярко-красный или просто любой "красный"
-    return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
-#!!!
-async def is_green(r, g, b, g_min=80, diff_r=40, diff_b=40):
-    # Проверка: ярко-зелёный или просто явно зелёный цвет
-    return (g > g_min) and (g - r > diff_r) and (g - b > diff_b)
-
-async def is_error(x1, y1, x2, y2):
-    global win_left, win_top
-    rc,  rg, rb = 0, 0, 0
-    for x in range(x1, x2):
-        for y in range(y1, y2):
-            r, g, b = pyautogui.pixel(win_left + x, win_top + y)
-            if await is_red(r, g, b):
-                print("Здесь введен неверный пароль или логин")
-                return True
-    return False
-
 async def epic_exit():
     global win_left, win_top
 
@@ -241,7 +173,7 @@ async def epic_exit():
     # запуска
     # Epic
     # Games
-    win = await wait_for_epic_open("Epic Games Launcher")
+    win = await wait_for_open("Epic Games Launcher")
     win.activate()
     if win:
         win.resizeTo(1324, 1400)
@@ -342,17 +274,6 @@ async def close_sunrise():
         pyautogui.click(x=abs_x, y=abs_y)
     else:
         print("Окно не найдено")
-
-def keyboard_press_key(key, times=1, interval=0.5):
-    keyboard = Controller()
-    if key == 'enter':
-        key_to_press = Key.enter
-    else:
-        key_to_press = key
-    for _ in range(times):
-        keyboard.press(key_to_press)
-        keyboard.release(key_to_press)
-        time.sleep(interval)
 
 # async def close_apps():
 #     # выход из гта

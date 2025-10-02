@@ -1,5 +1,8 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
+from src.Clikers.RockstarClicker import RockstarClicker
+from src.Clikers.SteamClicker import SteamClicker
+from src.Clikers.EpicgamesClicker import EpicgamesClicker
 from src.Handlers import globals
 from src.common import bot
 
@@ -53,15 +56,14 @@ async def order_output(message):
     await bot.send_message(chat_id, full_order, reply_markup=ReplyKeyboardRemove())
     globals.order = full_order
 
-    if globals.platform == "EpicGames":
-        from src.Clikers import epic_cliker
-        await epic_cliker(message)
+    if globals.platform == "Steam":
+        globals.clicker = SteamClicker()
+    elif globals.platform == "EpicGames":
+        globals.clicker = EpicgamesClicker()
     elif globals.platform == "Rockstar":
-        from src.Clikers import rockstar_cliker
-        await rockstar_cliker(message)
-    elif globals.platform == "Steam":
-        from src.Clikers import steam_cliker
-        await steam_cliker(message)
+        globals.clicker = RockstarClicker()
+
+    await globals.clicker.plat_clicker(message)
 
 @bot.message_handler(func=lambda m: globals.user_step.get(m.chat.id, {}).get("step") == "order_des")
 async def order_choice(message):
