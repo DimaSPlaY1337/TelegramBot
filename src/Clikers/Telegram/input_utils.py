@@ -4,6 +4,9 @@ import pygetwindow as gw
 import pyautogui
 from pynput.keyboard import Controller, Key
 
+from src import common
+
+
 def write_text(text, interval=0.2):
     keyboard = Controller()
     for char in str(text):
@@ -31,13 +34,12 @@ def write_data(x, y,  data):
     pyautogui.write(data, interval=0.05)
 
 async def is_error(x1, y1, x2, y2):
-    global win_left, win_top
     rc,  rg, rb = 0, 0, 0
     for x in range(x1, x2):
         for y in range(y1, y2):
-            r, g, b = pyautogui.pixel(win_left + x, win_top + y)
+            r, g, b = pyautogui.pixel(common.cliker.win_left + x, common.cliker.win_top + y)
             # print(f"Цвет возможной ошибки: {r}, {g}, {b}")
-            if globals.platform == "Rockstar":
+            if common.cliker.platform == "Rockstar":
                 if r==189 and g==8 and b==8:
                     print("Здесь введен неверный пароль или логин")
                     return True
