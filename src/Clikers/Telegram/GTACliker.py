@@ -1,4 +1,4 @@
-from src.Clikers.input_utils import *
+from src.Clikers.Telegram.input_utils import *
 import pyautogui
 import time
 from pynput.keyboard import Controller, Key

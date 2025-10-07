@@ -1,6 +1,6 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
-from src.Handlers.OrderDesc import order_description
+from src.Handlers.Telegram.OrderDesc import order_description
 import src.common as common
 from src.common import *
 

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from src.Clikers.input_utils import *
+from src.Clikers.Telegram.input_utils import *
 import src.common as common
 from src.common import bot
 

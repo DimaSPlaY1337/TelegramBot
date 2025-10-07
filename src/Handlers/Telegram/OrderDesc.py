@@ -1,8 +1,8 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
-from src.Clikers.RockstarClicker import RockstarClicker
-from src.Clikers.SteamClicker import SteamClicker
-from src.Clikers.EpicgamesClicker import EpicgamesClicker
+from src.Clikers.Telegram.RockstarClicker import RockstarClicker
+from src.Clikers.Telegram.SteamClicker import SteamClicker
+from src.Clikers.Telegram.EpicgamesClicker import EpicgamesClicker
 import src.common as common
 from src.common import *
 

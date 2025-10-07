@@ -1,4 +1,4 @@
-from src.Handlers.ChoosingPlatform import choosing_platform
+from src.Handlers.Telegram.ChoosingPlatform import choosing_platform
 from src.common import bot
 from src.dao.models import AsyncSessionLocal, User
 

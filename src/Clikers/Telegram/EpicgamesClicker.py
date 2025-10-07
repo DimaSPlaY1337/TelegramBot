@@ -1,5 +1,5 @@
-from src.Clikers.PlatformClicker import PlatformClicker
-from src.Clikers.input_utils import *
+from src.Clikers.Telegram.PlatformClicker import PlatformClicker
+from src.Clikers.Telegram.input_utils import *
 import src.common as common
 from src.common import *
 
@@ -140,7 +140,7 @@ class EpicgamesClicker(PlatformClicker):
                 win_gta.activate()
                 win_sun.minimize()
                 time.sleep(2.5)
-            from src.Clikers.GTACliker import gta_cliker_exp
+            from src.Clikers.Telegram.GTACliker import gta_cliker_exp
             await gta_cliker_exp(message)
 
     async def plat_exit(self):
