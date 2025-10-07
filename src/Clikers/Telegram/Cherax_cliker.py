@@ -73,7 +73,10 @@ async def gta_cliker(message):
         time.sleep(30)
         await cherax_cliker(message)
     else:
-        click(511, 95, 10, 0.2)
+        click(2355, 1358, 2, 0.2)
+
+        time.sleep(30)
+        await cherax_cliker(message)
 
 async def cherax_cliker(message):
     keyboard_press_key(KeyCode.from_vk(0x61))#numpad 1
