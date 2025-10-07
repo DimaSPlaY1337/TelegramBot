@@ -7,7 +7,6 @@ from src.common import *
 
 
 async def c_cliker(message):
-    global win_left, win_top
     os.startfile(r"C:\Users\gamePC\Desktop\CheraxLoader.exe", 'runas')
     win = await wait_for_open("Cherax Loader", 100)
 
@@ -58,22 +57,23 @@ async def gta_cliker(message):
     if win_cherax:
         win_cherax.minimize()
         print("Скрыли cherax")
+    if order_des[message.chat.id]["version"] == "Enhanced":
+        while True:
+            r, g, b = pyautogui.pixel(2362, 334)
+            print(f"Текущий цвет: {r}, {g}, {b}")
+            if not await is_green(r, g, b):
+                print("Цвет стал целевым!")
+                break
+        time.sleep(2)
+        click(511, 95, 10, 0.2)
 
-    while True:
-        r, g, b = pyautogui.pixel(2362, 334)
-        print(f"Текущий цвет: {r}, {g}, {b}")
-        if not await is_green(r, g, b):
-            print("Цвет стал целевым!")
-            break
+        time.sleep(2)
+        keyboard_press_key("enter", 3)
 
-    time.sleep(2)
-    click(511,95, 10, 0.2)
-
-    time.sleep(2)
-    keyboard_press_key("enter", 3)
-
-    time.sleep(30)
-    await cherax_cliker(message)
+        time.sleep(30)
+        await cherax_cliker(message)
+    else:
+        click(511, 95, 10, 0.2)
 
 async def cherax_cliker(message):
     keyboard_press_key(KeyCode.from_vk(0x61))#numpad 1
