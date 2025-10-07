@@ -44,8 +44,10 @@ class SteamClicker(PlatformClicker):
             win.resizeTo(705, 440)
             time.sleep(0.2)
             win.activate()
+            common.clicker.win_left = win.left
+            common.clicker.win_left = win.top
             win_left = win.left
-            win_top = win.top
+            win_left = win.top
 
             abs_x = win_left + offset_plus_x
             abs_y = win_top + offset_plus_y
