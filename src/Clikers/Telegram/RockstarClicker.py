@@ -10,7 +10,6 @@ class RockstarClicker(PlatformClicker):
         super().__init__()
 
     async def plat_clicker(self, message):
-        global win_left, win_top
         await super().plat_clicker(message)
 
         os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
@@ -22,8 +21,6 @@ class RockstarClicker(PlatformClicker):
             win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
         else:
             win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
-
-        global win_left, win_top
 
         offset_login_x = 250  # смещение по X от левого верхнего угла окна
         offset_login_y = 350  # смещение по Y от левого верхнего угла окна
@@ -41,6 +38,8 @@ class RockstarClicker(PlatformClicker):
             time.sleep(0.3)
             win.activate()
             time.sleep(0.2)
+            common.clicker.win_left = win.left
+            common.clicker.win_top = win.top
             win_left = win.left
             win_top = win.top
 
@@ -66,8 +65,8 @@ class RockstarClicker(PlatformClicker):
 
                 win = await wait_for_open("Rockstar Games - Sign In", 5) or None
                 if win:
-                    win_top = win.top
-                    win_left = win.left
+                    common.clicker.win_top = win.top
+                    common.clicker.win_left = win.left
                     common.user_step[message.chat.id] = {"step": "rockstar_guard"}
                     await bot.send_message(message.chat.id, "Введите код RockStar Guard (или другой нужный код):")
                 else:
@@ -88,9 +87,9 @@ class RockstarClicker(PlatformClicker):
         print(f"Получили steam guard: {guard}")
 
         await bot.send_message(message.chat.id, "Спасибо! Код получен.")
-        pyautogui.click(x=win_left + 318, y=win_top + 451)
+        pyautogui.click(x=self.win_left + 318, y=self.win_top + 451)
         pyautogui.write(guard, interval=0.05)
-        pyautogui.click(x=win_left + 538, y=win_top + 563)
+        pyautogui.click(x=self.win_left + 538, y=self.win_top + 563)
 
         if common.type_of_soft == "Exp":
             if not await is_error(430, 650, 440, 660):  # узнать коор ошибки при вводе кода
