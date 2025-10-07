@@ -37,7 +37,7 @@ async def is_error(x1, y1, x2, y2):
     rc,  rg, rb = 0, 0, 0
     for x in range(x1, x2):
         for y in range(y1, y2):
-            r, g, b = pyautogui.pixel(common.cliker.win_left + x, common.cliker.win_top + y)
+            r, g, b = pyautogui.pixel(common.clicker.win_left + x, common.clicker.win_top + y)
             # print(f"Цвет возможной ошибки: {r}, {g}, {b}")
             if common.platform == "Rockstar":
                 if r==189 and g==8 and b==8:
