@@ -39,7 +39,7 @@ async def is_error(x1, y1, x2, y2):
         for y in range(y1, y2):
             r, g, b = pyautogui.pixel(common.cliker.win_left + x, common.cliker.win_top + y)
             # print(f"Цвет возможной ошибки: {r}, {g}, {b}")
-            if common.cliker.platform == "Rockstar":
+            if common.platform == "Rockstar":
                 if r==189 and g==8 and b==8:
                     print("Здесь введен неверный пароль или логин")
                     return True
