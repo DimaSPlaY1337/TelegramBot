@@ -1,4 +1,4 @@
-from src.Handlers.Digiseller.IO_utils import send_message
+from src.Handlers.Digiseller.IO_utils import send_message, wait_for_message
 from src.common import *
 from src.Clikers.Digiseller.PlatformClicker import PlatformClicker
 from src.Clikers.Digiseller.input_utils import *
@@ -58,12 +58,15 @@ class RockstarClicker(PlatformClicker):
                     and not await is_error(customer,123, 351, 134, 359)):
                 time.sleep(5)
 
-                win = await wait_for_open("Rockstar Games - Sign In", 5) or None
+                win = await wait_for_open("Rockstar Games - Sign In", 100) or None
                 if win:
                     customer.clicker.win_top = win.top
                     customer.clicker.win_left = win.left
                     customer.user_step = "rockstar_guard"
                     await send_message(token, dialog_id, "Введите код RockStar Guard (или другой нужный код):")
+
+                    guard = await wait_for_message(token, dialog_id)
+                    await self.plat_guard(token, dialog_id, guard, customer)
                 else:
                     if customer.type_of_soft == "Exp":
                         await self.launch_prog(token, dialog_id, message_text, customer)
@@ -91,11 +94,17 @@ class RockstarClicker(PlatformClicker):
                 await self.launch_prog(token, dialog_id, message_text, customer)
             else:
                 await send_message(token, dialog_id, "Код введен неверно, введите еще раз.")
+
+                guard = await wait_for_message(token, dialog_id)
+                await self.plat_guard(token, dialog_id, guard, customer)
         else:
             if not await is_error(customer, 430, 650, 440, 660):  # узнать коор ошибки при вводе кода
                 await c_cliker(token, dialog_id, message_text, customer)
             else:
                 await send_message(token, dialog_id, "Код введен неверно, введите еще раз.")
+
+                guard = await wait_for_message(token, dialog_id)
+                await self.plat_guard(token, dialog_id, guard, customer)
 
     async def launch_prog(self, token, dialog_id, message_text, customer):
         # протокола нету как у steam
