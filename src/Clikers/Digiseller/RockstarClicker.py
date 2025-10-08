@@ -89,6 +89,9 @@ class RockstarClicker(PlatformClicker):
         pyautogui.write(guard, interval=0.05)
         pyautogui.click(x=customer.clicker.win_left + 538, y=customer.clicker.win_top + 563)
 
+        #2-step verification
+        pyautogui.click(x=customer.clicker.win_left + 522, y=customer.clicker.win_top + 517)
+
         if customer.type_of_soft == "Exp":
             if not await is_error(customer,430, 650, 440, 660):  # узнать коор ошибки при вводе кода
                 await self.launch_prog(token, dialog_id, message_text, customer)

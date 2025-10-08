@@ -7,7 +7,7 @@ from src.Handlers.Digiseller.IO_utils import send_screenshot_message
 
 async def c_cliker(token, dialog_id, message_text, customer):
     os.startfile(r"C:\Users\gamePC\Desktop\CheraxLoader.exe", 'runas')
-    win = await wait_for_open("Cherax Loader", 100)
+    win = await wait_for_open("Cherax Loader", 100) or await wait_for_open("LjkspiFq", 100)
 
     if win:
         win_top = win.top
@@ -52,7 +52,7 @@ async def c_cliker(token, dialog_id, message_text, customer):
         await gta_cliker(token, dialog_id, message_text, customer)
 
 async def gta_cliker(token, dialog_id, message_text, customer):
-    win_cherax = await wait_for_open("Cherax Loader", 5)
+    win_cherax = await wait_for_open("Cherax Loader", 10) or await wait_for_open("LjkspiFq", 10)
     if win_cherax:
         win_cherax.minimize()
         print("Скрыли cherax")
