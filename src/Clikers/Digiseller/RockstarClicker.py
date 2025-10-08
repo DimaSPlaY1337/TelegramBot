@@ -32,7 +32,7 @@ class RockstarClicker(PlatformClicker):
         offset_enter_y = 520  # смещение по Y от левого верхнего угла окна
 
         time.sleep(0.5)
-        win = await wait_for_open("Rockstar Games - Sign In", 5)
+        win = await wait_for_open("Rockstar Games - Sign In", 100)
         if win:
             win.resizeTo(700, 800)
             time.sleep(0.3)
