@@ -39,7 +39,7 @@ class SteamClicker(PlatformClicker):
         offset_enter_y = 300  # смещение по Y от левого верхнего угла окна
 
         time.sleep(0.5)
-        win = await wait_for_open("Sign in to Steam", 5) or await wait_for_open("Войти в Steam", 5)
+        win = await wait_for_open("Sign in to Steam", 100) or await wait_for_open("Войти в Steam", 100)
         if win:
             win.resizeTo(705, 440)
             time.sleep(0.2)

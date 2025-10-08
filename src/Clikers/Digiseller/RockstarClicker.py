@@ -22,9 +22,6 @@ class RockstarClicker(PlatformClicker):
         else:
             win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
 
-        offset_login_x = 250  # смещение по X от левого верхнего угла окна
-        offset_login_y = 350  # смещение по Y от левого верхнего угла окна
-
         offset_password_x = 250  # смещение по X от левого верхнего угла окна
         offset_password_y = 420  # смещение по Y от левого верхнего угла окна
 
@@ -41,8 +38,8 @@ class RockstarClicker(PlatformClicker):
             customer.clicker.win_left = win.left
             customer.clicker.win_top = win.top
 
-            login_x = win.left + offset_login_x
-            login_y = win.top + offset_login_y
+            login_x = win.left + 250
+            login_y = win.top + 350
 
             write_data(login_x, login_y, customer.data_for_reg["login"])
 
