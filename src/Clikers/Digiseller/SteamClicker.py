@@ -127,7 +127,7 @@ class SteamClicker(PlatformClicker):
 
     # @bot.message_handler(func=lambda m: user_step.get(m.chat.id, {}).get("step") == "steam_guard")
     async def plat_guard(self, token, dialog_id, message_text, customer):
-        guard = token, dialog_id, message_text, customer  # Здесь — то, что ввел пользователь!
+        guard = message_text  # Здесь — то, что ввел пользователь!
         print(f"Получили steam guard: {guard}")
         await send_message(token, dialog_id, "Спасибо! Код получен.")
 
@@ -191,8 +191,8 @@ class SteamClicker(PlatformClicker):
                 win_gta.activate()
                 win_sun.minimize()
                 time.sleep(2.5)
-            from src.Clikers.Telegram.GTACliker import gta_cliker_exp
-            await gta_cliker_exp(customer)
+            from src.Clikers.Digiseller.GTACliker import gta_cliker_exp
+            await gta_cliker_exp(token, dialog_id, message_text, customer)
 
     async def plat_exit(self):
         offset_profile_x = 200  # смещение по X от левого верхнего угла окна
@@ -229,7 +229,7 @@ class SteamClicker(PlatformClicker):
         else:
             print("Окно не найдено")
 
-    async def close_apps(self):
+    async def close_apps(self, token):
         # выход из гта
         pyautogui.hotkey('alt', 'f4')
         if self.gta is not None:
@@ -256,3 +256,4 @@ class SteamClicker(PlatformClicker):
 
         await self.close_sunrise()
         print("Цикл завершён")
+        await super().close_apps(token)
