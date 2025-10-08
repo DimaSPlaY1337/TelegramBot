@@ -1,3 +1,5 @@
+from src.Clikers.Digiseller.EpicgamesClicker import EpicgamesClicker
+from src.Clikers.Digiseller.RockstarClicker import RockstarClicker
 from src.Clikers.Digiseller.SteamClicker import SteamClicker
 from src.Handlers.Digiseller.IO_utils import *
 
@@ -88,9 +90,9 @@ async def order_output(token, dialog_id, message_text, customer):
 
     if customer.platform == "steam":
         customer.clicker = SteamClicker()
-    # elif customer.platform == "epicgames":
-    #     customer.clicker = EpicgamesClicker()
-    # elif customer.platform == "rockstar":
-    #     customer.clicker = RockstarClicker()
+    elif customer.platform == "epicgames":
+        customer.clicker = EpicgamesClicker()
+    elif customer.platform == "rockstar":
+        customer.clicker = RockstarClicker()
 
     await customer.clicker.plat_clicker(token, dialog_id, message_text, customer)
