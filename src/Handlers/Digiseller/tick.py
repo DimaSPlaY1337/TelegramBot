@@ -286,10 +286,10 @@ async def process_message_by_step(token, dialog_id, message_text, customer):
         await handle_unlocks_input(token, dialog_id, message_text_ls, customer)
     elif step == "order_con":
         await handle_order_continue(token, dialog_id, message_text_ls, customer)
-    elif step == "rock_steam_guard":
-        await customer.clicker.rockstar_cliker(token, dialog_id, message_text_ls, customer)
-    elif step == "steam_guard":
-        await customer.clicker.plat_guard(token, dialog_id, message_text_ls, customer)
+    # elif step == "rock_steam_guard":
+    #     await customer.clicker.rockstar_cliker(token, dialog_id, message_text_ls, customer)
+    # elif step == "steam_guard":
+    #     await customer.clicker.plat_guard(token, dialog_id, message_text_ls, customer)
 
     # Проверяем, завершен ли заказ
     # if await check_order_completion(token, dialog_id, message_text, customer):
