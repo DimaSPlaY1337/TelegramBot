@@ -15,12 +15,12 @@ class RockstarClicker(PlatformClicker):
         os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
         switch_to_english()
 
-        # win_be = None
-        # if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
-        #     os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
-        #     win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
-        # else:
-        #     win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+        win_be = None
+        if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
+            os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
+            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+        else:
+            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
 
         offset_login_x = 250  # смещение по X от левого верхнего угла окна
         offset_login_y = 350  # смещение по Y от левого верхнего угла окна
@@ -32,7 +32,7 @@ class RockstarClicker(PlatformClicker):
         offset_enter_y = 520  # смещение по Y от левого верхнего угла окна
 
         time.sleep(0.5)
-        win = await wait_for_open("Sign in to Steam", 5) or await wait_for_open("Войти в Steam", 5)
+        win = await wait_for_open("Rockstar Games - Sign In", 5)
         if win:
             win.resizeTo(700, 800)
             time.sleep(0.3)
