@@ -15,21 +15,21 @@ async def c_cliker(token, dialog_id, message_text, customer):
 
         time.sleep(10)
         click(x=win_left + 127, y=win_top + 175)
-        if customer.order_des["version"] == "Enhanced":
+        if customer.order_des["version"] == "enhanced":
             click(x=win_left + 83, y=win_top + 207)
 
             click(x=win_left + 94, y=win_top + 207)
-            if customer.platform == "Steam":
+            if customer.platform == "steam":
                 click(x=win_left + 96, y=win_top + 239)
-            elif customer.platform == "Rockstar":
+            elif customer.platform == "rockstar":
                 click(x=win_left + 108, y=win_top + 267, times=1, t=3)
-        elif customer.order_des["version"] == "Legacy":
+        elif customer.order_des["version"] == "legacy":
             click(x=win_left + 117, y=win_top + 222)
 
             click(x=win_left + 94, y=win_top + 207)
-            if customer.platform == "Steam":
+            if customer.platform == "steam":
                 click(x=win_left + 106, y=win_top + 238)
-            elif customer.platform == "Rockstar":
+            elif customer.platform == "rockstar":
                 click(x=win_left + 110, y=win_top + 303, times=1, t = 3)
 
         click(x=win_left + 91, y=win_top + 265, times=3, t = 0.2)
@@ -52,7 +52,7 @@ async def c_cliker(token, dialog_id, message_text, customer):
         await gta_cliker(token, dialog_id, message_text, customer)
 
 async def gta_cliker(token, dialog_id, message_text, customer):
-    win_cherax = await wait_for_open("Cherax Loader", 10) or await wait_for_open("LjkspiFq", 10)
+    win_cherax = await wait_for_open("Cherax Loader", 10) or await find_window_by_size(900, 600, timeout=100)
     if win_cherax:
         win_cherax.minimize()
         print("Скрыли cherax")
