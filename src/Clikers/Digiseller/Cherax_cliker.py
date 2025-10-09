@@ -63,13 +63,14 @@ async def c_cliker(token, dialog_id, message_text, customer):
 
 async def gta_cliker(token, dialog_id, message_text, customer):
     win_cherax = await wait_for_open("Cherax Loader", 5) or await find_window_by_size(900, 600, timeout=100)
-    win_gta = await wait_for_open("Grand Theft Auto V Enhanced", 20) or await wait_for_open("Grand Theft Auto V Legacy", 20)
+    win_g = await wait_for_open("Google Chrome", 20)
     if win_cherax:
         win_cherax.minimize()
         print("Скрыли cherax")
 
-    if win_gta:
-        win_gta.activate()
+    if win_g:
+        win_g.minimize()
+        print("Скрыли google")
 
     time.sleep(2)
     while True:
