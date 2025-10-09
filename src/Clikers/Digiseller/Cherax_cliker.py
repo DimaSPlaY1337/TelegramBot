@@ -48,6 +48,7 @@ async def c_cliker(token, dialog_id, message_text, customer):
                 time.sleep(1)
                 win.activate()
                 time.sleep(5)
+                click(x=win_left + 905, y=win_top + 395, times=1, t=3)
         except PyGetWindowException as e:
             if "Error code from Windows: 0" in str(e):
                 print("Окно успешно активировано (ложная ошибка)")
