@@ -9,7 +9,7 @@ from src.Handlers.Digiseller.IO_utils import send_screenshot_message
 
 async def c_cliker(token, dialog_id, message_text, customer):
     os.startfile(r"C:\Users\gamePC\Desktop\CheraxLoader.exe", 'runas')
-    win = await wait_for_open("Cherax Loader", 7) or await find_window_by_size(900, 600, timeout=100)
+    win = await wait_for_open("Cherax Loader", 5) or await find_window_by_size(900, 600, timeout=100)
 
     if win:
         win_top = win.top
@@ -57,15 +57,21 @@ async def c_cliker(token, dialog_id, message_text, customer):
                 raise e  # Другие ошибки пробрасываем дальше
 
         #запускается игра
+        win_rock.minimize()
         time.sleep(10)
         await gta_cliker(token, dialog_id, message_text, customer)
 
 async def gta_cliker(token, dialog_id, message_text, customer):
-    win_cherax = await wait_for_open("Cherax Loader", 10) or await find_window_by_size(900, 600, timeout=100)
+    win_cherax = await wait_for_open("Cherax Loader", 5) or await find_window_by_size(900, 600, timeout=100)
+    win_gta = await wait_for_open("Grand Theft Auto V Enhanced", 20) or await wait_for_open("Grand Theft Auto V Legacy", 20)
     if win_cherax:
         win_cherax.minimize()
         print("Скрыли cherax")
 
+    if win_gta:
+        win_gta.activate()
+
+    time.sleep(2)
     while True:
         r, g, b = pyautogui.pixel(2362, 334)
         print(f"Текущий цвет: {r}, {g}, {b}")
@@ -164,4 +170,4 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
 
 async def send_screenshot(token, dialog_id, message_text, customer):
     await send_screenshot_message(token, dialog_id, message_text, r"D:\Repos\gta_screen.png")
-    await customer.clicker.close_apps()
+    await customer.clicker.close_apps(token)
