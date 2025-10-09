@@ -1,4 +1,6 @@
 import os
+from pygetwindow import PyGetWindowException
+
 from src.Clikers.Digiseller.input_utils import *
 import pyautogui
 from pynput.keyboard import KeyCode
@@ -37,15 +39,21 @@ async def c_cliker(token, dialog_id, message_text, customer):
         await customer.clicker.rockstar_search(token, dialog_id, message_text, customer, 10, True)
 
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
-        if win_rock:
-            win_left = win_rock.left
-            win_top = win_rock.top
+        try:
+            if win_rock:
+                win_left = win_rock.left
+                win_top = win_rock.top
 
-            # win.resizeTo(1024, 600)
-            # time.sleep(1)
-            win.activate()
-            time.sleep(5)
-            click(x=win_left + 905, y=win_top + 395, times=1, t = 3)
+                win.resizeTo(1024, 600)
+                time.sleep(1)
+                win.activate()
+                time.sleep(5)
+        except PyGetWindowException as e:
+            if "Error code from Windows: 0" in str(e):
+                print("Окно успешно активировано (ложная ошибка)")
+                click(x=win_left + 905, y=win_top + 395, times=1, t=3)
+            else:
+                raise e  # Другие ошибки пробрасываем дальше
 
         #запускается игра
         time.sleep(10)
