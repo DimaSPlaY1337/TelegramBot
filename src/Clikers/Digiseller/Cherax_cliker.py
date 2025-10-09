@@ -44,9 +44,9 @@ async def c_cliker(token, dialog_id, message_text, customer):
                 win_left = win_rock.left
                 win_top = win_rock.top
 
-                win.resizeTo(1024, 600)
+                win_rock.resizeTo(1024, 600)
                 time.sleep(1)
-                win.activate()
+                win_rock.activate()
                 time.sleep(5)
                 click(x=win_left + 905, y=win_top + 395, times=1, t=3)
         except PyGetWindowException as e:
