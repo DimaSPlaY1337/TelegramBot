@@ -47,7 +47,7 @@ class PlatformClicker(ABC):
         pyautogui.hotkey('alt', 'f4')
 
     # @bot.message_handler(func=lambda m: common.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
-    async def rockstar_cliker(self, token, dialog_id, message_text, customer):
+    async def rockstar_cliker(self, token, dialog_id, message_text, customer, ignore_launch):
         print(f"Получили rock guard: {message_text}")
         await send_message(token, dialog_id, "Спасибо! Код получен.")
 
@@ -60,22 +60,26 @@ class PlatformClicker(ABC):
         if await is_error(customer,368, 508, 388, 511):  # узнать коор ошибки при вводе кода
             await send_message(token, dialog_id, "Код введен неверно, введите еще раз.")
             self.sign_in_rock_button = self.win_top + 622
-        else:
-            await self.rockstar_acceptance(token, dialog_id, message_text, customer)
 
-    async def rockstar_search(self, token, dialog_id, message_text, customer, wait_time=100):
+            guard = await wait_for_message(token, dialog_id)
+            await self.rockstar_cliker(token, dialog_id, guard, customer, ignore_launch)
+        else:
+            await self.rockstar_acceptance(token, dialog_id, message_text, customer, ignore_launch)
+
+    async def rockstar_search(self, token, dialog_id, message_text, customer, wait_time=100, ignore_launch=False):
         win_rock = await wait_for_open("Rockstar Games - Sign In", wait_time)
         if win_rock:
             self.win_left = win_rock.left
             self.win_top = win_rock.top
             self.sign_in_rock_button = self.win_top + 601
 
-            customer.user_step = "rock_steam_guard"
             await send_message(token, dialog_id, "Введите код RockStar Guard (или другой нужный код):")
-        else:
+            guard = await wait_for_message(token, dialog_id)
+            await self.rockstar_cliker(token, dialog_id, guard, customer, ignore_launch)
+        elif not ignore_launch:
             await self.launch_prog(token, dialog_id, message_text, customer)
 
-    async def rockstar_acceptance(self, token, dialog_id, message_text, customer):
+    async def rockstar_acceptance(self, token, dialog_id, message_text, customer, ignore_launch):
         time.sleep(12)
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
         if win_rock:
@@ -86,8 +90,9 @@ class PlatformClicker(ABC):
 
             pyautogui.click(x=win_rock.left + 831, y=win_rock.top + 412)  # узнать координаты
 
-        time.sleep(5)
-        await self.launch_prog(token, dialog_id, message_text, customer)
+        if not ignore_launch:
+            time.sleep(5)
+            await self.launch_prog(token, dialog_id, message_text, customer)
 
     async def change_pass_and_login(self, token, dialog_id, message_text, customer):
         self.is_changing_data = True
