@@ -232,7 +232,7 @@ class SteamClicker(PlatformClicker):
         else:
             print("Окно не найдено")
 
-    async def close_apps(self, token):
+    async def close_apps(self, token, dialog_id, message_text, customer):
         # выход из гта
         pyautogui.hotkey('alt', 'f4')
         if self.gta is not None:
@@ -257,6 +257,5 @@ class SteamClicker(PlatformClicker):
 
         time.sleep(1)
 
-        await self.close_sunrise()
         print("Цикл завершён")
-        await super().close_apps(token)
+        await super().close_apps(token, dialog_id, message_text, customer)

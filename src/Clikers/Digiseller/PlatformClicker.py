@@ -33,7 +33,10 @@ class PlatformClicker(ABC):
     async def plat_exit(self):
         pass
 
-    async def close_apps(self, token):
+    async def close_apps(self, token, dialog_id, message_text, customer):
+        if customer.type_of_soft == "Exp":
+            await self.close_sunrise()
+
         await finish_current_order(token)
 
     async def close_sunrise(self):

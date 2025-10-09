@@ -86,7 +86,7 @@ async def gta_cliker(token, dialog_id, message_text, customer):
     time.sleep(2)
     keyboard_press_key("enter", 3)
 
-    time.sleep(30)
+    time.sleep(100)
     await cherax_cliker(token, dialog_id, message_text, customer)
 
 async def cherax_cliker(token, dialog_id, message_text, customer):
@@ -171,4 +171,4 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
 
 async def send_screenshot(token, dialog_id, message_text, customer):
     await send_screenshot_message(token, dialog_id, message_text, r"D:\Repos\gta_screen.png")
-    await customer.clicker.close_apps(token)
+    await customer.clicker.close_apps(token, dialog_id, message_text, customer)
