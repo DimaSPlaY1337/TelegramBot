@@ -13,7 +13,7 @@ async def c_cliker(token, dialog_id, message_text, customer):
         win_top = win.top
         win_left = win.left
 
-        time.sleep(10)
+        time.sleep(5)
         click(x=win_left + 127, y=win_top + 175)
         if customer.order_des["version"] == "enhanced":
             click(x=win_left + 83, y=win_top + 207)
@@ -34,7 +34,7 @@ async def c_cliker(token, dialog_id, message_text, customer):
 
         click(x=win_left + 91, y=win_top + 265, times=3, t = 0.2)
 
-        await customer.clicker.rockstar_search(token, dialog_id, message_text, customer, 15)
+        await customer.clicker.rockstar_search(token, dialog_id, message_text, customer, 10)
 
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
         if win_rock:
