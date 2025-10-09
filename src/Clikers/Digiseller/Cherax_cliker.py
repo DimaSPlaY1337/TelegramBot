@@ -34,7 +34,7 @@ async def c_cliker(token, dialog_id, message_text, customer):
 
         click(x=win_left + 91, y=win_top + 265, times=3, t = 0.2)
 
-        await customer.clicker.rockstar_search(token, dialog_id, message_text, customer)
+        await customer.clicker.rockstar_search(token, dialog_id, message_text, customer, 15)
 
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
         if win_rock:

@@ -63,8 +63,8 @@ class PlatformClicker(ABC):
         else:
             await self.rockstar_acceptance(token, dialog_id, message_text, customer)
 
-    async def rockstar_search(self, token, dialog_id, message_text, customer):
-        win_rock = await wait_for_open("Rockstar Games - Sign In", 100)
+    async def rockstar_search(self, token, dialog_id, message_text, customer, wait_time=100):
+        win_rock = await wait_for_open("Rockstar Games - Sign In", wait_time)
         if win_rock:
             self.win_left = win_rock.left
             self.win_top = win_rock.top
