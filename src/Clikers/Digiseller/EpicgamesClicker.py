@@ -9,7 +9,6 @@ class EpicgamesClicker(PlatformClicker):
         super().__init__()
 
     async def plat_clicker(self, message):
-        global win_left, win_top
         await super().plat_clicker(message)
 
         os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")

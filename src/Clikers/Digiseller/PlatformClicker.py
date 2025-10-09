@@ -21,6 +21,13 @@ class PlatformClicker(ABC):
         else:
             customer.type_of_soft = "Free"
 
+        win_be = None
+        if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
+            os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
+            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+        else:
+            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+
     @abstractmethod
     async def plat_guard(self, token, dialog_id, message_text, customer):
         pass

@@ -17,13 +17,6 @@ class RockstarClicker(PlatformClicker):
         os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
         switch_to_english()
 
-        win_be = None
-        if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
-            os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
-            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
-        else:
-            win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
-
         offset_password_x = 250  # смещение по X от левого верхнего угла окна
         offset_password_y = 420  # смещение по Y от левого верхнего угла окна
 
