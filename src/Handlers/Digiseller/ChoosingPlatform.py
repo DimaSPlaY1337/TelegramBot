@@ -32,7 +32,7 @@ async def choosing_platform(token, dialog_id, message_data, customer):
     # customer.user_step = "choose_platform"
 
     customer.platform = "steam"
-    customer.data_for_reg["login"] = "dimasplay1337@yandex.ru"
+    customer.data_for_reg["login"] = "DimaChaba"
     customer.data_for_reg["password"] = "06102005Dimagalitsyn"
     customer.order_des = {
         "version": "enhanced",
