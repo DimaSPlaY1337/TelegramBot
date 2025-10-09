@@ -61,7 +61,7 @@ class RockstarClicker(PlatformClicker):
                     and not await is_error(customer,123, 351, 134, 359)):
                 time.sleep(5)
 
-                win = await wait_for_open("Rockstar Games - Sign In", 20) or None
+                win = await wait_for_open("Rockstar Games - Sign In", 10) or None
                 if win:
                     customer.clicker.win_top = win.top
                     customer.clicker.win_left = win.left
