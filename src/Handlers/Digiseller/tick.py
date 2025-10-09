@@ -168,6 +168,8 @@
 # if __name__ == "__main__":
 #     asyncio.run(main())
 import asyncio
+
+from src.Clikers.Digiseller.input_utils import find_dynamic_window
 from src.Handlers.Digiseller.IO_utils import (
     get_token, get_messages, send_message, set_read_flag,
     add_to_queue, get_queue_position, get_next_customer,
@@ -380,7 +382,8 @@ async def queue_notification_task():
 async def main():
     """Запуск всех задач"""
     await asyncio.gather(
-        main_processing_loop(),
+        # main_processing_loop(),
+        find_dynamic_window()
         # queue_notification_task()
     )
 

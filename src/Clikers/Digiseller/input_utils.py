@@ -99,6 +99,23 @@ def keyboard_press_key(key, times=1, interval=0.5):
         keyboard.release(key_to_press)
         time.sleep(interval)
 
+def find_dynamic_window(timeout=30, interval=1):
+    """
+    Ищет окно, где в названии встречается 'Cherax', 'Loader', 'CheraxLoader' (можно расширить список паттернов).
+    Возвращает объект окна, если найден, иначе None.
+    """
+    patterns = ['Cherax', 'Loader', 'CheraxLoader']
+    end_time = time.time() + timeout
+    while time.time() < end_time:
+        all_windows = gw.getAllWindows()
+        for win in all_windows:
+            if any(pat.lower() in win.title.lower() for pat in patterns):
+                print(f"Найдено окно: {win.title}")
+                return win
+        time.sleep(interval)
+    print("Окно не найдено")
+    return None
+
 async def wait_for_open(title="Steam", timeout=200, interval=1):
     """
     Ждёт появления окна Steam с заголовком, максимум timeout секунд.
