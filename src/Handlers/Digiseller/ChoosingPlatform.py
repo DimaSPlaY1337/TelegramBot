@@ -72,6 +72,8 @@ async def handle_password(token, dialog_id, message_text, customer):
         )
         await send_message(token, dialog_id, version_request)
         customer.user_step = "version_of_game"
+    elif customer.is_changing_data:
+        await customer.clicker.plat_clicker(token, dialog_id, message_text, customer)
 
 
 async def handle_version(token, dialog_id, message_text, customer):

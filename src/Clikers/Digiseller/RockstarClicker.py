@@ -75,7 +75,6 @@ class RockstarClicker(PlatformClicker):
             else:
                 win.close()
                 await self.change_pass_and_login(token, dialog_id, message_text, customer)
-                await send_message(token, dialog_id, "Введите код RockStar Guard (или другой нужный код):")
         else:
             print("Окно не найдено")
 

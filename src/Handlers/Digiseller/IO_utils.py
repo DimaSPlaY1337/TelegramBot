@@ -451,7 +451,6 @@ async def upload_screenshot(token: str, screenshot_path: str, lang: str = "ru-RU
 
     raise Exception("Не удалось загрузить файл после нескольких попыток")
 
-
 async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
                                   screenshot_path: str, lang: str = "ru-RU") -> bool:
     """
@@ -460,6 +459,7 @@ async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
     try:
         # Шаг 1: Предварительная загрузка скриншота
         upload_response = await upload_screenshot(token, screenshot_path, lang)
+
         if not upload_response:
             print("Ошибка загрузки файла")
             return False
@@ -483,8 +483,9 @@ async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
         }
 
         async with aiohttp.ClientSession() as session:
-            await request_with_retries('post', url, session, headers=headers, json=payload)
-            return True
+            async with session.post(url, headers=headers, json=payload) as response:
+                response.raise_for_status()
+                return response.status == 200
 
     except Exception as e:
         print(f"Ошибка отправки скриншота: {e}")
