@@ -169,7 +169,6 @@
 #     asyncio.run(main())
 import asyncio
 
-from src.Clikers.Digiseller.input_utils import find_window_by_size
 from src.Handlers.Digiseller.IO_utils import (
     get_token, get_messages, send_message, set_read_flag,
     add_to_queue, get_queue_position, get_next_customer,
@@ -382,8 +381,7 @@ async def queue_notification_task():
 async def main():
     """Запуск всех задач"""
     await asyncio.gather(
-        # main_processing_loop(),
-        await find_window_by_size(900, 600)
+        main_processing_loop(),
         # queue_notification_task()
     )
 

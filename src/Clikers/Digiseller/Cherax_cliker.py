@@ -7,7 +7,7 @@ from src.Handlers.Digiseller.IO_utils import send_screenshot_message
 
 async def c_cliker(token, dialog_id, message_text, customer):
     os.startfile(r"C:\Users\gamePC\Desktop\CheraxLoader.exe", 'runas')
-    win = await wait_for_open("Cherax Loader", 20) or await wait_for_open("LjkspiFq", 20)
+    win = await wait_for_open("Cherax Loader", 7) or await find_window_by_size(900, 600, timeout=100)
 
     if win:
         win_top = win.top
