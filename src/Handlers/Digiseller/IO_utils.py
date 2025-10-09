@@ -176,6 +176,7 @@
 #                 return i + 1
 #         return None
 import asyncio
+import ctypes
 import os
 import aiohttp
 import hashlib
@@ -453,6 +454,23 @@ async def upload_screenshot(token: str, screenshot_path: str, lang: str = "ru-RU
             raise
 
     raise Exception("Не удалось загрузить файл после нескольких попыток")
+
+
+def set_numlock_state(state):
+    """Включает/выключает NumLock"""
+    VK_NUMLOCK = 0x90
+    KEYEVENTF_EXTENDEDKEY = 0x0001
+    KEYEVENTF_KEYUP = 0x0002
+
+    user32 = ctypes.windll.user32
+
+    # Получаем текущее состояние NumLock
+    current_state = user32.GetKeyState(VK_NUMLOCK) & 1
+
+    if current_state != state:
+        # Имитируем нажатие NumLock
+        user32.keybd_event(VK_NUMLOCK, 0, KEYEVENTF_EXTENDEDKEY, 0)
+        user32.keybd_event(VK_NUMLOCK, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0)
 
 
 async def send_screenshot(token, dialog_id, message_text, customer):

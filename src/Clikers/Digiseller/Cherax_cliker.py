@@ -1,10 +1,12 @@
 import os
+import time
+
 from pygetwindow import PyGetWindowException
 
 from src.Clikers.Digiseller.input_utils import *
 import pyautogui
 from pynput.keyboard import KeyCode
-from src.Handlers.Digiseller.IO_utils import send_screenshot
+from src.Handlers.Digiseller.IO_utils import send_screenshot, set_numlock_state
 
 
 async def c_cliker(token, dialog_id, message_text, customer):
@@ -90,6 +92,9 @@ async def gta_cliker(token, dialog_id, message_text, customer):
     await cherax_cliker(token, dialog_id, message_text, customer)
 
 async def cherax_cliker(token, dialog_id, message_text, customer):
+    # Включаем NumLock перед использованием Numpad
+    set_numlock_state(1)  # 1 = включить, 0 = выключить
+    time.sleep(2)
     keyboard_press_key(KeyCode.from_vk(0x61))#numpad 1
 
     time.sleep(4)
