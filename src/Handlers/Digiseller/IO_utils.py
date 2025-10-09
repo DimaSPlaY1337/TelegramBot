@@ -183,6 +183,9 @@ import time
 from datetime import datetime
 from typing import Optional
 
+import pyautogui
+from PIL import Image
+
 API_KEY = "DA4D6D5B237C4EA1974F0815AB890849"
 SELLER_ID = 889983
 
@@ -451,6 +454,31 @@ async def upload_screenshot(token: str, screenshot_path: str, lang: str = "ru-RU
 
     raise Exception("Не удалось загрузить файл после нескольких попыток")
 
+
+async def send_screenshot(token, dialog_id, message_text, customer):
+    # Делаем скриншот
+    screenshot = pyautogui.screenshot()
+    temp_path = "gta_screen.png"
+    final_path = r"D:\Repos\gta_screen.png"
+
+    # Сохраняем временно
+    screenshot.save(temp_path)
+
+    # Сжимаем
+    compress_image(temp_path, final_path, max_size_kb=4500)
+
+    # Отправляем
+    success = await send_screenshot_message(token, dialog_id, message_text, final_path)
+
+    # Удаляем временные файлы
+    try:
+        os.remove(temp_path)
+        os.remove(final_path)
+    except:
+        pass
+
+    return success
+
 async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
                                   screenshot_path: str, lang: str = "ru-RU") -> bool:
     """
@@ -490,3 +518,25 @@ async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
     except Exception as e:
         print(f"Ошибка отправки скриншота: {e}")
         return False
+
+
+def compress_image(input_path, output_path, max_size_kb=4500):
+    """
+    Сжимает изображение до указанного размера в KB
+    """
+    img = Image.open(input_path)
+
+    # Начальное качество
+    quality = 85
+
+    while True:
+        img.save(output_path, "PNG", optimize=True, quality=quality)
+        size_kb = os.path.getsize(output_path) / 1024
+
+        if size_kb <= max_size_kb or quality <= 20:
+            break
+
+        quality -= 5
+
+    print(f"Сжато до {size_kb:.1f} KB с качеством {quality}")
+    return output_path

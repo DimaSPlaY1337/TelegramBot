@@ -4,7 +4,7 @@ from pygetwindow import PyGetWindowException
 from src.Clikers.Digiseller.input_utils import *
 import pyautogui
 from pynput.keyboard import KeyCode
-from src.Handlers.Digiseller.IO_utils import send_screenshot_message
+from src.Handlers.Digiseller.IO_utils import send_screenshot
 
 
 async def c_cliker(token, dialog_id, message_text, customer):
@@ -164,11 +164,11 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
     keyboard_press_key('o', 1, 3)
     keyboard_press_key('z', 1, 3)
     # Скрин окна GTA:
-    screenshot = pyautogui.screenshot()
-    screenshot.save('gta_screen.png')
+    # screenshot = pyautogui.screenshot()
+    # screenshot.save('gta_screen.png')
     time.sleep(1)
-    await send_screenshot(token, dialog_id, message_text, customer)
+    await send_screen(token, dialog_id, message_text, customer)
 
-async def send_screenshot(token, dialog_id, message_text, customer):
-    await send_screenshot_message(token, dialog_id, message_text, r"D:\Repos\gta_screen.png")
+async def send_screen(token, dialog_id, message_text, customer):
+    await send_screenshot(token, dialog_id, message_text, r"D:\Repos\gta_screen.png")
     await customer.clicker.close_apps(token, dialog_id, message_text, customer)

@@ -3,7 +3,7 @@ import pyautogui
 import time
 from pynput.keyboard import Controller, Key
 
-from src.Handlers.Digiseller.IO_utils import send_screenshot_message
+from src.Handlers.Digiseller.IO_utils import send_screenshot
 
 
 async def gta_cliker_free(customer):
@@ -173,11 +173,11 @@ async def gta_cliker_exp(token, dialog_id, message_text, customer):
     time.sleep(1.5)
     keyboard_press_key('z')
     # Скрин окна GTA:
-    screenshot = pyautogui.screenshot()
-    screenshot.save('gta_screen.png')
+    # screenshot = pyautogui.screenshot()
+    # screenshot.save('gta_screen.png')
     time.sleep(1)
-    await send_screenshot(token, dialog_id, message_text, customer)
+    await send_screens(token, dialog_id, message_text, customer)
 
-async def send_screenshot(token, dialog_id, message_text, customer):
-    await send_screenshot_message(token, dialog_id, message_text, r"D:\Repos\gta_screen.png")
+async def send_screens(token, dialog_id, message_text, customer):
+    await send_screenshot(token, dialog_id, message_text, )
     await customer.clicker.close_apps()
