@@ -1,3 +1,5 @@
+import asyncio
+
 from src.Handlers.Digiseller.IO_utils import send_message, get_messages, wait_for_message
 from src.common import *
 from src.Clikers.Digiseller.PlatformClicker import PlatformClicker
@@ -39,7 +41,22 @@ class SteamClicker(PlatformClicker):
         offset_enter_y = 300  # смещение по Y от левого верхнего угла окна
 
         time.sleep(0.5)
-        win = await wait_for_open("Sign in to Steam", 100) or await wait_for_open("Войти в Steam", 100)
+        # win = await wait_for_open("Sign in to Steam", 100) or await wait_for_open("Войти в Steam", 100)
+        win = None
+        tasks = [
+            asyncio.create_task(wait_for_open("Sign in to Steam", 100)),
+            asyncio.create_task(wait_for_open("Войти в Steam", 100)),
+        ]
+        done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+        # получаем результат первого успешно отработавшего таска
+        for task in done:
+            win = task.result()
+            break
+
+        # Не забыть отменить оставшиеся задачи
+        for task in pending:
+            task.cancel()
+
         if win:
             win.resizeTo(705, 440)
             time.sleep(0.2)

@@ -1,3 +1,4 @@
+import asyncio
 import os
 from src.Clikers.Digiseller.input_utils import *
 import pyautogui
@@ -7,7 +8,20 @@ from src.Handlers.Digiseller.IO_utils import send_screenshot_message
 
 async def c_cliker(token, dialog_id, message_text, customer):
     os.startfile(r"C:\Users\gamePC\Desktop\CheraxLoader.exe", 'runas')
-    win = await wait_for_open("Cherax Loader", 100) or await wait_for_open("LjkspiFq", 100)
+    win = None
+    tasks = [
+        asyncio.create_task(wait_for_open("Cherax Loader", 100)),
+        asyncio.create_task(wait_for_open("LjkspiFq", 100)),
+    ]
+    done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+    # получаем результат первого успешно отработавшего таска
+    for task in done:
+        win = task.result()
+        break
+
+    # Не забыть отменить оставшиеся задачи
+    for task in pending:
+        task.cancel()
 
     if win:
         win_top = win.top

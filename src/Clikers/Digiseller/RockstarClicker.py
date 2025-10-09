@@ -1,3 +1,5 @@
+import time
+
 from src.Handlers.Digiseller.IO_utils import send_message, wait_for_message
 from src.common import *
 from src.Clikers.Digiseller.PlatformClicker import PlatformClicker
@@ -41,6 +43,7 @@ class RockstarClicker(PlatformClicker):
             login_x = win.left + 250
             login_y = win.top + 350
 
+            time.sleep(3)
             write_data(login_x, login_y, customer.data_for_reg["login"])
 
             pass_x = win.left + offset_password_x
