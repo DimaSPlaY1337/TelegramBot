@@ -83,7 +83,7 @@ async def gta_cliker(token, dialog_id, message_text, customer):
     while True:
         r, g, b = pyautogui.pixel(2213, 211)
         print(f"Текущий цвет: {r}, {g}, {b}")
-        if not await is_green(r, g, b):
+        if await is_green(r, g, b):
             print("Цвет стал целевым!")
             break
 
