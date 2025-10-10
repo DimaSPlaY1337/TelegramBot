@@ -87,7 +87,7 @@ async def gta_cliker(token, dialog_id, message_text, customer):
             print("Цвет стал целевым!")
             break
 
-    time.sleep(5)
+    time.sleep(8)
     click(733,88, 10, 1)
 
     time.sleep(5)
