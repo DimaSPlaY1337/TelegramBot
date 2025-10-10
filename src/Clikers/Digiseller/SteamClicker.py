@@ -15,7 +15,7 @@ class SteamClicker(PlatformClicker):
         await super().plat_clicker(token, dialog_id, message_text, customer)
 
         os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
-
+        os.startfile("C:\\Program Files (x86)\\Steam\\Steam.exe")
         time.sleep(7)
 
         switch_to_english()
