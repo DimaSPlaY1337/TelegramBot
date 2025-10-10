@@ -60,12 +60,16 @@ async def is_green(r, g, b, min_g=150, max_g=160, diff_rg=30, diff_bg=10):
     - Зеленый между min_g и max_g.
     - Разница Green-Red и Green-Blue не превышает diff_rg/diff_bg.
     """
-    return (
+    b1 = (
         min_g <= g <= max_g and
         abs(g - r) <= diff_rg and
         abs(g - b) <= diff_bg and
         g > r and g > b
     )
+    b2 = r == 97 and g == 120 and b == 108
+    r1, g1, b1 = pyautogui.pixel(374, 99)
+    b3 = r1 == g1 == b1 == 202
+    return b1 or b2 or b3
 
 # async def is_gray(r, g, b, diff=11):
 #     """

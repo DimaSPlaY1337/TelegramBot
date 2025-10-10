@@ -66,6 +66,7 @@ async def c_cliker(token, dialog_id, message_text, customer):
 async def gta_cliker(token, dialog_id, message_text, customer):
     win_cherax = await wait_for_open("Cherax Loader", 5) or await find_window_by_size(900, 600, timeout=100)
     win_g = await wait_for_open("Google Chrome", 20)
+    win_c = await wait_for_open("Console Window Host", 10)
     if win_cherax:
         win_cherax.minimize()
         print("Скрыли cherax")
@@ -74,9 +75,13 @@ async def gta_cliker(token, dialog_id, message_text, customer):
         win_g.minimize()
         print("Скрыли google")
 
+    if win_c:
+        win_c.minimize()
+        print("Console Window Host")
+
     time.sleep(2)
     while True:
-        r, g, b = pyautogui.pixel(2362, 334)
+        r, g, b = pyautogui.pixel(2213, 211)
         print(f"Текущий цвет: {r}, {g}, {b}")
         if not await is_green(r, g, b):
             print("Цвет стал целевым!")
