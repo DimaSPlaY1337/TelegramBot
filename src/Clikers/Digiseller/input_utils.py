@@ -66,11 +66,11 @@ async def is_green(r, g, b, min_g=119, max_g=160, diff_rg=30, diff_bg=15):
         abs(g - b) <= diff_bg and
         g > r and g > b
     )
-    b2 = r == 97 and g == 120 and b == 108
-    r1, g1, bb = pyautogui.pixel(374, 99)
-    b3 = r1 == g1 == bb == 202
-    b4 = r == 115 and g == 143 and b == 128
-    return b1 or b2 or b3 or b4
+    # b2 = r == 97 and g == 120 and b == 108
+    # r1, g1, bb = pyautogui.pixel(374, 99)
+    # b3 = r1 == g1 == bb == 202
+    # b4 = r == 115 and g == 143 and b == 128
+    return b1
 
 # async def is_gray(r, g, b, diff=11):
 #     """
