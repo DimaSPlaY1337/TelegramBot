@@ -53,7 +53,7 @@ async def is_red(r, g, b, r_min=80, diff_g=40, diff_b=40):
     # Проверка: ярко-красный или просто любой "красный"
     return (r > r_min) and (r - g > diff_g) and (r - b > diff_b)
 
-async def is_green(r, g, b, min_g=150, max_g=160, diff_rg=30, diff_bg=10):
+async def is_green(r, g, b, min_g=119, max_g=160, diff_rg=30, diff_bg=15):
     """
     Находит зеленоватый цвет наподобие #889E98:
     - Зеленый больше других компонент.
@@ -69,7 +69,8 @@ async def is_green(r, g, b, min_g=150, max_g=160, diff_rg=30, diff_bg=10):
     b2 = r == 97 and g == 120 and b == 108
     r1, g1, b1 = pyautogui.pixel(374, 99)
     b3 = r1 == g1 == b1 == 202
-    return b1 or b2 or b3
+    b4 = r == 115 or g == 143 and b == 128
+    return b1 or b2 or b3 or b4
 
 # async def is_gray(r, g, b, diff=11):
 #     """
