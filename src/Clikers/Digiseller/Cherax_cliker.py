@@ -87,10 +87,10 @@ async def gta_cliker(token, dialog_id, message_text, customer):
             print("Цвет стал целевым!")
             break
 
-    time.sleep(2)
-    click(733,88, 10, 0.2)
+    time.sleep(5)
+    click(733,88, 10, 1)
 
-    time.sleep(2)
+    time.sleep(5)
     keyboard_press_key("enter", 3)
 
     time.sleep(100)
@@ -98,7 +98,7 @@ async def gta_cliker(token, dialog_id, message_text, customer):
 
 async def cherax_cliker(token, dialog_id, message_text, customer):
     # Включаем NumLock перед использованием Numpad
-    set_numlock_state(1)  # 1 = включить, 0 = выключить
+    set_numlock_state(0)  # 1 = включить, 0 = выключить
     time.sleep(2)
     keyboard_press_key(KeyCode.from_vk(0x61))#numpad 1
 
