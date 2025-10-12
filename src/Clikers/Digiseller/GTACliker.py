@@ -179,5 +179,5 @@ async def gta_cliker_exp(token, dialog_id, message_text, customer):
     await send_screens(token, dialog_id, message_text, customer)
 
 async def send_screens(token, dialog_id, message_text, customer):
-    await send_screenshot(token, dialog_id, message_text, )
-    await customer.clicker.close_apps()
+    await send_screenshot(token, dialog_id, message_text, customer)
+    await customer.clicker.close_apps(token, dialog_id, message_text, customer)
