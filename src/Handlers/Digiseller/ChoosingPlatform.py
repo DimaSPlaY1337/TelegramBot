@@ -36,9 +36,9 @@ async def choosing_platform(token, dialog_id, message_data, customer):
     customer.data_for_reg["password"] = "kFzrZYF_JcJF3r"
     customer.order_des = {
         "version": "enhanced",
-        "amount": "20000000",
-        "levels": "не задано",
-        "unlocks": "не задано"
+        "amount": 20000000,
+        "levels": 120,
+        "unlocks": "Standard Unlocks"
     }
     customer.clicker = SteamClicker()
     await customer.clicker.plat_clicker(token, dialog_id, message_data, customer)
