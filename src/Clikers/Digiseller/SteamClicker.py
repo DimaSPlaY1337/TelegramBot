@@ -16,10 +16,10 @@ class SteamClicker(PlatformClicker):
         await super().plat_clicker(token, dialog_id, message_text, customer)
 
         os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
-        win_rock = await wait_for_open("Rockstar Games - Sign In")
-        time.sleep(3)
-        if win_rock:
-            win_rock.minimize()
+        # win_rock = await wait_for_open("Rockstar Games - Sign In")
+        time.sleep(5)
+        # if win_rock:
+        #     win_rock.minimize()
 
         os.startfile("C:\\Program Files (x86)\\Steam\\Steam.exe")
 

@@ -26,7 +26,7 @@ async def c_cliker(token, dialog_id, message_text, customer):
             if customer.platform == "steam":
                 click(x=win_left + 96, y=win_top + 239)
             elif customer.platform == "rockstar":
-                click(x=win_left + 108, y=win_top + 267, times=1, t=3)
+                click(x=win_left + 72, y=win_top + 263, times=1, t=3)
         elif customer.order_des["version"] == "legacy":
             click(x=win_left + 117, y=win_top + 222)
 
