@@ -258,6 +258,8 @@ class SteamClicker(PlatformClicker):
         print("Закрываем cherax")
         win_cherax = await wait_for_open("Cherax Loader", 5) or await find_window_by_size(900, 600, timeout=5)
         if win_cherax is not None:
+            win_cherax.activate()
+            time.sleep(1)
             win_cherax.close()
 
         print("Цикл завершён")
