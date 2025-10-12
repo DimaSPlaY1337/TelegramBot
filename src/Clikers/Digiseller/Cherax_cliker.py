@@ -88,7 +88,9 @@ async def gta_cliker(token, dialog_id, message_text, customer):
             break
 
     time.sleep(8)
-    click(733,88, 10, 1)
+    click(733,88, 5, 1)
+    keyboard_press_key("e", 2)
+    keyboard_press_key("enter", 1)
 
     time.sleep(5)
     keyboard_press_key("enter", 3)
