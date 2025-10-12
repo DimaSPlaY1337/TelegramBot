@@ -17,7 +17,7 @@ async def c_cliker(token, dialog_id, message_text, customer):
         win_top = win.top
         win_left = win.left
 
-        time.sleep(5)
+        time.sleep(3)
         click(x=win_left + 127, y=win_top + 175)
         if customer.order_des["version"] == "enhanced":
             click(x=win_left + 83, y=win_top + 207)
