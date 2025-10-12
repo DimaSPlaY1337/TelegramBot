@@ -17,7 +17,7 @@ class SteamClicker(PlatformClicker):
 
         os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
         # win_rock = await wait_for_open("Rockstar Games - Sign In")
-        time.sleep(5)
+        time.sleep(10)
         # if win_rock:
         #     win_rock.minimize()
 
