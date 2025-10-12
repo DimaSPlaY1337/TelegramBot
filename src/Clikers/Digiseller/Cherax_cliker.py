@@ -88,99 +88,158 @@ async def gta_cliker(token, dialog_id, message_text, customer):
             break
 
     time.sleep(8)
-    click(733,88, 5, 1)
+    click(1308,88, 5, 1)
     keyboard_press_key("e", 2)
     keyboard_press_key("enter", 1)
 
     time.sleep(5)
     keyboard_press_key("enter", 3)
 
-    time.sleep(100)
+    time.sleep(40)
     await cherax_cliker(token, dialog_id, message_text, customer)
 
 async def cherax_cliker(token, dialog_id, message_text, customer):
     # Включаем NumLock перед использованием Numpad
-    set_numlock_state(0)  # 1 = включить, 0 = выключить
-    time.sleep(2)
-    keyboard_press_key(KeyCode.from_vk(0x61))#numpad 1
+    # set_numlock_state(0)  # 1 = включить, 0 = выключить
+    # time.sleep(2)
+    # keyboard_press_key(KeyCode.from_vk(0x61))#numpad 1
 
-    time.sleep(4)
-    click(x=72, y=506)
-    click(x=141, y=200)
-    keyboard_press_key('u')
+    keyboard_press_key('k', 1, 3)
+    keyboard_press_key('y', 1, 10)
+    click(1278, 779,1,3)
+    keyboard_press_key('o')
     print("Загрузка в сессию")
 
-    time.sleep(25)
-    keyboard_press_key('y')
-    time.sleep(4)
-    click(x=1304, y=776, times=1, t=3)
-    click(x=510, y=151)
-    click(x=414, y=340)
-    click(x=407, y=149)
-    click(x=492, y=178)
-
-    #крутим деньги
+    time.sleep(100)
+    keyboard_press_key('n',1,3)
     if customer.order_des["amount"].isdigit():
-        r, g, b = pyautogui.pixel(161, 411)
-        order = int(customer.order_des["amount"])
-        if r == g == b == 255:
-            click(x=492, y=178, times=1, t=1)
-            pyautogui.hotkey('ctrl', 'a')
-            time.sleep(1)
-            write_text(order)
-            time.sleep(1)
-            click(x=120, y=571, times=1, t=3)#start
-            ctypes.windll.user32.ShowCursor(False)
-
-            #проверка снятия start
-            while True:
-                r, g, b = pyautogui.pixel(161, 411)
-                print(f"Текущий цвет: {r}, {g}, {b}")
-                if r == 46 and g == 00 and b == 78:
-                    print("Цвет стал целевым!")
-                    ctypes.windll.user32.ShowCursor(True)
+        click(x=527, y=162, times=1, t=2)
+        click(x=418, y=351, times=1, t=2)
+        click(x=408, y=164, times=1, t=2)
+        click(x=496, y=189, times=1, t=2)
+        #121 412 and 172 426
+        nightclub = False
+        for x in range(121, 172):
+            for y in range(412, 426):
+                r, g, b = pyautogui.pixel(x, y)
+                print(f"Цвет nightclub: {r}, {g}, {b}")
+                if r!=70 and g!=0 and b!=121:
+                    print("Nightclub есть")
+                    nightclub = True
                     break
 
-    time.sleep(1)
-    #крутим уровень
+        if nightclub:
+            await night_club(customer)
+        else:
+            click(141, 238,2, 3)
+            # set_numlock_state(1)  # 1 = включить, 0 = выключить
+            # time.sleep(1)
+            keyboard_press_key(Key.end,1,1)#numpad 1
+            keyboard_press_key(Key.up, 1, 1)
+            keyboard_press_key(Key.down, 1, 1)
+            keyboard_press_key('enter', 1, 1)
+            click(1376,792)
+            click(1488, 1194)
+            click(1801, 401)
+            click(1604, 1360)
+            click(976, 1144)
+            click(964, 1316)
+            click(2079, 1310,1, 5)
+            click(2101, 144)
+            keyboard_press_key(Key.end)
+            await night_club(customer)
+
     if customer.order_des["levels"].isdigit():
-        order = int(customer.order_des["levels"])
-        click(x=88, y=344)
+        click(81,357)
+        click(136,175)
+        write_text(customer.order_des["levels"])
+        click(140, 197)
 
-        click(x=130, y=167)
-        pyautogui.hotkey('ctrl', 'a')
-        time.sleep(1)
-        write_text(order)
-        time.sleep(1)
-        click(x=133, y=192)
-        keyboard_press_key('y')#смена сессии
-
-        while True:
-            r, g, b = pyautogui.pixel(1368, 620)
-            print(f"Текущий цвет: {r}, {g}, {b}")
-            if r == 240 and g == 201 and b == 80:
-                print("Цвет стал целевым!")
-                break
-
-        keyboard_press_key('enter', 1, 8)
-
-    time.sleep(1)
-    click(77, 356)
     if customer.order_des["unlocks"] == "Standard Unlocks":
-        print("Делаем unlocks")
-    elif customer.order_des["unlocks"] == "Super Unlocks":
-        print("Делаем unlocks")
+        keyboard_press_key('u', 1, 5)
 
     time.sleep(1)
-    keyboard_press_key('i', 1, 3)
-    keyboard_press_key('o', 1, 3)
-    keyboard_press_key('z', 1, 3)
+    keyboard_press_key('o', 1, 5)
+    keyboard_press_key('enter', 1, 30)
+    keyboard_press_key('n', 1, 1)
+    keyboard_press_key('x', 1, 1)
+    keyboard_press_key('i', 1, 1)
+    keyboard_press_key('l', 1, 3)
+    keyboard_press_key('z', 1, 1)
     # Скрин окна GTA:
     # screenshot = pyautogui.screenshot()
     # screenshot.save('gta_screen.png')
-    time.sleep(1)
     await send_screen(token, dialog_id, message_text, customer)
+
+async def night_club(customer):
+    click(181, 371, 1)
+    write_text(customer.order_des["amount"])
+    click(125, 574)
+    ctypes.windll.user32.ShowCursor(False)
+    time.sleep(1)
+    while True:
+        r, g, b = pyautogui.pixel(161, 411)
+        print(f"Текущий цвет: {r}, {g}, {b}")
+        if r == 70 and g == 0 and b == 121:
+            print("Цвет стал целевым!")
+            ctypes.windll.user32.ShowCursor(True)
+            break
+    time.sleep(1)
 
 async def send_screen(token, dialog_id, message_text, customer):
     await send_screenshot(token, dialog_id, message_text, r"D:\Repos\gta_screen.png")
     await customer.clicker.close_apps(token, dialog_id, message_text, customer)
+
+# click(x=492, y=178, times=1, t=2)
+#
+#     #крутим деньги
+#     if customer.order_des["amount"].isdigit():
+#         r, g, b = pyautogui.pixel(161, 411)
+#         order = int(customer.order_des["amount"])
+#         if r == g == b == 255:
+#             click(x=492, y=178, times=1, t=1)
+#             pyautogui.hotkey('ctrl', 'a')
+#             time.sleep(1)
+#             write_text(order)
+#             time.sleep(1)
+#             click(x=120, y=571, times=1, t=3)#start
+#             ctypes.windll.user32.ShowCursor(False)
+#
+#             #проверка снятия start
+#             while True:
+#                 r, g, b = pyautogui.pixel(161, 411)
+#                 print(f"Текущий цвет: {r}, {g}, {b}")
+#                 if r==70 and g==0 and b==121:
+#                     print("Цвет стал целевым!")
+#                     ctypes.windll.user32.ShowCursor(True)
+#                     break
+#
+#     time.sleep(1)
+#     #крутим уровень
+#     if customer.order_des["levels"].isdigit():
+#         order = int(customer.order_des["levels"])
+#         click(x=88, y=344)
+#
+#         click(x=130, y=167)
+#         pyautogui.hotkey('ctrl', 'a')
+#         time.sleep(1)
+#         write_text(order)
+#         time.sleep(1)
+#         click(x=133, y=192)
+#         keyboard_press_key('y')#смена сессии
+#
+#         while True:
+#             r, g, b = pyautogui.pixel(1368, 620)
+#             print(f"Текущий цвет: {r}, {g}, {b}")
+#             if r == 240 and g == 201 and b == 80:
+#                 print("Цвет стал целевым!")
+#                 break
+#
+#         keyboard_press_key('enter', 1, 8)
+#
+#     time.sleep(1)
+#     click(77, 356)
+#     if customer.order_des["unlocks"] == "Standard Unlocks":
+#         print("Делаем unlocks")
+#     elif customer.order_des["unlocks"] == "Super Unlocks":
+#         print("Делаем unlocks")

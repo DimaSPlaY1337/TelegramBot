@@ -21,6 +21,9 @@ class PlatformClicker(ABC):
         else:
             customer.type_of_soft = "Free"
 
+        if customer.order_des["unlocks"] == "Super Unlocks":
+            customer.type_of_soft = "Exp"
+
         win_be = None
         if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
             os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
@@ -47,14 +50,15 @@ class PlatformClicker(ABC):
         await finish_current_order(token)
 
     async def close_sunrise(self):
-        win = await wait_for_open("Sunrise", 40)
-        time.sleep(1)
-        win.activate()
-        pyautogui.hotkey('alt', 'f4')
-        time.sleep(0.3)
-        pyautogui.hotkey('alt', 'f4')
-        time.sleep(0.3)
-        pyautogui.hotkey('alt', 'f4')
+        win = await wait_for_open("Sunrise", 5)
+        if win:
+            time.sleep(1)
+            win.activate()
+            pyautogui.hotkey('alt', 'f4')
+            time.sleep(0.3)
+            pyautogui.hotkey('alt', 'f4')
+            time.sleep(0.3)
+            pyautogui.hotkey('alt', 'f4')
 
     # @bot.message_handler(func=lambda m: common.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
     async def rockstar_cliker(self, token, dialog_id, message_text, customer, ignore_launch):

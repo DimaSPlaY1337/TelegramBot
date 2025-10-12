@@ -174,7 +174,7 @@ class RockstarClicker(PlatformClicker):
         else:
             print("Окно не найдено")
 
-    async def close_apps(self, token):
+    async def close_apps(self, token, dialog_id, message_text, customer):
         # выход из гта
         pyautogui.hotkey('alt', 'f4')
         if self.gta is not None:
@@ -190,6 +190,9 @@ class RockstarClicker(PlatformClicker):
 
         time.sleep(1)
 
-        await self.close_sunrise()
+        win_cherax = await wait_for_open("Cherax Loader", 5) or await find_window_by_size(900, 600, timeout=5)
+        if win_cherax is not None:
+            win_cherax.close()
+
         print("Цикл завершён")
-        await super().close_apps(token)
+        await super().close_apps(token, dialog_id, message_text, customer)
