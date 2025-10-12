@@ -113,10 +113,10 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
     time.sleep(100)
     keyboard_press_key('n',1,3)
     if customer.order_des["amount"].isdigit():
-        click(x=527, y=162, times=1, t=4)
-        click(x=418, y=351, times=1, t=2)
-        click(x=408, y=164, times=1, t=2)
-        click(x=496, y=189, times=1, t=2)
+        click(x=527, y=162, times=2, t=4)
+        click(x=418, y=351, times=2, t=2)
+        click(x=408, y=164, times=2, t=2)
+        click(x=496, y=189, times=2, t=2)
         #121 412 and 172 426
         nightclub = False
         for x in range(121, 172):
@@ -138,29 +138,29 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
             keyboard_press_key(Key.up, 1, 1)
             keyboard_press_key(Key.down, 1, 1)
             keyboard_press_key('enter', 1, 1)
-            click(1376,792)
-            click(1488, 1194)
-            click(1801, 401)
-            click(1604, 1360)
-            click(976, 1144)
-            click(964, 1316)
-            click(2079, 1310,1, 5)
-            click(2101, 144)
+            click(1376,792,2)
+            click(1488, 1194,2)
+            click(1801, 401,2)
+            click(1604, 1360,2)
+            click(976, 1144,2)
+            click(964, 1316,2)
+            click(2079, 1310,2, 5)
+            click(2101, 144,2)
             keyboard_press_key(Key.end)
             await night_club(customer)
 
     if customer.order_des["levels"].isdigit():
-        click(81,357)
-        click(136,175)
+        click(81,357,2)
+        click(136,175,2)
         write_text(customer.order_des["levels"])
-        click(140, 197)
+        click(140, 197,2)
 
     if customer.order_des["unlocks"] == "Standard Unlocks":
         keyboard_press_key('u', 1, 5)
 
     time.sleep(1)
     keyboard_press_key('o', 1, 5)
-    keyboard_press_key('enter', 1, 30)
+    keyboard_press_key('enter', 1, 100)
     keyboard_press_key('n', 1, 1)
     keyboard_press_key('x', 1, 1)
     keyboard_press_key('i', 1, 1)

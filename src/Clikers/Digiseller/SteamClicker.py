@@ -15,6 +15,10 @@ class SteamClicker(PlatformClicker):
         await super().plat_clicker(token, dialog_id, message_text, customer)
 
         os.startfile("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe")
+        win_rock = await wait_for_open("Rockstar Games - Sign In")
+        if win_rock:
+            win_rock.minimize()
+
         os.startfile("C:\\Program Files (x86)\\Steam\\Steam.exe")
         time.sleep(7)
 
@@ -249,6 +253,7 @@ class SteamClicker(PlatformClicker):
 
         time.sleep(1)
 
+        print("Закрываем cherax")
         win_cherax = await wait_for_open("Cherax Loader", 5) or await find_window_by_size(900, 600, timeout=5)
         if win_cherax is not None:
             win_cherax.close()
