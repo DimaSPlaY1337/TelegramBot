@@ -113,7 +113,7 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
     time.sleep(100)
     keyboard_press_key('n',1,3)
     if customer.order_des["amount"].isdigit():
-        click(x=527, y=162, times=2, t=4)
+        click(x=527, y=162, times=2, t=2)
         click(x=418, y=351, times=2, t=2)
         click(x=408, y=164, times=2, t=2)
         click(x=496, y=189, times=2, t=2)
@@ -151,16 +151,17 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
 
     if customer.order_des["levels"].isdigit():
         click(81,357,2)
-        click(136,175,2)
+        click(136,175)
         write_text(customer.order_des["levels"])
         click(140, 197,2)
 
-    if customer.order_des["unlocks"] == "Standard Unlocks":
+    if customer.order_des["unlocks"] == "standard unlocks":
         keyboard_press_key('u', 1, 5)
 
     time.sleep(1)
-    keyboard_press_key('o', 1, 5)
-    keyboard_press_key('enter', 1, 100)
+    keyboard_press_key('o', 1, 15)
+    keyboard_press_key('enter', 2)
+    time.sleep(70)
     keyboard_press_key('n', 1, 1)
     keyboard_press_key('x', 1, 1)
     keyboard_press_key('i', 1, 1)

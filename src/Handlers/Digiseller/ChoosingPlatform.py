@@ -38,7 +38,7 @@ async def choosing_platform(token, dialog_id, message_data, customer):
         "version": "enhanced",
         "amount": "20000000",
         "levels": "120",
-        "unlocks": "Standard Unlocks"
+        "unlocks": "standard unlocks"
     }
     customer.clicker = SteamClicker()
     await customer.clicker.plat_clicker(token, dialog_id, message_data, customer)

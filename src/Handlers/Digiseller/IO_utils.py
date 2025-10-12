@@ -497,6 +497,7 @@ async def send_screenshot(token, dialog_id, message_text, customer):
 
     return success
 
+
 async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
                                   screenshot_path: str, lang: str = "ru-RU") -> bool:
     """
@@ -510,29 +511,57 @@ async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
             print("Ошибка загрузки файла")
             return False
 
-        # Шаг 2: Отправка сообщения с файлом
-        url = f"https://api.digiseller.com/api/debates/v2/?token={token}&id_i={dialog_id}"
+        # Логирование ответа загрузки
+        print(f"Upload response: {upload_response}")
+
+        # Проверяем структуру ответа
+        if "files" not in upload_response or not upload_response["files"]:
+            print(f"Неверный формат ответа загрузки: {upload_response}")
+            return False
+
+        file_info = upload_response["files"][0]
+
+        # Проверяем обязательные поля
+        required_fields = ["newid", "name", "type", "size"]
+        for field in required_fields:
+            if field not in file_info:
+                print(f"Отсутствует обязательное поле: {field}")
+                return False
+
+        # ИСПРАВЛЕНИЕ: Убираем лишний слеш перед ?
+        url = f"https://api.digiseller.com/api/debates/v2?token={token}&id_i={dialog_id}"
+
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json"
         }
 
-        # Формируем payload с текстом и информацией о файле
+        # Формируем payload согласно документации
         payload = {
             "message": message_text,
             "files": [{
-                "newid": upload_response.get("files", [{}])[0].get("newid"),
-                "name": upload_response.get("files", [{}])[0].get("name"),
-                "type": upload_response.get("files", [{}])[0].get("type"),
-                "size": upload_response.get("files", [{}])[0].get("size")
+                "newid": file_info["newid"],
+                "name": file_info["name"],
+                "type": file_info["type"],
+                "size": file_info["size"]
             }]
         }
 
+        print(f"Sending to URL: {url}")
+        print(f"Payload: {payload}")
+
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, json=payload) as response:
+                response_text = await response.text()
+                print(f"Response status: {response.status}, body: {response_text}")
+
                 response.raise_for_status()
+                # Согласно документации, пустой ответ с кодом 200 означает успех
                 return response.status == 200
 
+    except aiohttp.ClientResponseError as e:
+        print(f"Ошибка отправки скриншота: {e.status}, message='{e.message}', url='{e.request_info.url}'")
+        return False
     except Exception as e:
         print(f"Ошибка отправки скриншота: {e}")
         return False
