@@ -17,7 +17,7 @@ async def order_description(token, dialog_id, customer):
 
 async def handle_order_choice(token, dialog_id, message_text, customer):
     if message_text == "money" and customer.order_des["amount"] == "не задано":
-        await send_message(token, dialog_id, "Введите сумму:")
+        await send_message(token, dialog_id, "Введите сумму без пробелов, точек и др символов. Пример: 10000000")
         customer.user_step = "money"
     elif message_text == "levels" and customer.order_des["levels"] == "не задано":
         await send_message(token, dialog_id, "Введите уровни:")
