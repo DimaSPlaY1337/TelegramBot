@@ -113,7 +113,7 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
     time.sleep(100)
     keyboard_press_key('n',1,3)
     if customer.order_des["amount"].isdigit():
-        click(x=527, y=162, times=1, t=2)
+        click(x=527, y=162, times=1, t=4)
         click(x=418, y=351, times=1, t=2)
         click(x=408, y=164, times=1, t=2)
         click(x=496, y=189, times=1, t=2)
