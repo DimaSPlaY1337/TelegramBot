@@ -32,9 +32,9 @@ async def c_cliker(token, dialog_id, message_text, customer):
 
             click(x=win_left + 94, y=win_top + 207)
             if customer.platform == "steam":
-                click(x=win_left + 106, y=win_top + 238)
+                click(x=win_left + 99, y=win_top + 246)
             elif customer.platform == "rockstar":
-                click(x=win_left + 110, y=win_top + 303, times=1, t = 3)
+                click(x=win_left + 50, y=win_top + 305, times=1, t = 3)
 
         click(x=win_left + 91, y=win_top + 265, times=3, t = 0.2)
 
