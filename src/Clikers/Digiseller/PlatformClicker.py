@@ -63,6 +63,7 @@ class PlatformClicker(ABC):
     # @bot.message_handler(func=lambda m: common.user_step.get(m.chat.id, {}).get("step") == "rock_steam_guard")
     async def rockstar_cliker(self, token, dialog_id, message_text, customer, ignore_launch):
         print(f"Получили rock guard: {message_text}")
+        pyautogui.FAILSAFE = False
         await send_message(token, dialog_id, "Спасибо! Код получен.")
 
         pyautogui.click(x=self.win_left + 233, y=self.win_top + 475)

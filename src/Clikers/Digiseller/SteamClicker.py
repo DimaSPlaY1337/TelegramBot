@@ -22,7 +22,6 @@ class SteamClicker(PlatformClicker):
             win_rock.minimize()
 
         os.startfile("C:\\Program Files (x86)\\Steam\\Steam.exe")
-        time.sleep(7)
 
         switch_to_english()
 
