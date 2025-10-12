@@ -21,27 +21,27 @@ from src.Clikers.Digiseller.SteamClicker import SteamClicker
 
 
 async def choosing_platform(token, dialog_id, message_data, customer):
-    # platform_text = (
-    #     "Какая платформа игры?\n"
-    #     "Напишите одну из следующих:\n"
-    #     "- Steam\n"
-    #     "- EpicGames\n"
-    #     "- Rockstar"
-    # )
-    # await send_message(token, dialog_id, platform_text)
-    # customer.user_step = "choose_platform"
+    platform_text = (
+        "Какая платформа игры?\n"
+        "Напишите одну из следующих:\n"
+        "- Steam\n"
+        "- EpicGames\n"
+        "- Rockstar"
+    )
+    await send_message(token, dialog_id, platform_text)
+    customer.user_step = "choose_platform"
 
-    customer.platform = "steam"
-    customer.data_for_reg["login"] = "mustypalate7710"
-    customer.data_for_reg["password"] = "kFzrZYF_JcJF3r"
-    customer.order_des = {
-        "version": "enhanced",
-        "amount": "20000000",
-        "levels": "120",
-        "unlocks": "standard unlocks"
-    }
-    customer.clicker = SteamClicker()
-    await customer.clicker.plat_clicker(token, dialog_id, message_data, customer)
+    # customer.platform = "steam"
+    # customer.data_for_reg["login"] = "mustypalate7710"
+    # customer.data_for_reg["password"] = "kFzrZYF_JcJF3r"
+    # customer.order_des = {
+    #     "version": "enhanced",
+    #     "amount": "20000000",
+    #     "levels": "120",
+    #     "unlocks": "standard unlocks"
+    # }
+    # customer.clicker = SteamClicker()
+    # await customer.clicker.plat_clicker(token, dialog_id, message_data, customer)
 
 
 async def handle_platform_choice(token, dialog_id, message_text, customer):
