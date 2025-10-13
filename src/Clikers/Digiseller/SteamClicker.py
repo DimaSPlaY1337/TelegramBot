@@ -169,9 +169,9 @@ class SteamClicker(PlatformClicker):
         gta = win_gta
 
         win_sun = None
-        if customer.order_des["version"] == "Enhanced":
+        if customer.order_des["version"] == "enhanced":
             os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-        elif customer.order_des["version"] == "Legacy":
+        elif customer.order_des["version"] == "legacy":
             os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
         else:
             print("Ошибка выбора версии Sunrise")
