@@ -106,9 +106,9 @@ class RockstarClicker(PlatformClicker):
 
     async def launch_prog(self, token, dialog_id, message_text, customer):
         # протокола нету как у steam
-        if customer.order_des["version"] == "Enhanced":
+        if customer.order_des["version"] == "enhanced":
             os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_RE.lnk")
-        elif customer.order_des["version"] == "Legacy":
+        elif customer.order_des["version"] == "legacy":
             os.startfile(r"C:\Users\gamePC\Desktop\GTA`s\GTA_RL.lnk")
         else:
             print("Ошибка выбора версии GTA")
@@ -118,9 +118,9 @@ class RockstarClicker(PlatformClicker):
 
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
 
-        if customer.order_des["version"] == "Enhanced":
+        if customer.order_des["version"] == "enhanced":
             os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-        elif customer.order_des["version"] == "Legacy":
+        elif customer.order_des["version"] == "legacy":
             os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
         else:
             print("Ошибка выбора версии Sunrise")
