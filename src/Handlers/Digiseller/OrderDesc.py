@@ -46,7 +46,7 @@ async def handle_levels_input(token, dialog_id, message_text, customer):
 
 
 async def handle_unlocks_input(token, dialog_id, message_text, customer):
-    if message_text in ["Standard Unlocks", "Super Unlocks"]:
+    if message_text in ["standard unlocks", "super unlocks"]:
         customer.order_des["unlocks"] = message_text
         await check_order_completion(token, dialog_id, message_text, customer)
     else:
