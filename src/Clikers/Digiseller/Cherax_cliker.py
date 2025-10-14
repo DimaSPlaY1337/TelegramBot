@@ -119,14 +119,18 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
         click(x=496, y=189, times=2, t=2)
         #121 412 and 172 426
         nightclub = False
-        for x in range(121, 172):
-            for y in range(412, 426):
-                r, g, b = pyautogui.pixel(x, y)
-                print(f"Цвет nightclub: {r}, {g}, {b}")
-                if r!=70 and g!=0 and b!=121:
-                    print("Nightclub есть")
-                    nightclub = True
-                    break
+        # for x in range(121, 172):
+        #     for y in range(412, 426):
+        #         r, g, b = pyautogui.pixel(x, y)
+        #         print(f"Цвет nightclub: {r}, {g}, {b}")
+        #         if r!=70 and g!=0 and b!=121:
+        #             print("Nightclub есть")
+        #             nightclub = True
+        #             break
+        r, g, b = pyautogui.pixel(122, 560)
+        if r == 70 and g == 0 and 120 <= b <= 121:
+            nightclub = True
+            print("Nightclub есть")
 
         if nightclub:
             await night_club(customer)
