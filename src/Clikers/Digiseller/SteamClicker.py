@@ -248,7 +248,7 @@ class SteamClicker(PlatformClicker):
         await self.plat_exit()
 
         print("Закрываем Steam2")
-        win = await wait_for_open("Sign in to Steam", 100) or await wait_for_open("Войти в Steam", 100)
+        win = await wait_for_open("Sign in to Steam", 20) or await wait_for_open("Войти в Steam", 20) or await wait_for_open("Steam", 20)
         if win:
             win.close()
 
