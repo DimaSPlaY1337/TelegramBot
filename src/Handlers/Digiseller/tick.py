@@ -174,82 +174,84 @@ async def finish_current_order(token):
     await start_next_order(token)
 
 
-async def process_new_sales(token):
-    """
-    Обрабатывает новые продажи и отправляет сообщения покупателям
-    """
-
-    # Проверяем новые продажи
-    new_sales = await check_new_sales(token)
-
-    if not new_sales:
-        return
-
-    print(f"📦 Найдено новых продаж: {len(new_sales)}")
-
-    for sale in new_sales:
-        try:
-            # Извлекаем данные о продаже
-            product_id = sale['product']['id']
-            product_name = sale['product']['name']
-            date = sale['date']
-            price = sale['product'].get('price_rub', 0)
-            invoice_id = sale.get('invoice_id')
-
-            print(f"🛒 Новая продажа: {product_name} (ID: {product_id})")
-            print(f"   Дата: {date}, Цена: {price} руб.")
-
-            # Получаем dialog_id
-            # ВАРИАНТ 1: Если invoice_id есть
-            if invoice_id:
-                purchase_info = await get_purchase_info(token, invoice_id)
-                if purchase_info:
-                    dialog_id = purchase_info.get('dialog_id')
-
-                    if dialog_id:
-                        # Отправляем приветственное сообщение
-                        welcome_message = (
-                            f"🎉 Здравствуйте!\n\n"
-                            f"Спасибо за покупку: {product_name}\n"
-                            f"💰 Сумма: {price} руб.\n\n"
-                            f"🎮 Мы начали обработку вашего заказа!\n"
-                            f"Напишите 'start' для начала работы."
-                        )
-                        # await send_message(token, dialog_id, welcome_message)
-                        print(welcome_message)
-                        print(f"✅ Отправлено сообщение покупателю {dialog_id}")
-
-            # Небольшая задержка между обработкой продаж
-
-        except Exception as e:
-            print(f"❌ Ошибка обработки продажи: {e}")
-
-    await asyncio.sleep(300)
-
-async def main_processing_loop():
-    """Главный цикл обработки"""
+async def process_new_sales_loop(token):
+    """Постоянно проверяет новые продажи"""
     while True:
         try:
-            token = await get_token()
-            # 1. Проверяем новые продажи и отправляем сообщения
-            await process_new_sales(token)
+            new_sales = await check_new_sales(token)
+            if new_sales:
+                print(f"📦 Найдено новых продаж: {len(new_sales)}")
+                for sale in new_sales:
+                    try:
+                        product_id = sale['product']['id']
+                        product_name = sale['product']['name']
+                        date = sale['date']
+                        price = sale['product'].get('price_rub', 0)
+                        invoice_id = sale.get('invoice_id')
 
+                        print(f"🛒 Новая продажа: {product_name} (ID: {product_id})")
+
+                        if invoice_id:
+                            purchase_info = await get_purchase_info(token, invoice_id)
+                            if purchase_info:
+                                dialog_id = purchase_info.get('dialog_id')
+                                if dialog_id:
+                                    welcome_message = (
+                                        f"🎉 Здравствуйте!\\n\\n"
+                                        f"Спасибо за покупку: {product_name}\\n"
+                                        f"💰 Сумма: {price} руб.\\n\\n"
+                                        f"🎮 Мы начали обработку вашего заказа!\\n"
+                                        f"Напишите 'start' для начала работы."
+                                    )
+                                    # await send_message(token, dialog_id, welcome_message)
+                                    print(welcome_message)
+                    except Exception as e:
+                        print(f"❌ Ошибка обработки продажи: {e}")
+
+            # Проверяем новые продажи каждые 5 минут
+            await asyncio.sleep(300)
+        except Exception as e:
+            print(f"Ошибка в process_new_sales_loop: {e}")
+            await asyncio.sleep(10)
+
+async def scan_dialogs_loop(token):
+    """Постоянно сканирует диалоги на новых клиентов"""
+    while True:
+        try:
             dialogs = await get_dialogs(token)
             dialog_list = dialogs["chats"]
-            # 1. Сканируем диалоги на новых клиентов
             await scan_dialogs_for_new_customers(token, dialog_list)
 
-            # 2. Обрабатываем текущего клиента (если есть)
+            # Проверяем диалоги каждые 3 секунды
+            await asyncio.sleep(3)
+        except Exception as e:
+            print(f"Ошибка в scan_dialogs_loop: {e}")
+            await asyncio.sleep(5)
+
+
+async def process_customer_loop(token):
+    """Постоянно обрабатывает текущего клиента"""
+    while True:
+        try:
             await process_current_customer(token)
 
+            # Проверяем сообщения от текущего клиента каждые 2 секунды
+            await asyncio.sleep(2)
+        except Exception as e:
+            print(f"Ошибка в process_customer_loop: {e}")
+            await asyncio.sleep(5)
+
+async def main_processing_loop():
+    token = await get_token()
+    # Запускаем все три процесса параллельно
+    await asyncio.gather(
+        process_new_sales_loop(token),
+        scan_dialogs_loop(token),
+        process_customer_loop(token)
+    )
             # 3. Если никого не обрабатываем, берем следующего из очереди
             # if not current_processing:
             #     await start_next_order(token)
-
-        except Exception as e:
-            print(f"Ошибка в главном цикле: {e}")
-
-        await asyncio.sleep(3)  # Проверяем каждые 3 секунды
 
 
 # Задача для периодического уведомления о статусе очереди
