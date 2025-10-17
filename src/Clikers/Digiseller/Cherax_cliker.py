@@ -126,6 +126,7 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
             print("Nightclub есть")
             nightclub = True
 
+        click(x=220, y=570, times=2, t=0.5)
         if nightclub:
             await night_club(customer)
         else:
@@ -185,7 +186,7 @@ async def night_club(customer):
     ctypes.windll.user32.ShowCursor(False)
     time.sleep(1)
     while True:
-        r, g, b = pyautogui.pixel(120, 558)
+        r, g, b = pyautogui.pixel(120, 570)
         print(f"Текущий цвет: {r}, {g}, {b}")
         if r == 70 and g == 0 and 120 <= b <= 121:
             print("Цвет стал целевым!")
