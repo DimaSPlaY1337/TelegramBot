@@ -127,6 +127,7 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
         #             print("Nightclub есть")
         #             nightclub = True
         #             break
+        time.sleep(10)
         r, g, b = pyautogui.pixel(122, 560)
         if r == 70 and g == 0 and 120 <= b <= 121:
             nightclub = True

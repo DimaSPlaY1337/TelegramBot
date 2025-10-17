@@ -223,7 +223,7 @@ async def scan_dialogs_loop(token):
             await scan_dialogs_for_new_customers(token, dialog_list)
 
             # Проверяем диалоги каждые 3 секунды
-            await asyncio.sleep(3)
+            await asyncio.sleep(5)
         except Exception as e:
             print(f"Ошибка в scan_dialogs_loop: {e}")
             await asyncio.sleep(5)
