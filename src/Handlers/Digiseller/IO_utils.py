@@ -1,180 +1,3 @@
-# import asyncio
-# import os
-#
-# import aiohttp
-# import hashlib
-# import time
-# from typing import Optional
-#
-# API_KEY = "DA4D6D5B237C4EA1974F0815AB890849"
-# SELLER_ID = 889983
-#
-#
-# async def get_token():
-#     url = "https://api.digiseller.com/api/apilogin"
-#     timestamp = int(time.time())
-#     sign_source = f"{API_KEY}{timestamp}"
-#     sign = hashlib.sha256(sign_source.encode()).hexdigest()
-#     payload = {
-#         "seller_id": SELLER_ID,
-#         "timestamp": timestamp,
-#         "sign": sign
-#     }
-#     headers = {
-#         "Content-Type": "application/json",
-#         "Accept": "application/json"
-#     }
-#     async with aiohttp.ClientSession() as session:
-#         async with session.post(url, headers=headers, json=payload) as response:
-#             response.raise_for_status()
-#             data = await response.json()
-#             return data["token"]
-#
-# async def get_dialogs(token):
-#     url = f"https://api.digiseller.com/api/debates/v2/chats?token={token}"
-#     headers = {"Accept": "application/json"}
-#     async with aiohttp.ClientSession() as session:
-#         async with session.get(url, headers=headers) as response:
-#             response.raise_for_status()
-#             return await response.json()
-#
-# async def wait_for_message(token, dialog_id):
-#     while True:
-#         messages = await get_messages(token, dialog_id)
-#
-#         if not messages:
-#             print("Сообщений пока нет от пользователя!")
-#             await asyncio.sleep(2)
-#             continue
-#
-#         message = messages[-1]
-#         if message.get('message', '') and not message.get('date_seen') and message.get('buyer'):
-#             print("Получили сообщение от пользователя!")
-#             return message.get('message', '')
-#         await asyncio.sleep(2)
-#
-# async def get_messages(token, dialog_id):
-#     url = f"https://api.digiseller.com/api/debates/v2?token={token}&id_i={dialog_id}"
-#     headers = {"Accept": "application/json"}
-#     async with aiohttp.ClientSession() as session:
-#         async with session.get(url, headers=headers) as response:
-#             response.raise_for_status()
-#             return await response.json()
-#
-# async def send_message(token, dialog_id, text):
-#     url = f"https://api.digiseller.com/api/debates/v2/?token={token}&id_i={dialog_id}"
-#     headers = {
-#         "Accept": "application/json",
-#         "Content-Type": "application/json"
-#     }
-#     payload = {"message": text}
-#     async with aiohttp.ClientSession() as session:
-#         async with session.post(url, headers=headers, json=payload) as response:
-#             response.raise_for_status()
-#             return response.status == 200
-#
-# async def set_read_flag(token, dialog_id):
-#     url = f"https://api.digiseller.com/api/debates/v2/seen?token={token}&id_i={dialog_id}"
-#     headers = {
-#         "Accept": "application/json",
-#         "Content-Type": "application/json"
-#     }
-#     async with aiohttp.ClientSession() as session:
-#         async with session.post(url, headers=headers) as response:
-#             response.raise_for_status()
-#             return response.status == 200
-#
-#
-# async def upload_screenshot(token: str, screenshot_path: str, lang: str = "ru-RU") -> Optional[dict]:
-#     """
-#     Предварительная загрузка скриншота на сервер Digiseller
-#     """
-#     url = f"https://api.digiseller.com/api/debates/v2/upload-preview?token={token}&lang={lang}"
-#
-#     if not os.path.exists(screenshot_path):
-#         raise FileNotFoundError(f"Файл не найден: {screenshot_path}")
-#
-#     headers = {
-#         "Accept": "application/json"
-#     }
-#
-#     async with aiohttp.ClientSession() as session:
-#         with open(screenshot_path, 'rb') as file:
-#             form_data = aiohttp.FormData()
-#             form_data.add_field('file', file,
-#                                 filename=os.path.basename(screenshot_path),
-#                                 content_type='image/png')
-#
-#             async with session.post(url, headers=headers, data=form_data) as response:
-#                 response.raise_for_status()
-#                 return await response.json()
-#
-#
-# async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
-#                                   screenshot_path: str, lang: str = "ru-RU") -> bool:
-#     """
-#     Отправка сообщения со скриншотом пользователю Digiseller
-#     """
-#     try:
-#         # Шаг 1: Предварительная загрузка скриншота
-#         upload_response = await upload_screenshot(token, screenshot_path, lang)
-#
-#         if not upload_response:
-#             print("Ошибка загрузки файла")
-#             return False
-#
-#         # Шаг 2: Отправка сообщения с файлом
-#         url = f"https://api.digiseller.com/api/debates/v2/?token={token}&id_i={dialog_id}"
-#         headers = {
-#             "Accept": "application/json",
-#             "Content-Type": "application/json"
-#         }
-#
-#         # Формируем payload с текстом и информацией о файле
-#         payload = {
-#             "message": message_text,
-#             "files": [{
-#                 "newid": upload_response.get("files", [{}])[0].get("newid"),
-#                 "name": upload_response.get("files", [{}])[0].get("name"),
-#                 "type": upload_response.get("files", [{}])[0].get("type"),
-#                 "size": upload_response.get("files", [{}])[0].get("size")
-#             }]
-#         }
-#
-#         async with aiohttp.ClientSession() as session:
-#             async with session.post(url, headers=headers, json=payload) as response:
-#                 response.raise_for_status()
-#                 return response.status == 200
-#
-#     except Exception as e:
-#         print(f"Ошибка отправки скриншота: {e}")
-#         return False
-#
-# from datetime import datetime
-# queue_lock = asyncio.Lock()  # ?
-# order_queue = []
-# current_processing = None
-# async def add_to_queue(dialog_id, customer):
-#     """Добавить пользователя в очередь"""
-#     global order_queue
-#     async with queue_lock:
-#         # Проверяем, нет ли уже этого пользователя в очереди
-#         for item in order_queue:
-#             if item[0] == dialog_id:
-#                 return False  # Уже в очереди
-#
-#         timestamp = datetime.now()
-#         order_queue.append((dialog_id, customer, timestamp))
-#         print(f"Пользователь {dialog_id} добавлен в очередь. Позиция: {len(order_queue)}")
-#         return True
-#
-# async def get_queue_position(dialog_id):
-#     """Получить позицию пользователя в очереди"""
-#     async with queue_lock:
-#         for i, (queue_dialog_id, _, _) in enumerate(order_queue):
-#             if queue_dialog_id == dialog_id:
-#                 return i + 1
-#         return None
 import asyncio
 import ctypes
 import os
@@ -190,46 +13,14 @@ from PIL import Image
 API_KEY = "DA4D6D5B237C4EA1974F0815AB890849"
 SELLER_ID = 889983
 
+# Множество для хранения ID обработанных продаж
+processed_sales = set()
+customers_count = 10
 # Система очереди
 order_queue = []  # Очередь заказов [(dialog_id, customer, timestamp)]
 current_processing = None  # Текущий обрабатываемый заказ
 queue_lock = asyncio.Lock()#?
 
-
-# Обработка ошибок 429/502
-# async def request_with_retries(method, url, session, max_retries=5, retry_statuses={429, 502}, **kwargs):
-#     """
-#     Универсальная функция для HTTP-запросов с повторными попытками при 429/502 ошибках
-#     """
-#     for attempt in range(max_retries):
-#         try:
-#             async with getattr(session, method)(url, **kwargs) as response:
-#                 if response.status in retry_statuses:
-#                     wait_time = 2 ** attempt  # экспоненциальная задержка
-#                     print(
-#                         f"Получена ошибка {response.status} для {url}. Ждем {wait_time}s перед повтором (попытка {attempt + 1}/{max_retries})")
-#                     await asyncio.sleep(wait_time)
-#                     continue
-#                 response.raise_for_status()
-#                 return await response.json()
-#         except aiohttp.ClientResponseError as e:
-#             if e.status in retry_statuses and attempt < max_retries - 1:
-#                 wait_time = 2 ** attempt
-#                 print(
-#                     f"ClientResponseError {e.status} для {url}. Ждем {wait_time}s перед повтором (попытка {attempt + 1}/{max_retries})")
-#                 await asyncio.sleep(wait_time)
-#                 continue
-#             raise
-#         except Exception as e:
-#             if attempt < max_retries - 1:
-#                 wait_time = 2 ** attempt
-#                 print(
-#                     f"Неожиданная ошибка для {url}: {e}. Ждем {wait_time}s перед повтором (попытка {attempt + 1}/{max_retries})")
-#                 await asyncio.sleep(wait_time)
-#                 continue
-#             raise
-#
-#     raise Exception(f"Превышено максимальное количество попыток для {url}")
 async def get_token():
     url = "https://api.digiseller.com/api/apilogin"
     timestamp = int(time.time())
@@ -277,46 +68,6 @@ async def send_message(token, dialog_id, text):
         async with session.post(url, headers=headers, json=payload) as response:
             response.raise_for_status()
             return response.status == 200
-
-# async def request_with_retries_post(method, url, session, max_retries=5, retry_statuses={429, 502}, **kwargs):
-#     """
-#     Универсальная функция для POST-запросов с повторными попытками при 429/502 ошибках
-#     Возвращает True при успехе, не пытается декодировать JSON
-#     """
-#     for attempt in range(max_retries):
-#         try:
-#             async with getattr(session, method)(url, **kwargs) as response:
-#                 if response.status in retry_statuses:
-#                     wait_time = 2 ** attempt  # экспоненциальная задержка
-#                     print(
-#                         f"Получена ошибка {response.status} для {url}. Ждем {wait_time}s перед повтором (попытка {attempt + 1}/{max_retries})")
-#                     await asyncio.sleep(wait_time)
-#                     continue
-#                 response.raise_for_status()
-#                 # Пытаемся получить JSON, если не получается - возвращаем True
-#                 try:
-#                     return await response.json()
-#                 except aiohttp.ContentTypeError:
-#                     # Сервер вернул не JSON (например, пустой ответ или текст)
-#                     return True
-#         except aiohttp.ClientResponseError as e:
-#             if e.status in retry_statuses and attempt < max_retries - 1:
-#                 wait_time = 2 ** attempt
-#                 print(
-#                     f"ClientResponseError {e.status} для {url}. Ждем {wait_time}s перед повтором (попытка {attempt + 1}/{max_retries})")
-#                 await asyncio.sleep(wait_time)
-#                 continue
-#             raise
-#         except Exception as e:
-#             if attempt < max_retries - 1:
-#                 wait_time = 2 ** attempt
-#                 print(
-#                     f"Неожиданная ошибка для {url}: {e}. Ждем {wait_time}s перед повтором (попытка {attempt + 1}/{max_retries})")
-#                 await asyncio.sleep(wait_time)
-#                 continue
-#             raise
-#
-#     raise Exception(f"Превышено максимальное количество попыток для {url}")
 
 async def set_read_flag(token, dialog_id):
     url = f"https://api.digiseller.com/api/debates/v2/seen?token={token}&id_i={dialog_id}"
@@ -587,3 +338,189 @@ def compress_image(input_path, output_path, max_size_kb=4500):
 
     print(f"Сжато до {size_kb:.1f} KB с качеством {quality}")
     return output_path
+
+
+async def get_purchase_info(token: str, invoice_id: int) -> Optional[dict]:
+    """
+    Получение информации о продаже по номеру заказа
+
+    Args:
+        token: Токен авторизации API Digiseller
+        invoice_id: Номер счета/заказа (ID инвойса)
+
+    Returns:
+        dict: Информация о заказе в формате JSON
+        None: В случае ошибки
+
+    Raises:
+        aiohttp.ClientResponseError: При ошибках HTTP запроса
+    """
+    url = f"https://api.digiseller.com/api/purchase/info/{invoice_id}?token={token}"
+
+    headers = {
+        "Accept": "application/json"
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                return await response.json()
+
+    except aiohttp.ClientResponseError as e:
+        print(f"Ошибка получения информации о заказе {invoice_id}: {e.status}, message='{e.message}'")
+        return None
+
+    except Exception as e:
+        print(f"Ошибка получения информации о заказе {invoice_id}: {e}")
+        return None
+
+
+async def get_all_sales(token: str, product_ids: Optional[str] = None,
+                        max_pages: int = 10) -> list:
+    """
+    Получение всех продаж постранично
+
+    Args:
+        token: Токен авторизации API
+        product_ids: ID товаров через запятую (опционально)
+        max_pages: Максимальное количество страниц для загрузки
+
+    Returns:
+        list: Список всех продаж
+    """
+    all_sales = []
+    page = 1
+
+    while page <= max_pages:
+        sales_data = await get_last_sales(token, product_ids=product_ids, page=page, rows=1000)
+
+        if not sales_data or not sales_data.get('rows'):
+            break
+
+        all_sales.extend(sales_data['rows'])
+
+        # Проверяем, есть ли еще страницы
+        total_count = sales_data.get('cnt_all', 0)
+        if len(all_sales) >= total_count:
+            break
+
+        page += 1
+
+        # Небольшая задержка между запросами
+        await asyncio.sleep(0.5)
+
+    return all_sales
+
+
+async def get_last_sales(token: str,
+                         seller_id: int = 0,
+                         top: int = 20,
+                         group: str = "true") -> Optional[dict]:
+    """
+    Получение списка последних продаж
+
+    Args:
+        token: Токен авторизации API Digiseller
+        seller_id: ID продавца (по умолчанию 0)
+        top: Количество записей (по умолчанию 1000)
+        group: Группировка "true" или "false" (по умолчанию "true")
+
+    Returns:
+        dict: Список последних продаж
+        None: В случае ошибки
+    """
+    url = "https://api.digiseller.ru/api/seller-last-sales"
+
+    headers = {
+        "Accept": "application/json"
+    }
+
+    # Формируем параметры согласно документации
+    params = {
+        "seller_id": seller_id,
+        "top": top,
+        "group": group,
+        "token": token
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers, params=params) as response:
+                # Логирование для отладки
+                print(f"Request URL: {response.url}")
+
+                response.raise_for_status()
+                data = await response.json()
+
+                # Проверяем код возврата
+                if data.get("retval") != 0:
+                    print(f"API ошибка: {data.get('retdesc')}")
+                    return None
+
+                return data
+
+    except aiohttp.ClientResponseError as e:
+        print(f"HTTP ошибка {e.status}: {e.message}")
+        print(f"URL: {e.request_info.url}")
+        return None
+
+    except Exception as e:
+        print(f"Ошибка: {e}")
+        return None
+
+
+async def check_new_sales(token: str) -> list:
+    """
+    Проверяет наличие новых продаж и возвращает список новых
+# id = dialogs['chats'][3]['id_i']
+# info = await get_purchase_info(token, id)
+    Returns:
+        list: Список новых продаж [{sale_data}, ...]
+    """
+    global processed_sales
+
+    # Получаем последние продажи
+    sales_data = await get_last_sales(token, seller_id=SELLER_ID, top=customers_count)
+
+    if not sales_data or not sales_data.get('sales'):
+        return []
+
+    new_sales = []
+
+    for sale in sales_data['sales']:
+        # Создаем уникальный ID продажи (дата + product_id)
+        sale_date = sale.get('date', '')
+        product_id = sale.get('product', {}).get('id')
+
+        # Если продажа еще не обработана
+        if product_id not in processed_sales:
+            new_sales.append(sale)
+            processed_sales.add(product_id)
+            print(f"🆕 Обнаружена новая продажа: {product_id}")
+
+    return new_sales
+
+
+async def get_dialog_id_from_sale(token: str, ids: int) -> Optional[str]:
+    """
+    Получает dialog_id из данных продажи
+
+    Args:
+        token: Токен API
+        ids: Данные продажи
+
+    Returns:
+        str: dialog_id или None
+    """
+    # Если в данных продажи есть invoice_id, получаем информацию о покупке
+    invoice_id = ids
+
+    if invoice_id:
+        purchase_info = await get_purchase_info(token, invoice_id)
+        if purchase_info:
+            # Ищем dialog_id в информации о покупке
+            # (структура может отличаться, проверьте API документацию)
+            return purchase_info.get('dialog_id')
+
+    return None

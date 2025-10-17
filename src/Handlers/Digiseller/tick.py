@@ -1,178 +1,12 @@
-# import aiohttp
-# import asyncio
-#
-# from src.Handlers.Digiseller.IO_utils import get_token, add_to_queue, get_queue_position, send_message, \
-#     current_processing
-# from DigisellersWelcome import send_welcome, customers
-# from ChoosingPlatform import (
-#     handle_platform_choice, handle_login, handle_password, handle_version
-# )
-# from OrderDesc import (
-#     handle_order_choice, handle_money_input, handle_levels_input,
-#     handle_unlocks_input, handle_order_continue, check_order_completion
-# )
-#
-#
-# async def get_dialogs(token):
-#     url = f"https://api.digiseller.com/api/debates/v2/chats?token={token}"
-#     headers = {"Accept": "application/json"}
-#     async with aiohttp.ClientSession() as session:
-#         async with session.get(url, headers=headers) as response:
-#             response.raise_for_status()
-#             return await response.json()
-#
-#
-# async def get_messages(token, dialog_id):
-#     url = f"https://api.digiseller.com/api/debates/v2?token={token}&id_i={dialog_id}"
-#     headers = {"Accept": "application/json"}
-#     async with aiohttp.ClientSession() as session:
-#         async with session.get(url, headers=headers) as response:
-#             response.raise_for_status()
-#             return await response.json()
-#
-#
-# async def set_read_flag(token, dialog_id):
-#     url = f"https://api.digiseller.com/api/debates/v2/seen?token={token}&id_i={dialog_id}"
-#     headers = {
-#         "Accept": "application/json",
-#         "Content-Type": "application/json"
-#     }
-#     async with aiohttp.ClientSession() as session:
-#         async with session.post(url, headers=headers) as response:
-#             response.raise_for_status()
-#             return response.status == 200
-#
-#
-# async def handle_dialog(token, dialog):
-#     dialog_id = dialog['id_i']
-#     messages = await get_messages(token, dialog_id)
-#
-#     for message in reversed(messages):  # Обрабатываем с самых новых
-#         text = message.get('message', '').lower()
-#
-#         s = message.get('buyer')
-#         if not message.get('date_seen') and s:  # Только непрочитанные
-#             customer = customers.get(dialog_id)
-#
-#             if "start" in text:
-#                 await send_welcome(token, dialog_id, message)
-#                 await set_read_flag(token, dialog_id)
-#                 break
-#             elif customer:
-#                 await process_message_by_step(token, dialog_id, message.get('message', ''), customer)
-#                 await set_read_flag(token, dialog_id)
-#                 break
-#         else:
-#             break
-#     #     dialog_id = dialog['id_i']
-#     #     messages = await get_messages(token, dialog_id)
-#     #
-#     #     for message in reversed(messages):  # Обрабатываем с самых новых
-#     #         text = message.get('message', '').lower()
-#     #         is_buyer = message.get('buyer')
-#     #
-#     #         if not message.get('date_seen') and is_buyer:  # Только непрочитанные от покупателей
-#     #             customer = customers.get(dialog_id)
-#     #
-#     #             if "start" in text and not customer:
-#     #                 # Новый клиент написал start
-#     #                 print(f"Новый клиент {dialog_id} написал 'start'")
-#     #
-#     #                 # Создаем временного клиента для очереди (или получаем из send_welcome)
-#     #                 await send_welcome(token, dialog_id, message)
-#     #                 customer = customers.get(dialog_id)
-#     #
-#     #                 if customer:
-#     #                     # Добавляем в очередь
-#     #                     added = await add_to_queue(dialog_id, customer)
-#     #                     if added:
-#     #                         position = await get_queue_position(dialog_id)
-#     #                         if position == 1:
-#     #                             await send_message(token, dialog_id,
-#     #                                                "🎮 Добро пожаловать! Вы первый в очереди, начинаем обработку вашего заказа прямо сейчас!")
-#     #                         else:
-#     #                             wait_time = (position - 1) * 10
-#     #                             await send_message(token, dialog_id,
-#     #                                                f"🎮 Добро пожаловать! Вы добавлены в очередь.\n\n"
-#     #                                                f"📍 Ваша позиция: {position}\n"
-#     #                                                f"⏰ Примерное время ожидания: {wait_time} минут\n\n"
-#     #                                                f"⚡ Мы обрабатываем заказы последовательно, среднее время выполнения одного заказа - 10 минут.")
-#     #
-#     #                     await set_read_flag(token, dialog_id)
-#     #                 break
-#     #
-#     #             # Если клиент уже есть, но не в процессе обработки - проверяем очередь
-#     #             elif customer and dialog_id != current_processing:
-#     #                 position = await get_queue_position(dialog_id)
-#     #                 if position is not None:
-#     #                     # Клиент в очереди написал сообщение
-#     #                     await send_message(token, dialog_id,
-#     #                                        f"⏳ Ваше сообщение получено. Вы в очереди на позиции {position}.\n"
-#     #                                        f"⏰ Ожидаемое время: {(position - 1) * 10} минут. Пожалуйста, ожидайте.")
-#     #                     await set_read_flag(token, dialog_id)
-#     #                 break
-#
-#
-# async def process_message_by_step(token, dialog_id, message_text, customer):
-#     step = customer.user_step
-#     message_text_ls = message_text.lower().strip()
-#
-#     if step == "choose_platform":
-#         await handle_platform_choice(token, dialog_id, message_text_ls, customer)
-#     elif step == "login":
-#         await handle_login(token, dialog_id, message_text, customer)
-#     elif step == "password":
-#         await handle_password(token, dialog_id, message_text, customer)
-#     elif step == "version_of_game":
-#         await handle_version(token, dialog_id, message_text_ls, customer)
-#     elif step == "order_des":
-#         await handle_order_choice(token, dialog_id, message_text_ls, customer)
-#     elif step == "money":
-#         await handle_money_input(token, dialog_id, message_text_ls, customer)
-#     elif step == "levels":
-#         await handle_levels_input(token, dialog_id, message_text_ls, customer)
-#     elif step == "unlocks":
-#         await handle_unlocks_input(token, dialog_id, message_text_ls, customer)
-#     elif step == "order_con":
-#         await handle_order_continue(token, dialog_id, message_text_ls, customer)
-#     elif step == "rock_steam_guard":
-#         await customer.clicker.rockstar_cliker(token, dialog_id, message_text_ls, customer)
-#     elif step == "steam_guard":
-#         await customer.clicker.plat_guard(token, dialog_id, message_text_ls, customer)
-#
-#
-# async def reply_to_customers():
-#     token = await get_token()
-#     dialogs = await get_dialogs(token)
-#     dialog_list = dialogs["chats"]
-#     batch_size = 3
-#
-#     for i in range(0, len(dialog_list), batch_size):
-#         batch = dialog_list[i:i + batch_size]
-#         for dialog in batch:
-#             print(dialog)
-#         print("---------------------------------------------------")
-#         tasks = [asyncio.create_task(handle_dialog(token, dialog)) for dialog in batch]
-#         await asyncio.gather(*tasks)
-#
-#
-# async def main():
-#     while True:
-#         try:
-#             await reply_to_customers()
-#         except Exception as e:
-#             print("Ошибка:", e)
-#         await asyncio.sleep(1)  # Опрос каждые 5 секунд
-#
-#
-# if __name__ == "__main__":
-#     asyncio.run(main())
 import asyncio
 
 from src.Handlers.Digiseller.IO_utils import (
     get_token, get_messages, send_message, set_read_flag,
     add_to_queue, get_queue_position, get_next_customer,
-    remove_from_queue, notify_queue_status, current_processing, get_dialogs
+    remove_from_queue, notify_queue_status, current_processing,
+    get_dialogs, get_last_sales, SELLER_ID, get_purchase_info,
+    check_new_sales, processed_sales, get_dialog_id_from_sale,
+    customers_count
 )
 from DigisellersWelcome import send_welcome, customers
 from ChoosingPlatform import (
@@ -188,7 +22,7 @@ from OrderDesc import (
 async def scan_dialogs_for_new_customers(token, dialog_list):
     global current_processing
     """Сканируем диалоги и добавляем новых клиентов в очередь"""
-    for dialog in dialog_list:
+    for dialog in dialog_list[:customers_count]:
         dialog_id = dialog['id_i']
         messages = await get_messages(token, dialog_id)
 
@@ -340,14 +174,68 @@ async def finish_current_order(token):
     await start_next_order(token)
 
 
+async def process_new_sales(token):
+    """
+    Обрабатывает новые продажи и отправляет сообщения покупателям
+    """
+
+    # Проверяем новые продажи
+    new_sales = await check_new_sales(token)
+
+    if not new_sales:
+        return
+
+    print(f"📦 Найдено новых продаж: {len(new_sales)}")
+
+    for sale in new_sales:
+        try:
+            # Извлекаем данные о продаже
+            product_id = sale['product']['id']
+            product_name = sale['product']['name']
+            date = sale['date']
+            price = sale['product'].get('price_rub', 0)
+            invoice_id = sale.get('invoice_id')
+
+            print(f"🛒 Новая продажа: {product_name} (ID: {product_id})")
+            print(f"   Дата: {date}, Цена: {price} руб.")
+
+            # Получаем dialog_id
+            # ВАРИАНТ 1: Если invoice_id есть
+            if invoice_id:
+                purchase_info = await get_purchase_info(token, invoice_id)
+                if purchase_info:
+                    dialog_id = purchase_info.get('dialog_id')
+
+                    if dialog_id:
+                        # Отправляем приветственное сообщение
+                        welcome_message = (
+                            f"🎉 Здравствуйте!\n\n"
+                            f"Спасибо за покупку: {product_name}\n"
+                            f"💰 Сумма: {price} руб.\n\n"
+                            f"🎮 Мы начали обработку вашего заказа!\n"
+                            f"Напишите 'start' для начала работы."
+                        )
+                        # await send_message(token, dialog_id, welcome_message)
+                        print(welcome_message)
+                        print(f"✅ Отправлено сообщение покупателю {dialog_id}")
+
+            # Небольшая задержка между обработкой продаж
+
+        except Exception as e:
+            print(f"❌ Ошибка обработки продажи: {e}")
+
+    await asyncio.sleep(300)
+
 async def main_processing_loop():
     """Главный цикл обработки"""
     while True:
         try:
             token = await get_token()
+            # 1. Проверяем новые продажи и отправляем сообщения
+            await process_new_sales(token)
+
             dialogs = await get_dialogs(token)
             dialog_list = dialogs["chats"]
-
             # 1. Сканируем диалоги на новых клиентов
             await scan_dialogs_for_new_customers(token, dialog_list)
 
