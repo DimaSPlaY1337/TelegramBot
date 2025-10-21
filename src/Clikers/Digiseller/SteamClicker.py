@@ -140,7 +140,7 @@ class SteamClicker(PlatformClicker):
         pyautogui.press('enter')
 
         time.sleep(2)
-        if type_of_soft == "Exp":
+        if customer.type_of_soft == "Exp":
             if not await is_error(customer,266, 151, 293, 161):
                 self.start_game(customer)
                 await self.steam_EULA()
