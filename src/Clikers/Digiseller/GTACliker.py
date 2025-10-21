@@ -66,8 +66,8 @@ async def gta_cliker_exp(token, dialog_id, message_text, customer):
         # Medium safe
         press_key('down', 5)
         r, g, b = pyautogui.pixel(2305, 798)
-        while not await is_gray(r,g,b):
-            press_key('down')
+        # while not await is_gray(r,g,b):
+        #     press_key('down')
         press_key('enter')
 
         time.sleep(1)
