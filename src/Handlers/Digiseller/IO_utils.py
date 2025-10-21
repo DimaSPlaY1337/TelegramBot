@@ -289,7 +289,6 @@ async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
 
         # Формируем payload согласно документации
         payload = {
-            "message": message_text,
             "files": [{
                 "newid": file_info["newid"],
                 "name": file_info["name"],
