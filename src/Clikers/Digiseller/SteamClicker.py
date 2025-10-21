@@ -95,7 +95,7 @@ class SteamClicker(PlatformClicker):
                     guard = await wait_for_message(token, dialog_id)
                     await self.plat_guard(token, dialog_id, guard, customer)
                 else:
-                    if type_of_soft == "Exp":
+                    if customer.type_of_soft == "Exp":
                         self.start_game(customer)
                         await self.steam_EULA()
                         time.sleep(5)
