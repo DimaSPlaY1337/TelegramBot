@@ -179,8 +179,9 @@ class SteamClicker(PlatformClicker):
             end_time = time.time() + 85
             while time.time() < end_time:
                 r, g, b = pyautogui.pixel(2183, 1097)
-                click(2369,  148)
-                if is_gray(r, g, b) and found == False:
+                click(2369, 148)
+                if await is_gray(r, g, b) and found == False:
+                    click(2369, 148)
                     keyboard_press_key('enter')
                     print("Нашли серое окно GTA")
                     found = True
