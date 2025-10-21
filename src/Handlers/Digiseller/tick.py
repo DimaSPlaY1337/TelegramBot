@@ -121,10 +121,6 @@ async def process_message_by_step(token, dialog_id, message_text, customer):
         await handle_unlocks_input(token, dialog_id, message_text_ls, customer)
     elif step == "order_con":
         await handle_order_continue(token, dialog_id, message_text_ls, customer)
-    # elif step == "rock_steam_guard":
-    #     await customer.clicker.rockstar_cliker(token, dialog_id, message_text_ls, customer)
-    # elif step == "steam_guard":
-    #     await customer.clicker.plat_guard(token, dialog_id, message_text_ls, customer)
 
     # Проверяем, завершен ли заказ
     # if await check_order_completion(token, dialog_id, message_text, customer):
@@ -228,7 +224,6 @@ async def scan_dialogs_loop(token):
             print(f"Ошибка в scan_dialogs_loop: {e}")
             await asyncio.sleep(5)
 
-
 async def process_customer_loop(token):
     """Постоянно обрабатывает текущего клиента"""
     while True:
@@ -245,7 +240,7 @@ async def main_processing_loop():
     token = await get_token()
     # Запускаем все три процесса параллельно
     await asyncio.gather(
-        process_new_sales_loop(token),
+        # process_new_sales_loop(token),
         scan_dialogs_loop(token),
         process_customer_loop(token)
     )
