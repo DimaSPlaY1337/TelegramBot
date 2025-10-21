@@ -36,7 +36,7 @@ async def choosing_platform(token, dialog_id, message_data, customer):
     customer.data_for_reg["password"] = "kFzrZYF_JcJF3r"
     customer.order_des = {
         "version": "enhanced",
-        "amount": "80000000",
+        "amount": "110000000",
         "levels": "120",
         "unlocks": "standard unlocks"
     }

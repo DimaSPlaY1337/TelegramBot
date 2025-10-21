@@ -139,9 +139,9 @@ async def gta_cliker_exp(token, dialog_id, message_text, customer):
     press_key('up', 1)
     press_key('enter')
 
-    if customer.order_des["unlocks"] == "Standard Unlocks":
+    if customer.order_des["unlocks"] == "standard unlocks":
         press_key('enter')
-    elif customer.order_des["unlocks"] == "Super Unlocks":
+    elif customer.order_des["unlocks"] == "super unlocks":
         press_key('down', 1)
         press_key('enter')
 
