@@ -111,9 +111,9 @@ class SteamClicker(PlatformClicker):
             print("Окно не найдено")
 
     def start_game(self, customer):
-        if customer.order_des["version"] == "Enhanced":
+        if customer.order_des["version"] == "enhanced":
             os.startfile("steam://run/3240220")
-        elif customer.order_des["version"] == "Legacy":
+        elif customer.order_des["version"] == "legacy":
             os.startfile("steam://run/271590")
         else:
             print("Ошибка выбора версии GTA")
