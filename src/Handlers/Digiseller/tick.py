@@ -18,7 +18,8 @@ from OrderDesc import (
 )
 
 
-# Обработка диалогов (теперь только сканирование, не обработка)
+#Обработка диалогов (теперь только сканирование, не обработка)Это метод добавляет новых пользователей в очередь
+#Будет заниматься поиском новых пользователей,тк process_current_c уже занимается обработкой пользователя.
 async def scan_dialogs_for_new_customers(token, dialog_list):
     global current_processing
     """Сканируем диалоги и добавляем новых клиентов в очередь"""
@@ -33,6 +34,7 @@ async def scan_dialogs_for_new_customers(token, dialog_list):
             if not message.get('date_seen') and is_buyer:  # Только непрочитанные от покупателей
                 customer = customers.get(dialog_id)
 
+                #добавляем в очередь при наличии start - убрать в релизе
                 if "start" in text and not customer:
                     # Новый клиент написал start
                     print(f"Новый клиент {dialog_id} написал 'start'")

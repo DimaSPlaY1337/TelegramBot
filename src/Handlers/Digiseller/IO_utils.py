@@ -144,7 +144,8 @@ async def get_estimated_wait_time(position):
     return (position - 1) * 10  # 10 минут на заказ
 
 async def finish_current_order(token):
-    await finish_current_order(token)
+    from src.Handlers.Digiseller import tick
+    await tick.finish_current_order(token)
 
 async def notify_queue_status(token):
     """Уведомить всех в очереди о их статусе"""
