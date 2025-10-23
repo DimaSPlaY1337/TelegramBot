@@ -8,13 +8,3 @@ class Customer:
         self.type_of_soft = ""
         self.clicker = None
         self.is_changing_data = False
-
-
-    # platform = ""
-    # user_step = {}
-    # data_for_reg = {}
-    # order_des = {}
-    # app_list = []
-    # type_of_soft = ""
-    # clicker = None
-    # is_changing_data = False

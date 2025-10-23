@@ -6,7 +6,8 @@ import hashlib
 import time
 from datetime import datetime
 from typing import Optional
-
+import http.client
+import json
 import pyautogui
 from PIL import Image
 
@@ -19,10 +20,36 @@ customers_count = 10
 # Система очереди
 order_queue = []  # Очередь заказов [(dialog_id, customer, timestamp)]
 current_processing = None  # Текущий обрабатываемый заказ
-queue_lock = asyncio.Lock()#?
+queue_lock = asyncio.Lock()# Lock гарантирует, что в один момент времени только одна корутина сможет получить доступ к защищенному ресурсу или выполнить критическую секцию кода.
+
+# async def get_token():
+#     conn = None
+#     try:
+#         conn = http.client.HTTPSConnection("seller.ggsel.net")
+#         payload = json.dumps({
+#             "seller_id": 0,
+#             "timestamp": "string",
+#             "sign": "string"
+#         })
+#         headers = {
+#             'Content-Type': 'application/json',
+#             'Accept': 'application/json'
+#         }
+#         conn.request("POST", "/api_sellers/api/apilogin", payload, headers)
+#         res = conn.getresponse()
+#         if res.status == 200:
+#             data = res.read()
+#             return json.loads(data.decode("utf-8"))
+#         else:
+#             raise Exception(f"API Error: {res.status} - {res.reason}")
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         return None
+#     finally:
+#         conn.close()
 
 async def get_token():
-    url = "https://api.digiseller.com/api/apilogin"
+    url = "https://seller.ggsel.net/api_sellers/api/apilogin"
     timestamp = int(time.time())
     sign_source = f"{API_KEY}{timestamp}"
     sign = hashlib.sha256(sign_source.encode()).hexdigest()
@@ -41,24 +68,95 @@ async def get_token():
             data = await response.json()
             return data["token"]
 
+# async def get_dialogs(token):
+#     conn = None
+#     try:
+#         conn = http.client.HTTPSConnection("seller.ggsel.net")
+#         headers = {
+#             'Accept': 'application/json'
+#         }
+#
+#         # Формируем URL с токеном
+#         url = f"/api_sellers/api/debates/v2/chats?token={token}"
+#
+#         conn.request("GET", url, '', headers)
+#         res = conn.getresponse()
+#
+#         # Проверяем статус ответа
+#         if res.status == 200:
+#             data = res.read()
+#             return json.loads(data.decode("utf-8"))
+#         else:
+#             raise Exception(f"API Error: {res.status} - {res.reason}")
+#
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         return None
+#     finally:
+#         conn.close()
+
 async def get_dialogs(token):
-    url = f"https://api.digiseller.com/api/debates/v2/chats?token={token}"
+    url = f"https://seller.ggsel.net/api_sellers/api/debates/v2/chats?token={token}"
     headers = {"Accept": "application/json"}
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as response:
             response.raise_for_status()
             return await response.json()
+
+# async def get_messages(token, dialog_id):
+#     conn = None
+#     try:
+#         conn = http.client.HTTPSConnection("seller.ggsel.net")
+#         payload = ''
+#         headers = {
+#             'Accept': 'application/json'
+#         }
+#         conn.request("GET", f"/api_sellers/api/debates/v2?token={token}&id_i={dialog_id}", payload, headers)
+#         res = conn.getresponse()
+#         if res.status == 200:
+#             data = res.read()
+#             return json.loads(data.decode("utf-8"))
+#         else:
+#             raise Exception(f"API Error: {res.status} - {res.reason}")
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         return None
+#     finally:
+#         conn.close()
 
 async def get_messages(token, dialog_id):
-    url = f"https://api.digiseller.com/api/debates/v2?token={token}&id_i={dialog_id}"
+    url = f"https://seller.ggsel.net/api_sellers/api/debates/v2?token={token}&id_i={dialog_id}"
     headers = {"Accept": "application/json"}
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as response:
             response.raise_for_status()
             return await response.json()
 
+# async def send_message(token, dialog_id, text):
+#     conn = None
+#     try:
+#         conn = http.client.HTTPSConnection("seller.ggsel.net")
+#         payload = json.dumps({
+#             "message": "string"
+#         })
+#         headers = {
+#             'Content-Type': 'application/json'
+#         }
+#         conn.request("POST", "/api_sellers/api/debates/v2", payload, headers)
+#         res = conn.getresponse()
+#         if res.status == 200:
+#             data = res.read()
+#             return json.loads(data.decode("utf-8"))
+#         else:
+#             raise Exception(f"API Error: {res.status} - {res.reason}")
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         return None
+#     finally:
+#         conn.close()
+
 async def send_message(token, dialog_id, text):
-    url = f"https://api.digiseller.com/api/debates/v2/?token={token}&id_i={dialog_id}"
+    url = f"https://seller.ggsel.net/api_sellers/api/debates/v2?token={token}&id_i={dialog_id}"
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json"
@@ -69,8 +167,34 @@ async def send_message(token, dialog_id, text):
             response.raise_for_status()
             return response.status == 200
 
+# async def set_read_flag(token, dialog_id):
+#     conn = None
+#     try:
+#         conn = http.client.HTTPSConnection("seller.ggsel.net")
+#         headers = {
+#             'Accept': 'application/json',
+#             'Content-Type': 'application/json'
+#         }
+#         # Пробуем endpoint по аналогии со старым API
+#         conn.request("POST", f"/api_sellers/api/debates/v2/seen?token={token}&id_i={dialog_id}", '', headers)
+#         res = conn.getresponse()
+#
+#         if res.status == 200:
+#             data = res.read()
+#             return json.loads(data.decode("utf-8"))
+#         else:
+#             raise Exception(f"API Error: {res.status} - {res.reason}")
+#
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         return None
+#     finally:
+#         if conn:
+#             conn.close()
+
+
 async def set_read_flag(token, dialog_id):
-    url = f"https://api.digiseller.com/api/debates/v2/seen?token={token}&id_i={dialog_id}"
+    url = f"https://seller.ggsel.net/api_sellers/api/debates/v2/seen?token={token}&id_i={dialog_id}"
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json"
@@ -170,7 +294,7 @@ async def upload_screenshot(token: str, screenshot_path: str, lang: str = "ru-RU
     """
     Предварительная загрузка скриншота на сервер Digiseller
     """
-    url = f"https://api.digiseller.com/api/debates/v2/upload-preview?token={token}&lang={lang}"
+    url = f"https://seller.ggsel.net/api_sellers/api/debates/v2/upload-preview?token={token}&lang={lang}"
 
     if not os.path.exists(screenshot_path):
         raise FileNotFoundError(f"Файл не найден: {screenshot_path}")
@@ -206,23 +330,6 @@ async def upload_screenshot(token: str, screenshot_path: str, lang: str = "ru-RU
             raise
 
     raise Exception("Не удалось загрузить файл после нескольких попыток")
-
-
-def set_numlock_state(state):
-    """Включает/выключает NumLock"""
-    VK_NUMLOCK = 0x90
-    KEYEVENTF_EXTENDEDKEY = 0x0001
-    KEYEVENTF_KEYUP = 0x0002
-
-    user32 = ctypes.windll.user32
-
-    # Получаем текущее состояние NumLock
-    current_state = user32.GetKeyState(VK_NUMLOCK) & 1
-
-    if current_state != state:
-        # Имитируем нажатие NumLock
-        user32.keybd_event(VK_NUMLOCK, 0, KEYEVENTF_EXTENDEDKEY, 0)
-        user32.keybd_event(VK_NUMLOCK, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0)
 
 
 async def send_screenshot(token, dialog_id, message_text, customer):
@@ -280,8 +387,7 @@ async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
                 print(f"Отсутствует обязательное поле: {field}")
                 return False
 
-        # ИСПРАВЛЕНИЕ: Убираем лишний слеш перед ?
-        url = f"https://api.digiseller.com/api/debates/v2?token={token}&id_i={dialog_id}"
+        url = f"https://seller.ggsel.net/api_sellers/api/debates/v2?token={token}&id_i={dialog_id}"
 
         headers = {
             "Accept": "application/json",
@@ -355,7 +461,7 @@ async def get_purchase_info(token: str, invoice_id: int) -> Optional[dict]:
     Raises:
         aiohttp.ClientResponseError: При ошибках HTTP запроса
     """
-    url = f"https://api.digiseller.com/api/purchase/info/{invoice_id}?token={token}"
+    url = f"https://seller.ggsel.net/api_sellers/api/purchase/info/{invoice_id}?token={token}"
 
     headers = {
         "Accept": "application/json"
@@ -430,7 +536,7 @@ async def get_last_sales(token: str,
         dict: Список последних продаж
         None: В случае ошибки
     """
-    url = "https://api.digiseller.ru/api/seller-last-sales"
+    url = "https://seller.ggsel.net/api_sellers/api/seller-last-sales"
 
     headers = {
         "Accept": "application/json"
