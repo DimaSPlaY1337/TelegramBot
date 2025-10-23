@@ -92,7 +92,7 @@ class SteamClicker(PlatformClicker):
                     customer.user_step = "steam_guard"
                     await send_message(token, dialog_id, "Введите код Steam Guard (или другой нужный код):")
 
-                    guard = await wait_for_message(token, dialog_id, customer)
+                    guard = await wait_for_message(token, dialog_id, message_text, customer)
                     if guard is not None:
                         await self.plat_guard(token, dialog_id, guard, customer)
                 else:
@@ -152,7 +152,7 @@ class SteamClicker(PlatformClicker):
                 pyautogui.click(x=self.win_left + 469, y=self.win_top + 185)
                 pyautogui.press('backspace', 5)
 
-                guard = await wait_for_message(token, dialog_id, customer)
+                guard = await wait_for_message(token, dialog_id, message_text, customer)
                 if guard is not None:
                     await self.plat_guard(token, dialog_id, guard, customer)
         else:
@@ -163,7 +163,7 @@ class SteamClicker(PlatformClicker):
                 pyautogui.click(x=self.win_left + 469, y=self.win_top + 185)
                 pyautogui.press('backspace', 5)
 
-                guard = await wait_for_message(token, dialog_id, customer)
+                guard = await wait_for_message(token, dialog_id, message_text, customer)
                 if guard is not None:
                     await self.plat_guard(token, dialog_id, guard, customer)
 

@@ -204,7 +204,7 @@ async def set_read_flag(token, dialog_id):
             response.raise_for_status()
             return response.status == 200
 
-async def wait_for_message(token, dialog_id, customer):
+async def wait_for_message(token, dialog_id, message_text, customer):
     end_time = time.time() + 500
 
     while time.time() < end_time:
@@ -223,7 +223,7 @@ async def wait_for_message(token, dialog_id, customer):
 
     # Если время истекло и цикл завершился
     print("⏰ Время ожидания истекло!")
-    customer.clicker.close_apps()
+    customer.clicker.close_apps(token,  dialog_id, message_text, customer)
     from src.Handlers.Digiseller import tick
     await tick.finish_current_order(token, "deb")  # Вызываем метод next_order
     return None  # Возвращаем None, так как сообщение не получено

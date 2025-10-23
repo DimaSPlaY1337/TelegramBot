@@ -61,7 +61,7 @@ class RockstarClicker(PlatformClicker):
                     customer.user_step = "rockstar_guard"
                     await send_message(token, dialog_id, "Введите код RockStar Guard (или другой нужный код):")
 
-                    guard = await wait_for_message(token, dialog_id, customer)
+                    guard = await wait_for_message(token, dialog_id, message_text, customer)
                     if guard is not None:
                         await self.plat_guard(token, dialog_id, guard, customer)
                 else:
@@ -94,7 +94,7 @@ class RockstarClicker(PlatformClicker):
             else:
                 await send_message(token, dialog_id, "Код введен неверно, введите еще раз.")
 
-                guard = await wait_for_message(token, dialog_id, customer)
+                guard = await wait_for_message(token, dialog_id, message_text, customer)
                 if guard is not None:
                     await self.plat_guard(token, dialog_id, guard, customer)
         else:
@@ -103,7 +103,7 @@ class RockstarClicker(PlatformClicker):
             else:
                 await send_message(token, dialog_id, "Код введен неверно, введите еще раз.")
 
-                guard = await wait_for_message(token, dialog_id, customer)
+                guard = await wait_for_message(token, dialog_id, message_text, customer)
                 if  guard is not None:
                     await self.plat_guard(token, dialog_id, guard, customer)
 
