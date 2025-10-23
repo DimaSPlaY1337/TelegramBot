@@ -204,8 +204,10 @@ async def set_read_flag(token, dialog_id):
             response.raise_for_status()
             return response.status == 200
 
-async def wait_for_message(token, dialog_id):
-    while True:
+async def wait_for_message(token, dialog_id, customer):
+    end_time = time.time() + 85
+
+    while time.time() < end_time:
         messages = await get_messages(token, dialog_id)
         if not messages:
             print("Сообщений пока нет от пользователя!")
@@ -218,6 +220,13 @@ async def wait_for_message(token, dialog_id):
             return message.get('message', '')
 
         await asyncio.sleep(2)
+
+    # Если время истекло и цикл завершился
+    print("⏰ Время ожидания истекло!")
+    customer.clicker.close_apps()
+    from src.Handlers.Digiseller import tick
+    await tick.finish_current_order(token, "deb")  # Вызываем метод next_order
+    return None  # Возвращаем None, так как сообщение не получено
 
 
 # Функции для работы с очередью
@@ -269,7 +278,7 @@ async def get_estimated_wait_time(position):
 
 async def finish_current_order(token):
     from src.Handlers.Digiseller import tick
-    await tick.finish_current_order(token)
+    await tick.finish_current_order(token, "kras")
 
 async def notify_queue_status(token):
     """Уведомить всех в очереди о их статусе"""

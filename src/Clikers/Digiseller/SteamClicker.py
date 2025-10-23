@@ -92,8 +92,9 @@ class SteamClicker(PlatformClicker):
                     customer.user_step = "steam_guard"
                     await send_message(token, dialog_id, "Введите код Steam Guard (или другой нужный код):")
 
-                    guard = await wait_for_message(token, dialog_id)
-                    await self.plat_guard(token, dialog_id, guard, customer)
+                    guard = await wait_for_message(token, dialog_id, customer)
+                    if guard is not None:
+                        await self.plat_guard(token, dialog_id, guard, customer)
                 else:
                     if customer.type_of_soft == "Exp":
                         self.start_game(customer)
@@ -151,8 +152,9 @@ class SteamClicker(PlatformClicker):
                 pyautogui.click(x=self.win_left + 469, y=self.win_top + 185)
                 pyautogui.press('backspace', 5)
 
-                guard = await wait_for_message(token, dialog_id)
-                await self.plat_guard(token, dialog_id, guard, customer)
+                guard = await wait_for_message(token, dialog_id, customer)
+                if guard is not None:
+                    await self.plat_guard(token, dialog_id, guard, customer)
         else:
             if not await is_error(customer,266, 151, 293, 161):
                 await c_cliker(token, dialog_id, message_text, customer)
@@ -161,8 +163,9 @@ class SteamClicker(PlatformClicker):
                 pyautogui.click(x=self.win_left + 469, y=self.win_top + 185)
                 pyautogui.press('backspace', 5)
 
-                guard = await wait_for_message(token, dialog_id)
-                await self.plat_guard(token, dialog_id, guard, customer)
+                guard = await wait_for_message(token, dialog_id, customer)
+                if guard is not None:
+                    await self.plat_guard(token, dialog_id, guard, customer)
 
     async def launch_prog(self, token, dialog_id, message_text, customer):
         win_gta = await wait_for_open("Grand Theft Auto V", 200)

@@ -27,53 +27,54 @@ async def scan_dialogs_for_new_customers(token, dialog_list):
         dialog_id = dialog['id_i']
         messages = await get_messages(token, dialog_id)
 
-        for message in reversed(messages):  # Обрабатываем с самых новых
-            text = message.get('message', '').lower()
-            is_buyer = message.get('buyer')
+        # for message in reversed(messages):  # Обрабатываем с самых новых
+        message= messages[0]
+        text = message.get('message', '').lower()
+        is_buyer = message.get('buyer')
 
-            if not message.get('date_seen') and is_buyer:  # Только непрочитанные от покупателей
+        if not message.get('date_seen') and (is_buyer or dialog_id==109350):  # Только непрочитанные от покупателей
+            customer = customers.get(dialog_id)
+
+            #добавляем в очередь при наличии start - убрать в релизе
+            if "start" in text and not customer:
+                # Новый клиент написал start
+                print(f"Новый клиент {dialog_id} написал 'start'")
+
+                # Создаем временного клиента для очереди (или получаем из send_welcome)
+                await send_welcome(token, dialog_id, message)
                 customer = customers.get(dialog_id)
 
-                #добавляем в очередь при наличии start - убрать в релизе
-                if "start" in text and not customer:
-                    # Новый клиент написал start
-                    print(f"Новый клиент {dialog_id} написал 'start'")
+                if customer:
+                    # Добавляем в очередь
+                    added = await add_to_queue(dialog_id, customer)
+                    if added:
+                        position = await get_queue_position(dialog_id)
+                        if position == 1:
+                            await send_message(token, dialog_id,
+                                               "🎮 Добро пожаловать! Вы первый в очереди, начинаем обработку вашего заказа прямо сейчас!")
+                            current_processing = dialog_id
+                            await choosing_platform(token, dialog_id, message, customer)
+                        else:
+                            wait_time = (position - 1) * 10
+                            await send_message(token, dialog_id,
+                                               f"🎮 Добро пожаловать! Вы добавлены в очередь.\n\n"
+                                               f"📍 Ваша позиция: {position}\n"
+                                               f"⏰ Примерное время ожидания: {wait_time} минут\n\n"
+                                               f"⚡ Мы обрабатываем заказы последовательно, среднее время выполнения одного заказа - 10 минут.")
 
-                    # Создаем временного клиента для очереди (или получаем из send_welcome)
-                    await send_welcome(token, dialog_id, message)
-                    customer = customers.get(dialog_id)
+                    await set_read_flag(token, dialog_id)
+                break
 
-                    if customer:
-                        # Добавляем в очередь
-                        added = await add_to_queue(dialog_id, customer)
-                        if added:
-                            position = await get_queue_position(dialog_id)
-                            if position == 1:
-                                await send_message(token, dialog_id,
-                                                   "🎮 Добро пожаловать! Вы первый в очереди, начинаем обработку вашего заказа прямо сейчас!")
-                                current_processing = dialog_id
-                                await choosing_platform(token, dialog_id, message, customer)
-                            else:
-                                wait_time = (position - 1) * 10
-                                await send_message(token, dialog_id,
-                                                   f"🎮 Добро пожаловать! Вы добавлены в очередь.\n\n"
-                                                   f"📍 Ваша позиция: {position}\n"
-                                                   f"⏰ Примерное время ожидания: {wait_time} минут\n\n"
-                                                   f"⚡ Мы обрабатываем заказы последовательно, среднее время выполнения одного заказа - 10 минут.")
-
-                        await set_read_flag(token, dialog_id)
-                    break
-
-                # Если клиент уже есть, но не в процессе обработки - проверяем очередь
-                elif customer and dialog_id != current_processing:
-                    position = await get_queue_position(dialog_id)
-                    if position is not None:
-                        # Клиент в очереди написал сообщение
-                        await send_message(token, dialog_id,
-                                           f"⏳ Ваше сообщение получено. Вы в очереди на позиции {position}.\n"
-                                           f"⏰ Ожидаемое время: {(position - 1) * 10} минут. Пожалуйста, ожидайте.")
-                        await set_read_flag(token, dialog_id)
-                    break
+            # Если клиент уже есть, но не в процессе обработки - проверяем очередь
+            elif customer and dialog_id != current_processing:
+                position = await get_queue_position(dialog_id)
+                if position is not None:
+                    # Клиент в очереди написал сообщение
+                    await send_message(token, dialog_id,
+                                       f"⏳ Ваше сообщение получено. Вы в очереди на позиции {position}.\n"
+                                       f"⏰ Ожидаемое время: {(position - 1) * 10} минут. Пожалуйста, ожидайте.")
+                    await set_read_flag(token, dialog_id)
+                break
 
 
 async def process_current_customer(token):
@@ -152,25 +153,34 @@ async def start_next_order(token):
         await notify_queue_status(token)
 
 
-async def finish_current_order(token):
+async def finish_current_order(token, status):
     """Завершить текущий заказ и перейти к следующему"""
     global current_processing
 
     if current_processing:
         dialog_id = current_processing
-        await send_message(token, dialog_id,
-                           "✅ Ваш заказ успешно выполнен! Спасибо за использование наших услуг!")
+        if status == "kras":
+            await send_message(token, dialog_id,
+                               f"✅ Готово! Спасибо за заказ — вы теперь на новом уровне 💸\n"
+                                    f"Прокачка завершена — заходите в игру и наслаждайтесь результатом!\n"
+                                    f"🎁 В знак благодарности — +15% валюты при следующем заказе, если вы оставите отзыв!\n"
+                                    f"💬 Каждый отзыв — мощная поддержка. Спасибо, что с нами!\n"
+                                    f"Фишки можно снимать по 10 млн в сутки после траты основной налички.\n"
+                                    f"Снимать их можно на кассе в здании казино.")
+            # Убираем из customers если нужно
+            if dialog_id in customers:
+                del customers[dialog_id]
 
-        # Убираем из customers если нужно
-        if dialog_id in customers:
-            del customers[dialog_id]
+            print(f"Заказ для клиента {dialog_id} завершен")
+        elif status == "deb":
+            await send_message(token, dialog_id,"Время ожидания истекло. Ваш заказ перемещен в конец очереди.")
+            # Убираем из customers если нужно
+            if dialog_id in customers:
+                del customers[dialog_id]#TODO  разобраться как добавить в конец очереди
 
-        current_processing = None
-        print(f"Заказ для клиента {dialog_id} завершен")
-
+    current_processing = None
     # Запускаем следующий заказ
     await start_next_order(token)
-
 
 async def process_new_sales_loop(token):
     """Постоянно проверяет новые продажи"""
@@ -203,6 +213,7 @@ async def process_new_sales_loop(token):
                                     )
                                     # await send_message(token, dialog_id, welcome_message)
                                     print(welcome_message)
+                                    print(f"dialog_id: {dialog_id}")
                     except Exception as e:
                         print(f"❌ Ошибка обработки продажи: {e}")
 
@@ -217,7 +228,7 @@ async def scan_dialogs_loop(token):
     while True:
         try:
             dialogs = await get_dialogs(token)
-            dialog_list = dialogs["chats"]
+            dialog_list = dialogs["items"]
             await scan_dialogs_for_new_customers(token, dialog_list)
 
             # Проверяем диалоги каждые 3 секунды
@@ -242,7 +253,7 @@ async def main_processing_loop():
     token = await get_token()
     # Запускаем все три процесса параллельно
     await asyncio.gather(
-        # process_new_sales_loop(token),
+        process_new_sales_loop(token),
         scan_dialogs_loop(token),
         process_customer_loop(token)
     )

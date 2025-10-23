@@ -61,8 +61,9 @@ class RockstarClicker(PlatformClicker):
                     customer.user_step = "rockstar_guard"
                     await send_message(token, dialog_id, "Введите код RockStar Guard (или другой нужный код):")
 
-                    guard = await wait_for_message(token, dialog_id)
-                    await self.plat_guard(token, dialog_id, guard, customer)
+                    guard = await wait_for_message(token, dialog_id, customer)
+                    if guard is not None:
+                        await self.plat_guard(token, dialog_id, guard, customer)
                 else:
                     if customer.type_of_soft == "Exp":
                         await self.launch_prog(token, dialog_id, message_text, customer)
@@ -93,16 +94,18 @@ class RockstarClicker(PlatformClicker):
             else:
                 await send_message(token, dialog_id, "Код введен неверно, введите еще раз.")
 
-                guard = await wait_for_message(token, dialog_id)
-                await self.plat_guard(token, dialog_id, guard, customer)
+                guard = await wait_for_message(token, dialog_id, customer)
+                if guard is not None:
+                    await self.plat_guard(token, dialog_id, guard, customer)
         else:
             if not await is_error(customer, 430, 650, 440, 660):  # узнать коор ошибки при вводе кода
                 await c_cliker(token, dialog_id, message_text, customer)
             else:
                 await send_message(token, dialog_id, "Код введен неверно, введите еще раз.")
 
-                guard = await wait_for_message(token, dialog_id)
-                await self.plat_guard(token, dialog_id, guard, customer)
+                guard = await wait_for_message(token, dialog_id, customer)
+                if  guard is not None:
+                    await self.plat_guard(token, dialog_id, guard, customer)
 
     async def launch_prog(self, token, dialog_id, message_text, customer):
         # протокола нету как у steam

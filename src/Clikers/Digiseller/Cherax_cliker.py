@@ -6,7 +6,7 @@ from pygetwindow import PyGetWindowException
 from src.Clikers.Digiseller.input_utils import *
 import pyautogui
 from pynput.keyboard import KeyCode
-from src.Handlers.Digiseller.IO_utils import send_screenshot, set_numlock_state
+from src.Handlers.Digiseller.IO_utils import send_screenshot
 
 
 async def c_cliker(token, dialog_id, message_text, customer):
