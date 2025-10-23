@@ -205,7 +205,7 @@ async def set_read_flag(token, dialog_id):
             return response.status == 200
 
 async def wait_for_message(token, dialog_id, customer):
-    end_time = time.time() + 85
+    end_time = time.time() + 500
 
     while time.time() < end_time:
         messages = await get_messages(token, dialog_id)
