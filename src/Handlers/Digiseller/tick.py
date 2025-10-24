@@ -244,7 +244,7 @@ async def process_customer_loop(token):
             await process_current_customer(token)
 
             # Проверяем сообщения от текущего клиента каждые 2 секунды
-            await asyncio.sleep(2)
+            await asyncio.sleep(5)
         except Exception as e:
             print(f"Ошибка в process_customer_loop: {e}")
             await asyncio.sleep(5)
