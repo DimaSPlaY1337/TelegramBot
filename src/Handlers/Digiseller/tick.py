@@ -23,7 +23,7 @@ from OrderDesc import (
 async def scan_dialogs_for_new_customers(token, dialog_list):
     global current_processing
     """Сканируем диалоги и добавляем новых клиентов в очередь"""
-    for dialog in dialog_list[:customers_count]:
+    for dialog in dialog_list:
         dialog_id = dialog['id_i']
         messages = await get_messages(token, dialog_id)
 
@@ -254,7 +254,7 @@ async def main_processing_loop():
     token = await get_token()
     # Запускаем все три процесса параллельно
     await asyncio.gather(
-        process_new_sales_loop(token),
+        # process_new_sales_loop(token),
         scan_dialogs_loop(token),
         process_customer_loop(token)
     )

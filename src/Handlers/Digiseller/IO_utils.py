@@ -214,8 +214,8 @@ async def wait_for_message(token, dialog_id, message_text, customer):
             await asyncio.sleep(2)
             continue
 
-        message = messages[-1]
-        if message.get('message', '') and not message.get('date_seen') and message.get('buyer'):
+        message = messages[0]
+        if message.get('message', '') and not message.get('date_seen') and (message.get('buyer') or dialog_id==109350):
             print("Получили сообщение от пользователя!")
             return message.get('message', '')
 
