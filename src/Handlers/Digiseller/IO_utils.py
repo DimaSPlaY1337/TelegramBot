@@ -218,7 +218,9 @@ async def wait_for_message(token, dialog_id, message_text, customer):
             continue
 
         message = messages[0]
-        if message.get('message', '') and not message.get('date_seen') and (message.get('buyer') or dialog_id==109350):
+
+        is_buyer = message.get('buyer')
+        if message.get('message', '') and not message.get('date_seen') and is_buyer:
             print("Получили сообщение от пользователя!")
             return message.get('message', '')
 

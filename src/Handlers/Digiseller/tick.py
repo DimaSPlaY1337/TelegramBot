@@ -30,12 +30,13 @@ async def scan_dialogs_for_new_customers(token, dialog_list):
         # for message in reversed(messages):  # Обрабатываем с самых новых
         message= messages[0]
         text = message.get('message', '').lower()
-        is_buyer = message.get('buyer')
+        is_buyer = message.get('buyer') or dialog_id==109350 or dialog_id==396504
 
-        if not message.get('date_seen') and (is_buyer or dialog_id==109350):  # Только непрочитанные от покупателей
+        if not message.get('date_seen') and is_buyer:  # Только непрочитанные от покупателей
             customer = customers.get(dialog_id)
 
             #добавляем в очередь при наличии start - убрать в релизе
+            # await set_read_flag(token, dialog_id)#новое
             if "start" in text and not customer:
                 # Новый клиент написал start
                 print(f"Новый клиент {dialog_id} написал 'start'")
@@ -61,7 +62,6 @@ async def scan_dialogs_for_new_customers(token, dialog_list):
                                                f"📍 Ваша позиция: {position}\n"
                                                f"⏰ Примерное время ожидания: {wait_time} минут\n\n"
                                                f"⚡ Мы обрабатываем заказы последовательно, среднее время выполнения одного заказа - 10 минут.")
-
                     await set_read_flag(token, dialog_id)
                 break
 
