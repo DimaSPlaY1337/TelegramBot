@@ -98,8 +98,11 @@ async def get_token():
 async def get_dialogs(token):
     url = f"https://seller.ggsel.net/api_sellers/api/debates/v2/chats?token={token}"
     headers = {"Accept": "application/json"}
+    params = {
+        "filter_new": 1
+    }
     async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=headers) as response:
+        async with session.get(url, headers=headers, params=params) as response:
             response.raise_for_status()
             return await response.json()
 
