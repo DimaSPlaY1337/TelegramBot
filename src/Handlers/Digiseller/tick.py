@@ -88,15 +88,16 @@ async def process_current_customer(token):
         if customer:
             messages = await get_messages(token, dialog_id)
 
-            for message in reversed(messages):
-                text = message.get('message', '')
-                is_buyer = message.get('buyer')
+            # for message in reversed(messages):
+            message = messages[0]
+            text = message.get('message', '')
+            is_buyer = message.get('buyer')
 
-                if not message.get('date_seen') and is_buyer:
-                    print(f"Обрабатываем сообщение от текущего клиента {dialog_id}: {text}")
-                    await process_message_by_step(token, dialog_id, text, customer)
-                    await set_read_flag(token, dialog_id)
-                    break
+            if not message.get('date_seen') and is_buyer:
+                print(f"Обрабатываем сообщение от текущего клиента {dialog_id}: {text}")
+                await process_message_by_step(token, dialog_id, text, customer)
+                await set_read_flag(token, dialog_id)
+                # break
 
 
 async def process_message_by_step(token, dialog_id, message_text, customer):
