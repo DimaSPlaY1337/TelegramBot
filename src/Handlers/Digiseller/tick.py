@@ -23,20 +23,20 @@ from OrderDesc import (
 async def scan_dialogs_for_new_customers(token, dialog_list):
     global current_processing
     """Сканируем диалоги и добавляем новых клиентов в очередь"""
+    #!!убрать (reversed)
     for dialog in dialog_list:
         dialog_id = dialog['id_i']
         messages = await get_messages(token, dialog_id)
 
         # for message in reversed(messages):  # Обрабатываем с самых новых
-        message= messages[0]
+        message= messages[0]#!! 0
         text = message.get('message', '').lower()
-        is_buyer = message.get('buyer') or dialog_id==109350 or dialog_id==396504
+        is_buyer = message.get('buyer')
 
         if not message.get('date_seen') and is_buyer:  # Только непрочитанные от покупателей
             customer = customers.get(dialog_id)
 
             #добавляем в очередь при наличии start - убрать в релизе
-            # await set_read_flag(token, dialog_id)#новое
             if "start" in text and not customer:
                 # Новый клиент написал start
                 print(f"Новый клиент {dialog_id} написал 'start'")
@@ -197,24 +197,28 @@ async def process_new_sales_loop(token):
                         date = sale['date']
                         price = sale['product'].get('price_rub', 0)
                         invoice_id = sale.get('invoice_id')
-
                         print(f"🛒 Новая продажа: {product_name} (ID: {product_id})")
 
                         if invoice_id:
                             purchase_info = await get_purchase_info(token, invoice_id)
-                            if purchase_info:
-                                dialog_id = purchase_info.get('dialog_id')
-                                if dialog_id:
-                                    welcome_message = (
+                            warning_message = (f"‼️ ВАЖНО, прочитайте инструкцию внимательно, ошибки с вашей стороны замедлят процесс выполнения заказа ‼\\n"
+                                            f"Спасибо что выбрали наш магазин.\\n"
+                                            f"Ваш заказ будет выполнен ботом для накрутки.\\n"
+                                            f"Бот назначит ваше место в очерерди и пришлет дальнейшие инструкции.\\n"
+                                            f"До завершения работ игра и лаунчер, в котором она куплена, должны быть закрыты.\\n"
+                                            f"Далее следуйте инструкциям от бота\\n")
+                            welcome_message = (
                                         f"🎉 Здравствуйте!\\n\\n"
                                         f"Спасибо за покупку: {product_name}\\n"
                                         f"💰 Сумма: {price} руб.\\n\\n"
                                         f"🎮 Мы начали обработку вашего заказа!\\n"
                                         f"Напишите 'start' для начала работы."
                                     )
-                                    # await send_message(token, dialog_id, welcome_message)
-                                    print(welcome_message)
-                                    print(f"dialog_id: {dialog_id}")
+                            await send_welcome(token, invoice_id, warning_message)
+                            await send_welcome(token, invoice_id, welcome_message)
+                            print(welcome_message)
+                            print(f"dialog_id: {invoice_id}")
+                            
                     except Exception as e:
                         print(f"❌ Ошибка обработки продажи: {e}")
 
@@ -233,7 +237,7 @@ async def scan_dialogs_loop(token):
             await scan_dialogs_for_new_customers(token, dialog_list)
 
             # Проверяем диалоги каждые 3 секунды
-            await asyncio.sleep(5)
+            await asyncio.sleep(3)
         except Exception as e:
             print(f"Ошибка в scan_dialogs_loop: {e}")
             await asyncio.sleep(5)
@@ -254,7 +258,7 @@ async def main_processing_loop():
     token = await get_token()
     # Запускаем все три процесса параллельно
     await asyncio.gather(
-        # process_new_sales_loop(token),
+        process_new_sales_loop(token),
         scan_dialogs_loop(token),
         process_customer_loop(token)
     )

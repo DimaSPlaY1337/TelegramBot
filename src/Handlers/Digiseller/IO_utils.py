@@ -11,6 +11,8 @@ import json
 import pyautogui
 from PIL import Image
 
+# "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJHR1NlbGxlciIsInN1YiI6NjU2OCwiaWF0IjoxNzYxMDY3NTM0LCJleHAiOjE3NjM3NDU5MzQsImp0aSI6IjVlODlhMzk4LTNiYzItNDYxOC1hNGQ5LTBjMTAxNDk5MDY5YiIsInVzZXIiOnsiaWQiOjY1NjgsImVtYWlsIjoibWFya3R2ZW5ib29zdEBnbWFpbC5jb20ifSwidXVpZCI6IjllMmY2MmRlLWVkOWYtNGZlYS1hMjBmLWVkODc2ZjgxNTJlYSJ9.GSkQr6UVr8YNn1t_o3A1r-7ue98rszhUGkKwKEqI_qA"
+
 API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJHR1NlbGxlciIsInN1YiI6NjU2OCwiaWF0IjoxNzYxMDY3NTM0LCJleHAiOjE3NjM3NDU5MzQsImp0aSI6IjVlODlhMzk4LTNiYzItNDYxOC1hNGQ5LTBjMTAxNDk5MDY5YiIsInVzZXIiOnsiaWQiOjY1NjgsImVtYWlsIjoibWFya3R2ZW5ib29zdEBnbWFpbC5jb20ifSwidXVpZCI6IjllMmY2MmRlLWVkOWYtNGZlYS1hMjBmLWVkODc2ZjgxNTJlYSJ9.GSkQr6UVr8YNn1t_o3A1r-7ue98rszhUGkKwKEqI_qA"
 SELLER_ID = 889983
 
@@ -49,6 +51,7 @@ queue_lock = asyncio.Lock()# Lock гарантирует, что в один м�
 #         conn.close()
 
 async def get_token():
+
     url = "https://seller.ggsel.net/api_sellers/api/apilogin"
     timestamp = int(time.time())
     sign_source = f"{API_KEY}{timestamp}"
@@ -133,8 +136,14 @@ async def get_messages(token, dialog_id):
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as response:
             response.raise_for_status()
-            return await response.json()
+            # !!
+            # return await response.json()
 
+            # Обработка BOM
+            raw_text = await response.text()
+            text_without_bom = raw_text.encode().decode('utf-8-sig')
+
+            return json.loads(text_without_bom)
 # async def send_message(token, dialog_id, text):
 #     conn = None
 #     try:
@@ -217,7 +226,8 @@ async def wait_for_message(token, dialog_id, message_text, customer):
             await asyncio.sleep(2)
             continue
 
-        message = messages[0]
+        # !! 0
+        message = messages[-1]
 
         is_buyer = message.get('buyer')
         if message.get('message', '') and not message.get('date_seen') and is_buyer:
