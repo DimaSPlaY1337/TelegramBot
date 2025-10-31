@@ -76,7 +76,7 @@ class PlatformClicker(ABC):
             await send_message(token, dialog_id, "Код введен неверно, введите еще раз.")
             self.sign_in_rock_button = self.win_top + 622
 
-            guard = await wait_for_message(token, dialog_id)
+            guard = await wait_for_message(token, dialog_id, message_text, customer)
             await self.rockstar_cliker(token, dialog_id, guard, customer, ignore_launch)
         else:
             await self.rockstar_acceptance(token, dialog_id, message_text, customer, ignore_launch)
@@ -89,7 +89,7 @@ class PlatformClicker(ABC):
             self.sign_in_rock_button = self.win_top + 601
 
             await send_message(token, dialog_id, "Введите код RockStar Guard (или другой нужный код):")
-            guard = await wait_for_message(token, dialog_id)
+            guard = await wait_for_message(token, dialog_id, message_text, customer)
             await self.rockstar_cliker(token, dialog_id, guard, customer, ignore_launch)
         elif not ignore_launch:
             await self.launch_prog(token, dialog_id, message_text, customer)

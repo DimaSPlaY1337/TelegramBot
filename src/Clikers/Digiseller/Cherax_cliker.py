@@ -38,6 +38,10 @@ async def c_cliker(token, dialog_id, message_text, customer):
 
         click(x=win_left + 91, y=win_top + 265, times=3, t = 0.2)
 
+        time.sleep(5)
+        if customer.platform == "steam":
+            await customer.clicker.steam_EULA()
+
         await customer.clicker.rockstar_search(token, dialog_id, message_text, customer, 10, True)
 
         win_rock = await wait_for_open("Rockstar Games Launcher", 100)
@@ -88,8 +92,14 @@ async def gta_cliker(token, dialog_id, message_text, customer):
             break
 
     time.sleep(8)
-    click(1308,88, 5, 1)
-    keyboard_press_key("e", 3)
+    click(1508,88, 5, 1)
+    for x in range(1066, 1086):
+        for y in range(88, 98):
+            r, g, b = pyautogui.pixel(x, y)
+            if r==g==b!=0:
+                keyboard_press_key("e", 1, 2)
+    keyboard_press_key(Key.right, 2)
+    keyboard_press_key(Key.down, 3)
     keyboard_press_key("enter", 1)
 
     time.sleep(5)
@@ -184,6 +194,7 @@ async def night_club(customer):
     click(125, 574)
     time.sleep(1)
     ctypes.windll.user32.ShowCursor(False)
+    click(220, 570)
     time.sleep(1)
     while True:
         r, g, b = pyautogui.pixel(120, 570)

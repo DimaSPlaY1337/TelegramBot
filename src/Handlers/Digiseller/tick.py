@@ -26,55 +26,56 @@ async def scan_dialogs_for_new_customers(token, dialog_list):
     #!!убрать (reversed)
     for dialog in dialog_list:
         dialog_id = dialog['id_i']
-        messages = await get_messages(token, dialog_id)
+        if dialog_id is not None:
+            messages = await get_messages(token, dialog_id)
 
-        # for message in reversed(messages):  # Обрабатываем с самых новых
-        message= messages[0]#!! 0
-        text = message.get('message', '').lower()
-        is_buyer = message.get('buyer')
+            # for message in reversed(messages):  # Обрабатываем с самых новых
+            message= messages[0]#!! 0
+            text = message.get('message', '').lower()
+            is_buyer = message.get('buyer')
 
-        if not message.get('date_seen') and is_buyer:  # Только непрочитанные от покупателей
-            customer = customers.get(dialog_id)
-
-            #добавляем в очередь при наличии start - убрать в релизе
-            if "start" in text and not customer:
-                # Новый клиент написал start
-                print(f"Новый клиент {dialog_id} написал 'start'")
-
-                # Создаем временного клиента для очереди (или получаем из send_welcome)
-                await send_welcome(token, dialog_id, message)
+            if not message.get('date_seen') and is_buyer:  # Только непрочитанные от покупателей
                 customer = customers.get(dialog_id)
 
-                if customer:
-                    # Добавляем в очередь
-                    added = await add_to_queue(dialog_id, customer)
-                    if added:
-                        position = await get_queue_position(dialog_id)
-                        if position == 1:
-                            await send_message(token, dialog_id,
-                                               "🎮 Добро пожаловать! Вы первый в очереди, начинаем обработку вашего заказа прямо сейчас!")
-                            current_processing = dialog_id
-                            await choosing_platform(token, dialog_id, message, customer)
-                        else:
-                            wait_time = (position - 1) * 10
-                            await send_message(token, dialog_id,
-                                               f"🎮 Добро пожаловать! Вы добавлены в очередь.\n\n"
-                                               f"📍 Ваша позиция: {position}\n"
-                                               f"⏰ Примерное время ожидания: {wait_time} минут\n\n"
-                                               f"⚡ Мы обрабатываем заказы последовательно, среднее время выполнения одного заказа - 10 минут.")
-                    await set_read_flag(token, dialog_id)
-                break
+                #добавляем в очередь при наличии start - убрать в релизе
+                if "start" in text and not customer:
+                    # Новый клиент написал start
+                    print(f"Новый клиент {dialog_id} написал 'start'")
 
-            # Если клиент уже есть, но не в процессе обработки - проверяем очередь
-            elif customer and dialog_id != current_processing:
-                position = await get_queue_position(dialog_id)
-                if position is not None:
-                    # Клиент в очереди написал сообщение
-                    await send_message(token, dialog_id,
-                                       f"⏳ Ваше сообщение получено. Вы в очереди на позиции {position}.\n"
-                                       f"⏰ Ожидаемое время: {(position - 1) * 10} минут. Пожалуйста, ожидайте.")
-                    await set_read_flag(token, dialog_id)
-                break
+                    # Создаем временного клиента для очереди (или получаем из send_welcome)
+                    await send_welcome(token, dialog_id, message)
+                    customer = customers.get(dialog_id)
+
+                    if customer:
+                        # Добавляем в очередь
+                        added = await add_to_queue(dialog_id, customer)
+                        if added:
+                            position = await get_queue_position(dialog_id)
+                            if position == 1:
+                                await send_message(token, dialog_id,
+                                                   "🎮 Добро пожаловать! Вы первый в очереди, начинаем обработку вашего заказа прямо сейчас!")
+                                current_processing = dialog_id
+                                await choosing_platform(token, dialog_id, message, customer)
+                            else:
+                                wait_time = (position - 1) * 10
+                                await send_message(token, dialog_id,
+                                                   f"🎮 Добро пожаловать! Вы добавлены в очередь.\n\n"
+                                                   f"📍 Ваша позиция: {position}\n"
+                                                   f"⏰ Примерное время ожидания: {wait_time} минут\n\n"
+                                                   f"⚡ Мы обрабатываем заказы последовательно, среднее время выполнения одного заказа - 10 минут.")
+                        # await set_read_flag(token, dialog_id) не срабатывает
+                    break
+
+                # Если клиент уже есть, но не в процессе обработки - проверяем очередь
+                elif customer and dialog_id != current_processing:
+                    position = await get_queue_position(dialog_id)
+                    if position is not None:
+                        # Клиент в очереди написал сообщение
+                        await send_message(token, dialog_id,
+                                           f"⏳ Ваше сообщение получено. Вы в очереди на позиции {position}.\n"
+                                           f"⏰ Ожидаемое время: {(position - 1) * 10} минут. Пожалуйста, ожидайте.")
+                        # await set_read_flag(token, dialog_id) не срабатывает
+                    break
 
 
 async def process_current_customer(token):
@@ -96,7 +97,7 @@ async def process_current_customer(token):
             if not message.get('date_seen') and is_buyer:
                 print(f"Обрабатываем сообщение от текущего клиента {dialog_id}: {text}")
                 await process_message_by_step(token, dialog_id, text, customer)
-                await set_read_flag(token, dialog_id)
+                # await set_read_flag(token, dialog_id) сайт не работает
                 # break
 
 

@@ -222,7 +222,7 @@ class SteamClicker(PlatformClicker):
             center_x = win.left + win.width // 2 + 100
             center_y = win.top + win.height // 2 + 75
 
-            time.sleep(0.5)
+            time.sleep(4)
             pyautogui.click(x=center_x, y=center_y)
 
             win.close()

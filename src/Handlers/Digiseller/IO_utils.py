@@ -227,10 +227,11 @@ async def wait_for_message(token, dialog_id, message_text, customer):
             continue
 
         # !! 0
-        message = messages[-1]
+        message = messages[0]
 
         is_buyer = message.get('buyer')
-        if message.get('message', '') and not message.get('date_seen') and is_buyer:
+        # if message.get('message', '') and not message.get('date_seen') and is_buyer:
+        if message.get('message', '') and is_buyer:
             print("Получили сообщение от пользователя!")
             return message.get('message', '')
 
@@ -388,7 +389,7 @@ async def send_screenshot_message(token: str, dialog_id: str, message_text: str,
     """
     try:
         # Шаг 1: Предварительная загрузка скриншота
-        upload_response = await upload_screenshot(token, screenshot_path, lang)
+        upload_response = False #await upload_screenshot(token, screenshot_path, lang)
 
         if not upload_response:
             print("Ошибка загрузки файла")

@@ -31,14 +31,50 @@ async def choosing_platform(token, dialog_id, message_data, customer):
     # await send_message(token, dialog_id, platform_text)
     # customer.user_step = "choose_platform"
 
-    customer.platform = "steam"
-    customer.data_for_reg["login"] = "mustypalate7710"
-    customer.data_for_reg["password"] = "kFzrZYF_JcJF3r"
+    # customer.platform = "steam"
+    # customer.data_for_reg["login"] = "mustypalate7710"
+    # customer.data_for_reg["password"] = "kFzrZYF_JcJF3r"
+    # customer.order_des = {
+    #     "version": "enhanced",
+    #     "amount": "70000000",
+    #     "levels": "105",
+    #     "unlocks": "standard unlocks"
+    # }
+    purchase_info = await get_purchase_info(token, dialog_id)
+    options = purchase_info['content']['options']
+    money = next((item['user_data'] for item in options if 'Деньги' in item.get('name', '')), None)
+    if money:
+        money = money.replace('.', '').replace('$', '')
+
+    level = next((item['user_data'] for item in options if 'Уровни' in item.get('name', '')), None)
+    if level:
+        level = level.lower()
+
+    login = next((item['user_data'] for item in options if 'Логин' in item.get('name', '')), None)
+    if login:
+        login = login.lower()
+
+    password = next((item['user_data'] for item in options if 'Пароль' in item.get('name', '')), None)
+    if password:
+        password = password.lower()
+
+    version = next((item['user_data'] for item in options if 'Выберите Платформу' in item.get('name', '')), None)
+    if version:
+        version = version.lower()
+
+    super_unclocks = next((item['user_data'] for item in options if 'Особые Разблокировки' in item.get('name', '')), None)
+    standart_unclocks = next((item['user_data'] for item in options if 'Разблокировки' in item.get('name', '')), None)
+    unlock = super_unclocks or standart_unclocks
+    if unlock:
+        unlock = unlock.lower()
+
+    customer.data_for_reg["login"] = login.strip()
+    customer.data_for_reg["password"] = password.strip()
     customer.order_des = {
-        "version": "enhanced",
-        "amount": "110000000",
-        "levels": "120",
-        "unlocks": "standard unlocks"
+        "version": version,
+        "amount": money,
+        "levels": level,
+        "unlocks": unlock,
     }
     customer.clicker = SteamClicker()
     await customer.clicker.plat_clicker(token, dialog_id, message_data, customer)
