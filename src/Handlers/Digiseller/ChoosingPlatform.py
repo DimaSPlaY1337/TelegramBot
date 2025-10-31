@@ -51,12 +51,8 @@ async def choosing_platform(token, dialog_id, message_data, customer):
         level = level.lower()
 
     login = next((item['user_data'] for item in options if 'Логин' in item.get('name', '')), None)
-    if login:
-        login = login.lower()
 
     password = next((item['user_data'] for item in options if 'Пароль' in item.get('name', '')), None)
-    if password:
-        password = password.lower()
 
     version = next((item['user_data'] for item in options if 'Выберите Платформу' in item.get('name', '')), None)
     if version:
@@ -76,7 +72,12 @@ async def choosing_platform(token, dialog_id, message_data, customer):
         "levels": level,
         "unlocks": unlock,
     }
-    customer.clicker = SteamClicker()
+    if customer.platform == "steam":
+        customer.clicker = SteamClicker()
+    elif customer.platform == "rockstar":
+        customer.clicker = RockstarClicker()
+    elif customer.platform == "epicgames":
+        customer.clicker = EpicgamesClicker()
     await customer.clicker.plat_clicker(token, dialog_id, message_data, customer)
 
 
