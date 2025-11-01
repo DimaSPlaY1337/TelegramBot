@@ -34,11 +34,12 @@ async def scan_dialogs_for_new_customers(token, dialog_list):
             text = message.get('message', '').lower()
             is_buyer = message.get('buyer')
 
-            if not message.get('date_seen') and is_buyer:  # Только непрочитанные от покупателей
+            if is_buyer:  # Только непрочитанные от покупателей
+                #TODO убрать customers и пользоваться только order_queue. Там тоже есть id. Просто 1 слоаврь, а 2 список
                 customer = customers.get(dialog_id)
 
                 #добавляем в очередь при наличии start - убрать в релизе
-                if "start" in text and dialog_id:
+                if "start" in text and not dialog_id in customers:
                     # Новый клиент написал start
                     print(f"Новый клиент {dialog_id} написал 'start'")
 
@@ -230,7 +231,8 @@ async def scan_dialogs_loop(token):
         try:
             dialogs = await get_dialogs(token)
             dialog_list = dialogs["items"]
-            await scan_dialogs_for_new_customers(token, dialog_list)
+            sorted_list = sorted(dialog_list, key=lambda x: x['last_message'], reverse=True)
+            await scan_dialogs_for_new_customers(token, sorted_list)
 
             # Проверяем диалоги каждые 3 секунды
             await asyncio.sleep(3)
