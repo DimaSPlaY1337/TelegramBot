@@ -54,7 +54,11 @@ async def choosing_platform(token, dialog_id, message_data, customer):
 
     password = next((item['user_data'] for item in options if 'Пароль' in item.get('name', '')), None)
 
-    version = next((item['user_data'] for item in options if 'Выберите Платформу' in item.get('name', '')), None)
+    platform = next((item['user_data'] for item in options if 'Выберите Платформу' in item.get('name', '')), None)
+    if platform:
+        platform = platform.lower()
+
+    version = next((item['user_data'] for item in options if 'Версия игры' in item.get('name', '')), None)
     if version:
         version = version.lower()
 
@@ -64,6 +68,7 @@ async def choosing_platform(token, dialog_id, message_data, customer):
     if unlock:
         unlock = unlock.lower()
 
+    customer.platform = platform
     customer.data_for_reg["login"] = login.strip()
     customer.data_for_reg["password"] = password.strip()
     customer.order_des = {

@@ -8,7 +8,7 @@ from src.Handlers.Digiseller.IO_utils import (
     check_new_sales, processed_sales, get_dialog_id_from_sale,
     customers_count
 )
-from DigisellersWelcome import send_welcome, customers
+from DigisellersWelcome import add_customer, customers
 from ChoosingPlatform import (
     handle_platform_choice, handle_login, handle_password, handle_version, choosing_platform
 )
@@ -38,12 +38,12 @@ async def scan_dialogs_for_new_customers(token, dialog_list):
                 customer = customers.get(dialog_id)
 
                 #добавляем в очередь при наличии start - убрать в релизе
-                if "start" in text and not customer:
+                if "start" in text and dialog_id:
                     # Новый клиент написал start
                     print(f"Новый клиент {dialog_id} написал 'start'")
 
                     # Создаем временного клиента для очереди (или получаем из send_welcome)
-                    await send_welcome(token, dialog_id, message)
+                    await add_customer(token, dialog_id)
                     customer = customers.get(dialog_id)
 
                     if customer:
@@ -97,9 +97,6 @@ async def process_current_customer(token):
             if not message.get('date_seen') and is_buyer:
                 print(f"Обрабатываем сообщение от текущего клиента {dialog_id}: {text}")
                 await process_message_by_step(token, dialog_id, text, customer)
-                # await set_read_flag(token, dialog_id) сайт не работает
-                # break
-
 
 async def process_message_by_step(token, dialog_id, message_text, customer):
     """Обработка сообщения по шагам"""
@@ -176,9 +173,9 @@ async def finish_current_order(token, status):
             print(f"Заказ для клиента {dialog_id} завершен")
         elif status == "deb":
             await send_message(token, dialog_id,"Время ожидания истекло. Ваш заказ перемещен в конец очереди.")
-            # Убираем из customers если нужно
             if dialog_id in customers:
-                del customers[dialog_id]#TODO  разобраться как добавить в конец очереди
+                user = order_queue.pop(0)  # Удаляет и возвращает первый элемент
+                order_queue.append(user)
 
     current_processing = None
     # Запускаем следующий заказ
@@ -215,8 +212,6 @@ async def process_new_sales_loop(token):
                                         f"🎮 Мы начали обработку вашего заказа!\\n"
                                         f"Напишите 'start' для начала работы."
                                     )
-                            await send_welcome(token, invoice_id, warning_message)
-                            await send_welcome(token, invoice_id, welcome_message)
                             print(welcome_message)
                             print(f"dialog_id: {invoice_id}")
                             
