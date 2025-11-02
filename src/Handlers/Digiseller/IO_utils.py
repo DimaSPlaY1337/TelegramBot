@@ -544,94 +544,165 @@ async def get_all_sales(token: str, product_ids: Optional[str] = None,
 
     return all_sales
 
-
-async def get_last_sales(token: str,
-                         seller_id: int = 0,
-                         top: int = 20,
-                         group: str = "true") -> Optional[dict]:
+async def get_last_sales(token, count=10):
     """
-    Получение списка последних продаж
+    Получает последние продажи
 
     Args:
-        token: Токен авторизации API Digiseller
-        seller_id: ID продавца (по умолчанию 0)
-        top: Количество записей (по умолчанию 1000)
-        group: Группировка "true" или "false" (по умолчанию "true")
+        token: Токен авторизации
+        count: Количество последних продаж (по умолчанию 10)
 
     Returns:
-        dict: Список последних продаж
-        None: В случае ошибки
+        List[dict]: Список продаж
     """
     url = "https://seller.ggsel.net/api_sellers/api/seller-last-sales"
 
     headers = {
-        "Accept": "application/json"
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
     }
 
-    # Формируем параметры согласно документации
     params = {
-        "seller_id": seller_id,
-        "top": top,
-        "group": group,
-        "token": token
+        "count": count  # Можно указать количество возвращаемых продаж
     }
 
     try:
-        async with aiohttp.ClientSession() as session:#, params=params
-            async with session.get(url, headers=headers) as response:
-                # Логирование для отладки
-                print(f"Request URL: {response.url}")
-
-                response.raise_for_status()
-                data = await response.json()
-
-                # Проверяем код возврата
-                if data.get("retval") != 0:
-                    print(f"API ошибка: {data.get('retdesc')}")
-                    return None
-
-                return data
-
-    except aiohttp.ClientResponseError as e:
-        print(f"HTTP ошибка {e.status}: {e.message}")
-        print(f"URL: {e.request_info.url}")
-        return None
-
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers, params=params) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    # API возвращает список продаж напрямую
+                    return data if isinstance(data, list) else []
+                else:
+                    print(f"❌ Ошибка получения продаж: {response.status}")
+                    error_text = await response.text()
+                    print(f"Детали ошибки: {error_text}")
+                    return []
     except Exception as e:
-        print(f"Ошибка: {e}")
-        return None
-
-
-async def check_new_sales(token: str) -> list:
-    """
-    Проверяет наличие новых продаж и возвращает список новых
-# id = dialogs['chats'][3]['id_i']
-# info = await get_purchase_info(token, id)
-    Returns:
-        list: Список новых продаж [{sale_data}, ...]
-    """
-    global processed_sales
-
-    # Получаем последние продажи
-    sales_data = await get_last_sales(token, seller_id=SELLER_ID, top=customers_count)
-
-    if not sales_data or not sales_data.get('sales'):
+        print(f"❌ Исключение при получении продаж: {e}")
         return []
 
-    new_sales = []
 
-    for sale in sales_data['sales']:
-        # Создаем уникальный ID продажи (дата + product_id)
-        sale_date = sale.get('date', '')
-        product_id = sale.get('product', {}).get('id')
+async def check_new_sales(token):
+    """Проверяет наличие новых продаж"""
+    try:
+        sales = await get_last_sales(token, count=20)
 
-        # Если продажа еще не обработана
-        if product_id not in processed_sales:
-            new_sales.append(sale)
-            processed_sales.add(product_id)
-            print(f"🆕 Обнаружена новая продажа: {product_id}")
+        if not sales:
+            return []
 
-    return new_sales
+        new_sales = []
+        for sale in sales:
+            invoice_id = sale.get('invoice_id')
+
+            # Проверяем, не обрабатывали ли мы эту продажу
+            if invoice_id and invoice_id not in processed_sales:
+                new_sales.append(sale)
+                processed_sales.add(invoice_id)
+
+        for sale in sales['sales']:
+            # Создаем уникальный ID продажи (дата + product_id)
+            sale_date = sale.get('date', '')
+            product_id = sale.get('product', {}).get('id')
+
+            # Если продажа еще не обработана
+            if product_id not in processed_sales:
+                new_sales.append(sale)
+                processed_sales.add(product_id)
+                print(f"🆕 Обнаружена новая продажа: {product_id}")
+
+        return new_sales
+    except Exception as e:
+        print(f"❌ Ошибка проверки новых продаж: {e}")
+        return []
+
+# async def get_last_sales(token: str,
+#                          seller_id: int = 0,
+#                          top: int = 20,
+#                          group: str = "true") -> Optional[dict]:
+#     """
+#     Получение списка последних продаж
+#
+#     Args:
+#         token: Токен авторизации API Digiseller
+#         seller_id: ID продавца (по умолчанию 0)
+#         top: Количество записей (по умолчанию 1000)
+#         group: Группировка "true" или "false" (по умолчанию "true")
+#
+#     Returns:
+#         dict: Список последних продаж
+#         None: В случае ошибки
+#     """
+#     url = "https://seller.ggsel.net/api_sellers/api/seller-last-sales"
+#
+#     headers = {
+#         "Accept": "application/json"
+#     }
+#
+#     # Формируем параметры согласно документации
+#     params = {
+#         "token": token,
+#         "seller_id": seller_id,
+#         "group": group,
+#         "top": top
+#     }
+#
+#     try:
+#         async with aiohttp.ClientSession() as session:#, params=params
+#             async with session.get(url, headers=headers) as response:
+#                 # Логирование для отладки
+#                 print(f"Request URL: {response.url}")
+#
+#                 response.raise_for_status()
+#                 data = await response.json()
+#
+#                 # Проверяем код возврата
+#                 if data.get("retval") != 0:
+#                     print(f"API ошибка: {data.get('retdesc')}")
+#                     return None
+#
+#                 return data
+#
+#     except aiohttp.ClientResponseError as e:
+#         print(f"HTTP ошибка {e.status}: {e.message}")
+#         print(f"URL: {e.request_info.url}")
+#         return None
+#
+#     except Exception as e:
+#         print(f"Ошибка: {e}")
+#         return None
+#
+#
+# async def check_new_sales(token: str) -> list:
+#     """
+#     Проверяет наличие новых продаж и возвращает список новых
+# # id = dialogs['chats'][3]['id_i']
+# # info = await get_purchase_info(token, id)
+#     Returns:
+#         list: Список новых продаж [{sale_data}, ...]
+#     """
+#     global processed_sales
+#
+#     # Получаем последние продажи
+#     sales_data = await get_last_sales(token, seller_id=SELLER_ID, top=customers_count)
+#
+#     if not sales_data or not sales_data.get('sales'):
+#         return []
+#
+#     new_sales = []
+#
+#     for sale in sales_data['sales']:
+#         # Создаем уникальный ID продажи (дата + product_id)
+#         sale_date = sale.get('date', '')
+#         product_id = sale.get('product', {}).get('id')
+#
+#         # Если продажа еще не обработана
+#         if product_id not in processed_sales:
+#             new_sales.append(sale)
+#             processed_sales.add(product_id)
+#             print(f"🆕 Обнаружена новая продажа: {product_id}")
+#
+#     return new_sales
 
 
 async def get_dialog_id_from_sale(token: str, ids: int) -> Optional[str]:
