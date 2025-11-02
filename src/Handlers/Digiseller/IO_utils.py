@@ -577,8 +577,8 @@ async def get_last_sales(token: str,
     }
 
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=headers, params=params) as response:
+        async with aiohttp.ClientSession() as session:#, params=params
+            async with session.get(url, headers=headers) as response:
                 # Логирование для отладки
                 print(f"Request URL: {response.url}")
 

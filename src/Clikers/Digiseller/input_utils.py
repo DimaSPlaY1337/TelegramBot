@@ -1,6 +1,8 @@
 import asyncio
 import ctypes
 import time
+import win32api
+import win32con
 import pygetwindow as gw
 import pyautogui
 from pynput.keyboard import Controller, Key
@@ -81,6 +83,13 @@ async def is_green(r, g, b, min_g=119, max_g=160, diff_rg=30, diff_bg=15):
 #     print(f" Цвет поля: {r}, {g}, {b}")
 #     return abs(r - g) <= diff and abs(r - b) <= diff and abs(g - b) <= diff
 
+def search_gray_window(found):
+    if await is_gray(r, g, b) and found == False:
+        click(2369, 148)
+        keyboard_press_key('enter')
+        print("Нашли серое окно GTA")
+        found = True
+
 async def is_gray(r, g, b, diff=3, min_val=26, max_val=159):
     """
     Проверяет, является ли цвет тёмно-серым: оттенки типа 1A1A1A, 1D1D1D и похожие.
@@ -141,6 +150,13 @@ def press_key(key, times=1):
     for _ in range(times):
         pyautogui.press(key)
         time.sleep(0.3) # небольшая пауза между нажатиями 0.2
+
+def click32(x, y, times=1, t=1):
+    for _ in range(times):
+        win32api.SetCursorPos((x, y))
+        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, x, y, 0, 0)
+        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, x, y, 0, 0)
+        time.sleep(t)
 
 def click(x, y, times=1, t=1):
     for _ in range(times):

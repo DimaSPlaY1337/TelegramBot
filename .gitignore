@@ -1,0 +1,5 @@
+*.xml
+*.iml
+*.db
+.idea/*
+.idea/TelegramBot.iml
