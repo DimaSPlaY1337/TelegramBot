@@ -18,6 +18,8 @@
 from IO_utils import *
 from OrderDesc import order_description
 from src.Clikers.Digiseller.SteamClicker import SteamClicker
+from src.Clikers.Digiseller.RockstarClicker import RockstarClicker
+from src.Clikers.Digiseller.EpicgamesClicker import EpicgamesClicker
 
 
 async def choosing_platform(token, dialog_id, message_data, customer):
