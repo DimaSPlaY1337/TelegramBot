@@ -84,33 +84,36 @@ async def gta_cliker(token, dialog_id, message_text, customer):
         win_c.minimize()
         print("Console Window Host")
 
-    time.sleep(2)
-    found = False
-    end_time = time.time() + 30
-    while True:
-        search_gray_window(found)
-        r, g, b = pyautogui.pixel(2213, 211)
-        print(f"Текущий цвет: {r}, {g}, {b}")
-        if await is_green(r, g, b):
-            print("Цвет стал целевым!")
-            break
-        if time.time() > end_time:
-            keyboard_press_key("e", 1)
-            end_time = time.time() + 30
+    if customer.version == "enhanced":
+        time.sleep(2)
+        found = False
+        end_time = time.time() + 30
+        while True:
+            search_gray_window(found)
+            r, g, b = pyautogui.pixel(2213, 211)
+            print(f"Текущий цвет: {r}, {g}, {b}")
+            if await is_green(r, g, b):
+                print("Цвет стал целевым!")
+                break
+            if time.time() > end_time:
+                keyboard_press_key("e", 1)
+                end_time = time.time() + 30
+        time.sleep(8)
+        click(1508, 88, 5, 1)
+        # for x in range(1066, 1086):
+        #     for y in range(88, 98):
+        #         r, g, b = pyautogui.pixel(x, y)
+        #         if r==g==b!=0:
+        #             keyboard_press_key("e", 1, 2)
+        keyboard_press_key(Key.right, 2)
+        keyboard_press_key(Key.down, 3)
+        keyboard_press_key("enter", 1)
 
-    time.sleep(8)
-    click(1508,88, 5, 1)
-    # for x in range(1066, 1086):
-    #     for y in range(88, 98):
-    #         r, g, b = pyautogui.pixel(x, y)
-    #         if r==g==b!=0:
-    #             keyboard_press_key("e", 1, 2)
-    keyboard_press_key(Key.right, 2)
-    keyboard_press_key(Key.down, 3)
-    keyboard_press_key("enter", 1)
-
-    time.sleep(5)
-    keyboard_press_key("enter", 3)
+        time.sleep(5)
+        keyboard_press_key("enter", 3)
+    elif customer.version == "legacy":
+        time.sleep(115)
+        click(2417, 1395, 10, 0.2)
 
     time.sleep(40)
     await cherax_cliker(token, dialog_id, message_text, customer)
@@ -127,7 +130,10 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
     keyboard_press_key('o')
     print("Загрузка в сессию")
 
-    time.sleep(10)
+    if customer.version == "enhanced":
+        time.sleep(10)
+    elif customer.version == "legacy":
+        time.sleep(100)
     keyboard_press_key('n',1,3)
     if customer.order_des["amount"].isdigit():
         click(x=527, y=162, times=2, t=2)
