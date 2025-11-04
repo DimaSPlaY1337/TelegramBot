@@ -84,13 +84,13 @@ async def is_green(r, g, b, min_g=119, max_g=160, diff_rg=30, diff_bg=15):
 #     return abs(r - g) <= diff and abs(r - b) <= diff and abs(g - b) <= diff
 
 def search_gray_window(found):
-    if is_gray(r, g, b) and found == False:
+    if await is_gray(r, g, b) and found == False:
         click(2369, 148)
         keyboard_press_key('enter')
         print("Нашли серое окно GTA")
         found = True
 
-def is_gray(r, g, b, diff=3, min_val=26, max_val=159):
+async def is_gray(r, g, b, diff=3, min_val=26, max_val=159):
     """
     Проверяет, является ли цвет тёмно-серым: оттенки типа 1A1A1A, 1D1D1D и похожие.
     """
