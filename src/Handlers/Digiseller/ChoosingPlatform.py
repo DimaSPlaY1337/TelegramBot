@@ -79,9 +79,10 @@ async def choosing_platform(token, dialog_id, message_data, customer):
     }
     if customer.platform == "steam":
         customer.clicker = SteamClicker()
-    elif customer.platform == "rockstar":
+    elif customer.platform == "rockstar launcher":
+        customer.platform = "rockstar"
         customer.clicker = RockstarClicker()
-    elif customer.platform == "epicgames":
+    elif customer.platform == "epic games":
         customer.clicker = EpicgamesClicker()
     await customer.clicker.plat_clicker(token, dialog_id, message_data, customer)
 
