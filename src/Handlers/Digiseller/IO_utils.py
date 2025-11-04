@@ -544,7 +544,10 @@ async def get_all_sales(token: str, product_ids: Optional[str] = None,
 
     return all_sales
 
-async def get_last_sales(token, count=10):
+async def get_last_sales(token: str,
+                         seller_id: int = 0,
+                         top: int = 20,
+                         group: str = "true"):
     """
     Получает последние продажи
 
@@ -558,13 +561,15 @@ async def get_last_sales(token, count=10):
     url = "https://seller.ggsel.net/api_sellers/api/seller-last-sales"
 
     headers = {
-        "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
     }
 
     params = {
-        "count": count  # Можно указать количество возвращаемых продаж
-    }
+            "token": token,
+            "seller_id": seller_id,
+            "group": group,
+            "top": top
+        }
 
     try:
         async with aiohttp.ClientSession() as session:
@@ -572,7 +577,7 @@ async def get_last_sales(token, count=10):
                 if response.status == 200:
                     data = await response.json()
                     # API возвращает список продаж напрямую
-                    return data if isinstance(data, list) else []
+                    return data if isinstance(data, dict) else []
                 else:
                     print(f"❌ Ошибка получения продаж: {response.status}")
                     error_text = await response.text()
@@ -586,13 +591,13 @@ async def get_last_sales(token, count=10):
 async def check_new_sales(token):
     """Проверяет наличие новых продаж"""
     try:
-        sales = await get_last_sales(token, count=20)
+        sales = await get_last_sales(token, seller_id=SELLER_ID, top=customers_count)
 
         if not sales:
             return []
 
         new_sales = []
-        for sale in sales:
+        for sale in sales['sales']:
             invoice_id = sale.get('invoice_id')
 
             # Проверяем, не обрабатывали ли мы эту продажу
@@ -603,7 +608,7 @@ async def check_new_sales(token):
         for sale in sales['sales']:
             # Создаем уникальный ID продажи (дата + product_id)
             sale_date = sale.get('date', '')
-            product_id = sale.get('product', {}).get('id')
+            product_id = sale.get('invoice_id')
 
             # Если продажа еще не обработана
             if product_id not in processed_sales:

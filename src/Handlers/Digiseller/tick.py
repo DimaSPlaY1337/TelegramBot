@@ -231,7 +231,7 @@ async def scan_dialogs_loop(token):
         try:
             dialogs = await get_dialogs(token)
             dialog_list = dialogs["items"]
-            sorted_list = sorted(dialog_list, key=lambda x: x['last_message'], reverse=True)
+            sorted_list = sorted(dialog_list, key=lambda x: x['last_message'], reverse=True)[:customers_count]
             await scan_dialogs_for_new_customers(token, sorted_list)
 
             # Проверяем диалоги каждые 3 секунды
