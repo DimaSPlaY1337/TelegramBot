@@ -96,7 +96,7 @@ class PlatformClicker(ABC):
 
     async def rockstar_acceptance(self, token, dialog_id, message_text, customer, ignore_launch):
         time.sleep(12)
-        win_rock = await wait_for_open("Rockstar Games Launcher", 100)
+        win_rock = await wait_for_open("Rockstar Games Launcher", 20) or await wait_for_open("Rockstar Games - Sign In", 20)
         if win_rock:
             win_rock.resizeTo(1024, 600)
             time.sleep(0.5)

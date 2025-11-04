@@ -135,57 +135,59 @@ async def cherax_cliker(token, dialog_id, message_text, customer):
     elif customer.version == "legacy":
         time.sleep(100)
     keyboard_press_key('n',1,3)
-    if customer.order_des["amount"].isdigit():
-        click(x=527, y=162, times=2, t=2)
-        click(x=418, y=351, times=2, t=2)
-        click(x=408, y=164, times=2, t=2)
-        click(x=496, y=189, times=2, t=2)
-        #121 412 and 172 426
-        nightclub = False
+    if customer.order_des["amount"] is not None:
+        if customer.order_des["amount"].isdigit():
+            click(x=527, y=162, times=2, t=2)
+            click(x=418, y=351, times=2, t=2)
+            click(x=408, y=164, times=2, t=2)
+            click(x=496, y=189, times=2, t=2)
+            #121 412 and 172 426
+            nightclub = False
 
-        time.sleep(5)
-        r, g, b = pyautogui.pixel(120, 570)
-        if r == 70 and g == 0 and 120 <= b <= 121:
-            print("Nightclub есть")
-            nightclub = True
-
-        click(x=220, y=570, times=2, t=0.5)
-        if nightclub:
-            await night_club(customer)
-        else:
-            click(141, 238,2, 3)
-            # set_numlock_state(1)  # 1 = включить, 0 = выключить
-            # time.sleep(1)
-            keyboard_press_key(Key.end,1,1)#numpad 1
-            keyboard_press_key(Key.up, 1, 1)
-            keyboard_press_key(Key.down, 1, 1)
-            keyboard_press_key('enter', 1, 1)
-            click32(1376,792,10, 0.2)
-            time.sleep(1)
-            click32(1488, 1194,10, 0.2)
-            time.sleep(1)
-            click32(1801, 401,10, 0.2)
-            time.sleep(1)
-            click32(1604, 1360,10, 0.2)
-            time.sleep(1)
-            click32(976, 1144,10, 0.2)
-            time.sleep(1)
-            click32(964, 1316,10,0.2)
-            time.sleep(1)
-            click32(2079, 1310,10, 0.2)
             time.sleep(5)
-            click32(2101, 144,10,0.2)
-            keyboard_press_key(Key.end)
-            await night_club(customer)
+            r, g, b = pyautogui.pixel(120, 570)
+            if r == 70 and g == 0 and 120 <= b <= 121:
+                print("Nightclub есть")
+                nightclub = True
 
-    if customer.order_des["levels"].isdigit():
-        click(81,357,2)
-        click(136,175)
-        write_text(customer.order_des["levels"])
-        click(140, 197,2)
+            click(x=220, y=570, times=2, t=0.5)
+            if nightclub:
+                await night_club(customer)
+            else:
+                click(141, 238,2, 3)
+                # set_numlock_state(1)  # 1 = включить, 0 = выключить
+                # time.sleep(1)
+                keyboard_press_key(Key.end,1,1)#numpad 1
+                keyboard_press_key(Key.up, 1, 1)
+                keyboard_press_key(Key.down, 1, 1)
+                keyboard_press_key('enter', 1, 1)
+                click32(1376,792,10, 0.2)
+                time.sleep(1)
+                click32(1488, 1194,10, 0.2)
+                time.sleep(1)
+                click32(1801, 401,10, 0.2)
+                time.sleep(1)
+                click32(1604, 1360,10, 0.2)
+                time.sleep(1)
+                click32(976, 1144,10, 0.2)
+                time.sleep(1)
+                click32(964, 1316,10,0.2)
+                time.sleep(1)
+                click32(2079, 1310,10, 0.2)
+                time.sleep(5)
+                click32(2101, 144,10,0.2)
+                keyboard_press_key(Key.end)
+                await night_club(customer)
+    if customer.order_des["levels"] is not None:
+        if customer.order_des["levels"].isdigit():
+            click(81,357,2)
+            click(136,175)
+            write_text(customer.order_des["levels"])
+            click(140, 197,2)
 
-    if customer.order_des["unlocks"] == "standard unlocks":
-        keyboard_press_key('u', 1, 5)
+    if customer.order_des["unlocks"] is not None:
+        if customer.order_des["unlocks"] == "standard unlocks":
+            keyboard_press_key('u', 1, 5)
 
     time.sleep(1)
     keyboard_press_key('o', 1, 15)

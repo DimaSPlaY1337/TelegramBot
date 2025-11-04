@@ -137,10 +137,6 @@ async def get_messages(token, dialog_id):
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as response:
             response.raise_for_status()
-            # !!
-            # return await response.json()
-
-            # Обработка BOM
             raw_text = await response.text()
             text_without_bom = raw_text.encode().decode('utf-8-sig')
 
@@ -233,7 +229,7 @@ async def wait_for_message(token, dialog_id, message_text, customer):
         is_buyer = message.get('buyer')
         # if message.get('message', '') and not message.get('date_seen') and is_buyer:
         if message.get('message', '') and is_buyer:
-            print("Получили сообщение от пользователя!")
+            print(f"Получили сообщение от пользователя!{dialog_id}")
             return message.get('message', '')
 
         await asyncio.sleep(2)
