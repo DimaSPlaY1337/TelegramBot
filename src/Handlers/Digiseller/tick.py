@@ -24,7 +24,7 @@ async def scan_dialogs_for_new_customers(token, dialog_list):
     global current_processing
     """Сканируем диалоги и добавляем новых клиентов в очередь"""
     #!!убрать (reversed)
-    for dialog in dialog_list[:customers_count]:
+    for dialog in dialog_list:
         dialog_id = dialog['id_i']
         if dialog_id is not None:
             messages = await get_messages(token, dialog_id)
