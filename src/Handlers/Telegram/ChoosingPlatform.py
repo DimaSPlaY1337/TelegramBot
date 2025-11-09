@@ -1,19 +1,26 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
-
 from src.Handlers.Telegram.OrderDesc import order_description
 import src.common as common
-from src.common import *
+from src.common import bot
+from src.Handlers.Telegram.rules import error_handler
+import traceback
+
+# Клавиатуры
+versions_des = None
+
 
 def versions_kb():
+    """Клавиатура для выбора версии игры"""
+    global versions_des
     button1 = KeyboardButton(text="Enhanced")
     button2 = KeyboardButton(text="Legacy")
-
+    versions_des = ReplyKeyboardMarkup(resize_keyboard=True)
     versions_des.add(button1, button2)
+    return versions_des
 
-versions_des = ReplyKeyboardMarkup(resize_keyboard=True)
-versions_kb()
 
 def get_on_start_kb():
+    """Клавиатура для выбора платформы"""
     button1 = KeyboardButton(text="Steam")
     button2 = KeyboardButton(text="EpicGames")
     button3 = KeyboardButton(text="Rockstar")
@@ -21,70 +28,121 @@ def get_on_start_kb():
     markup.add(button1, button2, button3)
     return markup
 
+
 async def choosing_platform(message):
-    await bot.reply_to(
-        message,
-        "Какая платформа игры? (Steam, EpicGames, Rockstar)",
-        reply_markup=get_on_start_kb()
-    )
-    common.user_step[message.chat.id] = {"step": "choose_platform"}
+    """Начало процесса выбора платформы"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
+        customer.set_step("choose_platform")
 
-
-@bot.message_handler(func=lambda m: common.user_step.get(m.chat.id, {}).get("step") == "choose_platform" and m.text in ["Steam", "EpicGames", "Rockstar"])
-async def platform_choice(message):
-    common.platform = message.text
-
-    await bot.send_message(message.chat.id, f"Вы выбрали: {common.platform}", reply_markup=ReplyKeyboardRemove())
-    await bot.send_message(message.chat.id, "Введите ваш логин:")
-
-    # Меняем шаг на "ожидание логина"
-    common.user_step[message.chat.id] = {"step": "login"}
-    common.data_for_reg[message.chat.id] = {"login": ""}
-
-
-@bot.message_handler(func=lambda m: common.user_step.get(m.chat.id, {}).get("step") == "login")
-async def get_login(message):
-    common.data_for_reg[message.chat.id]["login"] = message.text
-    common.user_step[message.chat.id]["step"] = "password"
-    await bot.send_message(
-        message.chat.id, "Введите ваш пароль:", reply_markup=ReplyKeyboardRemove()
-    )
-
-@bot.message_handler(func=lambda m: common.user_step.get(m.chat.id, {}).get("step") == "password")
-async def get_password(message):
-    global is_changing_data
-
-    common.data_for_reg[message.chat.id]["password"] = message.text
-    login = common.data_for_reg[message.chat.id]["login"]
-    password = common.data_for_reg[message.chat.id]["password"]
-    await bot.send_message(
-        message.chat.id, f"Спасибо, ваши данные:\nЛогин: {login}\nПароль: {password}"
-    )
-    # Можно удалить данные, если больше не нужны:
-    if not is_changing_data:
         await bot.reply_to(
+            message,
+            "Какая платформа игры? (Steam, EpicGames, Rockstar)",
+            reply_markup=get_on_start_kb()
+        )
+    except Exception as e:
+        print(f"Ошибка в choosing_platform: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)
+
+
+@bot.message_handler(
+    func=lambda m: common.get_customer(m.chat.id).get_step() == "choose_platform"
+                   and m.text in ["Steam", "EpicGames", "Rockstar"]
+)
+async def platform_choice(message):
+    """Обработка выбора платформы"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
+        customer.platform = message.text
+
+        await bot.send_message(
+            chat_id,
+            f"Вы выбрали: {customer.platform}",
+            reply_markup=ReplyKeyboardRemove()
+        )
+        await bot.send_message(chat_id, "Введите ваш логин:")
+
+        customer.set_step("login")
+    except Exception as e:
+        print(f"Ошибка в platform_choice: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)
+
+
+@bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "login")
+async def get_login(message):
+    """Получение логина от пользователя"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
+        customer.login = message.text
+        customer.set_step("password")
+
+        await bot.send_message(
+            chat_id,
+            "Введите ваш пароль:",
+            reply_markup=ReplyKeyboardRemove()
+        )
+    except Exception as e:
+        print(f"Ошибка в get_login: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)
+
+
+@bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "password")
+async def get_password(message):
+    """Получение пароля и переход к выбору версии"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
+        customer.password = message.text
+
+        await bot.send_message(
+            chat_id,
+            f"Спасибо, ваши данные:\nЛогин: {customer.login}\nПароль: {customer.password}"
+        )
+
+        if not customer.is_changing_data:
+            versions_kb()
+            await bot.reply_to(
                 message,
                 "Выберете версию:",
                 reply_markup=versions_des
             )
-        common.user_step[message.chat.id]["step"] = "version_of_game"
-    else:
-        is_changing_data = False
-        await common.clicker.plat_clicker(message)
+            customer.set_step("version_of_game")
+        else:
+            customer.is_changing_data = False
+            if customer.clicker:
+                await customer.clicker.plat_clicker(message)
+    except Exception as e:
+        print(f"Ошибка в get_password: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)
 
-@bot.message_handler(func=lambda m: common.user_step.get(m.chat.id, {}).get("step") == "version_of_game")
+
+@bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "version_of_game")
 async def version_of_game(message):
-    if message.chat.id not in common.order_des or not isinstance(common.order_des[message.chat.id], dict):
-        common.order_des[message.chat.id] = {}
+    """Получение версии игры и переход к описанию заказа"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
+        customer.order_des["version"] = message.text
 
-    common.order_des[message.chat.id]["version"] = message.text
-    version = common.order_des[message.chat.id]["version"]
-    await bot.send_message(
-        message.chat.id, f"Ваша версия игры: {version}"
-    )
+        await bot.send_message(
+            chat_id,
+            f"Ваша версия игры: {customer.order_des['version']}"
+        )
 
-    common.order_des[message.chat.id]["amount"] = 'не задано'
-    common.order_des[message.chat.id]["levels"] = 'не задано'
-    common.order_des[message.chat.id]["unlocks"] = 'не задано'
+        # Инициализируем остальные поля заказа
+        customer.order_des["amount"] = "не задано"
+        customer.order_des["levels"] = "не задано"
+        customer.order_des["unlocks"] = "не задано"
 
-    await order_description(message)
+        await order_description(message)
+    except Exception as e:
+        print(f"Ошибка в version_of_game: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)

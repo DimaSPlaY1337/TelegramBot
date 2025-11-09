@@ -1,7 +1,10 @@
-from src.Handlers.Telegram.Welcome import send_welcome
-from src.Handlers.Telegram.rules import send_rules
-# from src.Handlers.message import echo_message
+# Важно: сначала импортируем rules (содержит restart и error_handler)
+from src.Handlers.Telegram import rules
 
-__all__ = ["send_rules", "send_welcome"]
-# , "echo_message"
+# Затем импортируем Welcome (содержит /start и /help)
+from src.Handlers.Telegram import Welcome
+
+# Потом остальные обработчики
+from src.Handlers.Telegram import ChoosingPlatform
+from src.Handlers.Telegram import OrderDesc
 
