@@ -89,7 +89,7 @@ class EpicgamesClicker(PlatformClicker):
         except Exception as e:
             print(f"Ошибка в plat_clicker (Epic): {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
     async def plat_guard(self, message):
         """Обработка ввода Epic Guard кода"""
@@ -115,7 +115,7 @@ class EpicgamesClicker(PlatformClicker):
         except Exception as e:
             print(f"Ошибка в plat_guard (Epic): {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
     async def launch_prog(self, message):
         """Запуск GTA через Epic Games"""
@@ -167,7 +167,7 @@ class EpicgamesClicker(PlatformClicker):
         except Exception as e:
             print(f"Ошибка в launch_prog (Epic): {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
     async def plat_exit(self):
         """Выход из Epic Games"""
@@ -222,7 +222,7 @@ class EpicgamesClicker(PlatformClicker):
         except Exception as e:
             print(f"Ошибка в close_apps (Epic): {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
 
 # Обработчик для Epic Guard
@@ -237,7 +237,7 @@ async def handle_epic_guard(message):
             await customer.clicker.plat_guard(message)
     except Exception as e:
         print(f"Ошибка в handle_epic_guard: {e}")
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 # Обработчик для Rockstar Guard в Epic
@@ -252,4 +252,4 @@ async def handle_rock_epic_guard(message):
             await customer.clicker.rockstar_cliker(message, message.text, ignore_launch=True)
     except Exception as e:
         print(f"Ошибка в handle_rock_epic_guard: {e}")
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())

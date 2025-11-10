@@ -76,7 +76,7 @@ async def c_cliker(message):
     except Exception as e:
         print(f"Ошибка в c_cliker: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 async def gta_cliker(message):
@@ -137,7 +137,7 @@ async def gta_cliker(message):
     except Exception as e:
         print(f"Ошибка в gta_cliker: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 async def cherax_cliker(message):
@@ -232,7 +232,7 @@ async def cherax_cliker(message):
     except Exception as e:
         print(f"Ошибка в cherax_cliker: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 async def night_club(message):
@@ -281,4 +281,4 @@ async def send_screen(message):
     except Exception as e:
         print(f"Ошибка в send_screen: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())

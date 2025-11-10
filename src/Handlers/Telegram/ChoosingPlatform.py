@@ -44,7 +44,7 @@ async def choosing_platform(message):
     except Exception as e:
         print(f"Ошибка в choosing_platform: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 @bot.message_handler(
@@ -69,7 +69,7 @@ async def platform_choice(message):
     except Exception as e:
         print(f"Ошибка в platform_choice: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 @bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "login")
@@ -89,7 +89,7 @@ async def get_login(message):
     except Exception as e:
         print(f"Ошибка в get_login: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 @bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "password")
@@ -120,7 +120,7 @@ async def get_password(message):
     except Exception as e:
         print(f"Ошибка в get_password: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 @bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "version_of_game")
@@ -145,4 +145,4 @@ async def version_of_game(message):
     except Exception as e:
         print(f"Ошибка в version_of_game: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())

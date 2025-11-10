@@ -137,7 +137,7 @@ async def gta_cliker_exp(message):
     except Exception as e:
         print(f"Ошибка в gta_cliker_exp: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 async def send_screens(message):
@@ -161,4 +161,4 @@ async def send_screens(message):
     except Exception as e:
         print(f"Ошибка в send_screens: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())

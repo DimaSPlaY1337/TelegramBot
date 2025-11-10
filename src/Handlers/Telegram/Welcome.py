@@ -30,4 +30,4 @@ async def send_welcome(message):
     except Exception as e:
         print(f"Ошибка в send_welcome: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())

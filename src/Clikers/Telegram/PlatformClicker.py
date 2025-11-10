@@ -46,7 +46,7 @@ class PlatformClicker(ABC):
         except Exception as e:
             print(f"Ошибка в plat_clicker: {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
     @abstractmethod
     async def plat_guard(self, message):
@@ -76,7 +76,7 @@ class PlatformClicker(ABC):
         except Exception as e:
             print(f"Ошибка в close_apps: {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
     async def close_sunrise(self):
         """Закрытие Sunrise"""
@@ -119,7 +119,7 @@ class PlatformClicker(ABC):
         except Exception as e:
             print(f"Ошибка в rockstar_cliker: {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
     async def rockstar_search(self, message, wait_time=100, ignore_launch=False):
         """Поиск окна Rockstar"""
@@ -143,7 +143,7 @@ class PlatformClicker(ABC):
         except Exception as e:
             print(f"Ошибка в rockstar_search: {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
     async def rockstar_acceptance(self, message, ignore_launch=False):
         """Принятие соглашений Rockstar"""
@@ -178,4 +178,4 @@ class PlatformClicker(ABC):
         except Exception as e:
             print(f"Ошибка в change_pass_and_login: {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())

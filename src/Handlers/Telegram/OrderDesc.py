@@ -58,7 +58,7 @@ async def order_description(message):
     except Exception as e:
         print(f"Ошибка в order_description: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 async def order_output(message):
@@ -86,7 +86,7 @@ async def order_output(message):
     except Exception as e:
         print(f"Ошибка в order_output: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 @bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "order_des")
@@ -116,7 +116,7 @@ async def order_choice(message):
     except Exception as e:
         print(f"Ошибка в order_choice: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 @bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "money")
@@ -130,7 +130,7 @@ async def get_money(message):
     except Exception as e:
         print(f"Ошибка в get_money: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 @bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "levels")
@@ -144,7 +144,7 @@ async def get_levels(message):
     except Exception as e:
         print(f"Ошибка в get_levels: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 @bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "unlocks")
@@ -158,7 +158,7 @@ async def get_items(message):
     except Exception as e:
         print(f"Ошибка в get_items: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 async def order_question(message):
@@ -182,7 +182,7 @@ async def order_question(message):
     except Exception as e:
         print(f"Ошибка в order_question: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 @bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "order_con")
@@ -196,4 +196,4 @@ async def order_continue(message):
     except Exception as e:
         print(f"Ошибка в order_continue: {e}")
         print(traceback.format_exc())
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())

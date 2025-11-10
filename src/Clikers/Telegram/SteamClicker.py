@@ -115,7 +115,7 @@ class SteamClicker(PlatformClicker):
         except Exception as e:
             print(f"Ошибка в plat_clicker (Steam): {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
     def start_game(self, customer):
         """Запуск GTA через Steam"""
@@ -180,7 +180,7 @@ class SteamClicker(PlatformClicker):
         except Exception as e:
             print(f"Ошибка в plat_guard (Steam): {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
     async def launch_prog(self, message):
         """Запуск программы Sunrise"""
@@ -213,7 +213,7 @@ class SteamClicker(PlatformClicker):
         except Exception as e:
             print(f"Ошибка в launch_prog (Steam): {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
     async def plat_exit(self):
         """Выход из Steam"""
@@ -292,7 +292,7 @@ class SteamClicker(PlatformClicker):
         except Exception as e:
             print(f"Ошибка в close_apps (Steam): {e}")
             print(traceback.format_exc())
-            await error_handler(message.chat.id)
+            await error_handler(message.chat.id, traceback.format_exc())
 
 
 # Обработчик для Steam Guard
@@ -307,4 +307,4 @@ async def handle_steam_guard(message):
             await customer.clicker.plat_guard(message)
     except Exception as e:
         print(f"Ошибка в handle_steam_guard: {e}")
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())

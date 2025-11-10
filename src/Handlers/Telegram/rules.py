@@ -2,12 +2,12 @@ from src.common import bot
 import src.common as common
 import traceback
 
-async def error_handler(chat_id: int):
+async def error_handler(chat_id: int, error: str):
     """Обработчик ошибок - уведомляет пользователя и очищает данные"""
     try:
         await bot.send_message(
             chat_id,
-            "😕 Я упал в ошибку, нажмите /restart"
+            f"😕 Я упал в ошибку, нажмите /restart \n Сообщение ошибки: {error}"
         )
     except Exception as e:
         print(f"Ошибка при отправке сообщения об ошибке: {e}")
@@ -23,7 +23,7 @@ async def wrap_handler(handler_func, message):
     except Exception as e:
         print(f"Ошибка в обработчике: {e}")
         print(f"Трассировка: {traceback.format_exc()}")
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
 
 
 @bot.message_handler(commands=['restart'])
@@ -35,4 +35,4 @@ async def restart_handler(message):
         await bot.send_message(chat_id, "✅ Бот перезагружен. Введите /start для начала")
     except Exception as e:
         print(f"Ошибка при перезагрузке: {e}")
-        await error_handler(message.chat.id)
+        await error_handler(message.chat.id, traceback.format_exc())
