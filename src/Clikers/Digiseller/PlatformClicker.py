@@ -14,7 +14,7 @@ class PlatformClicker(ABC):
 
     async def plat_clicker(self, token, dialog_id, message_text, customer):
         if customer.order_des["amount"].isdigit():
-            if int(customer.order_des["amount"]) >= 75000000:
+            if int(customer.order_des["amount"]) >= 30000000:
                 customer.type_of_soft = "Exp"
             else:
                 customer.type_of_soft = "Free"
