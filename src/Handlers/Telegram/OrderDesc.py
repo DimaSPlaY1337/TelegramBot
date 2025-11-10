@@ -15,8 +15,8 @@ markup_des = None
 def unlocks_kb():
     """Клавиатура для выбора типа разблокировок"""
     global unlocks_des
-    button1 = KeyboardButton(text="Standard Unlocks")
-    button2 = KeyboardButton(text="Super Unlocks")
+    button1 = KeyboardButton(text="standard unlocks")
+    button2 = KeyboardButton(text="super unlocks")
     unlocks_des = ReplyKeyboardMarkup(resize_keyboard=True)
     unlocks_des.add(button1, button2)
     return unlocks_des
@@ -25,9 +25,9 @@ def unlocks_kb():
 def choose_kb():
     """Клавиатура для выбора позиций в заказе"""
     global markup_des
-    button1 = KeyboardButton(text="Money")
-    button2 = KeyboardButton(text="Levels")
-    button3 = KeyboardButton(text="Unlocks")
+    button1 = KeyboardButton(text="money")
+    button2 = KeyboardButton(text="levels")
+    button3 = KeyboardButton(text="unlocks")
     markup_des = ReplyKeyboardMarkup(resize_keyboard=True)
     markup_des.add(button1, button2, button3)
     return markup_des
@@ -74,11 +74,11 @@ async def order_output(message):
         )
 
         # Создаем кликкер в зависимости от платформы
-        if customer.platform == "Steam":
+        if customer.platform == "steam":
             customer.clicker = SteamClicker()
-        elif customer.platform == "EpicGames":
+        elif customer.platform == "epicgames":
             customer.clicker = EpicgamesClicker()
-        elif customer.platform == "Rockstar":
+        elif customer.platform == "rockstar":
             customer.clicker = RockstarClicker()
 
         if customer.clicker:
@@ -96,17 +96,17 @@ async def order_choice(message):
         chat_id = message.chat.id
         customer = common.get_customer(chat_id)
 
-        if message.text == "Money" and customer.order_des["amount"] == "не задано":
+        if message.text == "money" and customer.order_des["amount"] == "не задано":
             await bot.send_message(chat_id, "Введите сумму:", reply_markup=ReplyKeyboardRemove())
             customer.set_step("money")
-        elif message.text == "Levels" and customer.order_des["levels"] == "не задано":
+        elif message.text == "levels" and customer.order_des["levels"] == "не задано":
             await bot.send_message(chat_id, "Введите уровни:", reply_markup=ReplyKeyboardRemove())
             customer.set_step("levels")
-        elif message.text == "Unlocks" and customer.order_des["unlocks"] == "не задано":
+        elif message.text == "unlocks" and customer.order_des["unlocks"] == "не задано":
             unlocks_kb()
             await bot.reply_to(
                 message,
-                "Выберете тип Unlocks:",
+                "Выберете тип unlocks:",
                 reply_markup=unlocks_des
             )
             customer.set_step("unlocks")

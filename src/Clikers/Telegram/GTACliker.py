@@ -1,185 +1,164 @@
-from src.Clikers.Telegram.input_utils import *
 import pyautogui
 import time
 from pynput.keyboard import Controller, Key
-
-import src.common as common
+from src.Clikers.Telegram.input_utils import *
 from src.common import bot
-
-async def gta_cliker_free(message):
-    press_key("num1")
+import src.common as common
+from src.Handlers.Telegram.rules import error_handler
+import traceback
 
 async def gta_cliker_exp(message):
-    keyboard = Controller()
-    # Последовательность команд (по сообщениям)
-    # f5
-    press_key('f5')
+    """GTA Clicker для расширенной версии"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
+        keyboard = Controller()
 
-    # 4 down
-    press_key('down', 4)
+        # Последовательность команд
+        press_key('f5')
+        press_key('down', 4)
 
-    # write order
-    if common.order_des[message.chat.id]["amount"].isdigit():
-        # enter
-        press_key('enter')
+        # Обработка денег
+        if customer.order_des["amount"].isdigit():
+            press_key('enter')
+            press_key('enter')
+            press_key('enter')
+            press_key('down', 1)
+            press_key('enter')
 
-        # enter
-        press_key('enter')
+            sum_amount = int(customer.order_des["amount"])
+            if sum_amount < 7000000:
+                sum_amount = 7000000
 
-        # galka
-        press_key('enter')
+            order = 75000000
+            if sum_amount < order:
+                order = sum_amount
 
-        # 1 down
-        press_key('down', 1)
-        press_key('enter')
+            keyboard.type(str(order))
+            keyboard.press(Key.enter)
+            keyboard.release(Key.enter)
+            press_key('enter')
+            time.sleep(0.5)
 
-        sum = int(common.order_des[message.chat.id]["amount"])
-        if sum < 7000000:
-            sum = 7000000
-
-        order = 75000000
-        if sum < order:
-            order = sum
-
-        keyboard.type(str(order))
-        keyboard.press(Key.enter)
-        keyboard.release(Key.enter)
-        press_key('enter')
-
-        time.sleep(0.5)
-
-        # down
-        press_key('down')
-        press_key('enter')
-
-        # write(200000000-75000000)
-        result = str(sum - order)
-        keyboard.type(result)
-        keyboard.press(Key.enter)
-        keyboard.release(Key.enter)
-
-        time.sleep(0.5)
-
-        # backspace
-        press_key('backspace')
-
-        # Medium safe
-        press_key('down', 5)
-        r, g, b = pyautogui.pixel(2305, 798)
-        while not await is_gray(r,g,b):
             press_key('down')
-        press_key('enter')
+            press_key('enter')
 
-        time.sleep(1)
-        x = 2405
-        y = 798
-        while True:
-            # Считываем цвет пикселя
-            r,g,b = pyautogui.pixel(x, y)
-            print(f"Текущий цвет: {r}, {g}, {b}")
+            result = str(sum_amount - order)
+            keyboard.type(result)
+            keyboard.press(Key.enter)
+            keyboard.release(Key.enter)
+            time.sleep(0.5)
 
-            # Проверка цвета
-            if not await is_red(r,g,b):
-                print("Цвет стал целевым!")
-                break
+            press_key('backspace')
+            press_key('down', 5)
+            press_key('enter')
+            time.sleep(1)
 
-        time.sleep(0.2)  # небольшая задержка, чтобы не грузить процессор
-        # check red label disapear, while lable != black: wait
-        # (Это требует проверки содержимого экрана, не реализовано простым pyautogui)
+            # Ожидание изменения цвета
+            x = 2405
+            y = 798
+            while True:
+                r, g, b = pyautogui.pixel(x, y)
+                print(f"Текущий цвет: {r}, {g}, {b}")
+                if not await is_red(r, g, b):
+                    print("Цвет стал целевым!")
+                    break
+                time.sleep(0.2)
 
-        # 4 up
-        press_key('up', 4)
+            press_key('up', 4)
+            press_key('enter')
+            press_key('enter')
 
-        # Казино -> Зациклить
-        press_key('enter')
-        press_key('enter')
-        x = 2404
-        y = 567
-
-        r, g, b = pyautogui.pixel(x, y)
-        while await is_red(r,g,b):
-            # Считываем цвет пикселя
+            x = 2404
+            y = 567
             r, g, b = pyautogui.pixel(x, y)
-            print(f"Текущий цвет: {r}, {g}, {b}")
-        print("Цвет стал целевым!")
 
+            while await is_red(r, g, b):
+                r, g, b = pyautogui.pixel(x, y)
+                print(f"Текущий цвет: {r}, {g}, {b}")
+                print("Цвет стал целевым!")
 
-        # backspace
-        press_key('backspace')
-        press_key('backspace')
+            press_key('backspace')
+            press_key('backspace')
 
-    # 2 down
-    press_key('down', 2)
-    press_key('enter')
-
-    # write level
-    if common.order_des[message.chat.id]["levels"].isdigit():
-        order = int(common.order_des[message.chat.id]["levels"])
-        keyboard.press(Key.enter)
-        keyboard.release(Key.enter)
-        time.sleep(0.5)
-        write_text(order, 0.2)
-        keyboard.press(Key.enter)
-        keyboard.release(Key.enter)
-        time.sleep(0.5)
-        # 1 down
-        press_key('down')
+        # Обработка уровней
+        press_key('down', 2)
         press_key('enter')
+
+        if customer.order_des["levels"].isdigit():
+            order = int(customer.order_des["levels"])
+            keyboard.press(Key.enter)
+            keyboard.release(Key.enter)
+            time.sleep(0.5)
+            write_text(order, 0.2)
+            keyboard.press(Key.enter)
+            keyboard.release(Key.enter)
+            time.sleep(0.5)
+
+            press_key('down')
+            press_key('enter')
+            time.sleep(10)
+            press_key('backspace')
+
+        # Обработка unlocks
+        press_key('down', 2)
+        press_key('enter')
+        press_key('up', 1)
+        press_key('enter')
+
+        if customer.order_des["unlocks"].lower() == "standard unlocks":
+            press_key('enter')
+        elif customer.order_des["unlocks"].lower() == "super unlocks":
+            press_key('down', 1)
+            press_key('enter')
 
         time.sleep(10)
 
-    # backspace
-    press_key('backspace')
-
-    # down 2
-    press_key('down', 2)
-    press_key('enter')
-
-    # up 1
-    press_key('up', 1)
-    press_key('enter')
-
-    if common.order_des[message.chat.id]["unlocks"] == "Standard Unlocks":
+        # Завершение
+        switch_to_english()
+        press_key('o')
+        time.sleep(10)
+        press_key('backspace')
+        press_key('backspace')
+        press_key('down', 4)
         press_key('enter')
-    elif common.order_des[message.chat.id]["unlocks"] == "Super Unlocks":
-        press_key('down', 1)
+        press_key('up')
         press_key('enter')
+        time.sleep(10)
 
-    time.sleep(10)
-    # clava "o"
-    switch_to_english()
-    press_key('o')
+        # Скриншот
+        press_key('f5')
+        switch_to_english()
+        time.sleep(1.5)
+        keyboard_press_key('z')
+        time.sleep(1)
 
-    # 15 сек ждем
-    time.sleep(10)
+        await send_screens(message)
+    except Exception as e:
+        print(f"Ошибка в gta_cliker_exp: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)
 
-    # backspace
-    press_key('backspace')
-    press_key('backspace')
 
-    # 8 up
-    press_key('down', 4)
-    press_key('enter')
+async def send_screens(message):
+    """Отправка скриншотов в Telegram"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
 
-    # 1 up for legacy
-    press_key('up')
-    press_key('enter')
+        # Делаем скриншот
+        screenshot = pyautogui.screenshot()
+        screenshot_path = 'gta_screen.png'
+        screenshot.save(screenshot_path)
 
-    time.sleep(10)
+        # Отправляем в телеграм
+        with open(screenshot_path, 'rb') as photo:
+            await bot.send_photo(chat_id, photo, caption="✅ Работа выполнена!")
 
-    # делаем скриншот
-    press_key('f5')
-    switch_to_english()
-    time.sleep(1.5)
-    keyboard_press_key('z')
-    # Скрин окна GTA:
-    screenshot = pyautogui.screenshot()
-    screenshot.save('gta_screen.png')
-    time.sleep(1)
-    await send_screenshot(message)
-
-async def send_screenshot(message):
-    with open(r'D:\Repos\gta_screen.png', 'rb') as photo:
-        await bot.send_photo(message.chat.id, photo)
-    # platform = "Rockstar"
-    await common.clicker.close_apps()
+        # Закрываем приложения
+        if customer.clicker:
+            await customer.clicker.close_apps(message)
+    except Exception as e:
+        print(f"Ошибка в send_screens: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)

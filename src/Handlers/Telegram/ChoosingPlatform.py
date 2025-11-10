@@ -12,8 +12,8 @@ versions_des = None
 def versions_kb():
     """Клавиатура для выбора версии игры"""
     global versions_des
-    button1 = KeyboardButton(text="Enhanced")
-    button2 = KeyboardButton(text="Legacy")
+    button1 = KeyboardButton(text="enhanced")
+    button2 = KeyboardButton(text="legacy")
     versions_des = ReplyKeyboardMarkup(resize_keyboard=True)
     versions_des.add(button1, button2)
     return versions_des
@@ -21,9 +21,9 @@ def versions_kb():
 
 def get_on_start_kb():
     """Клавиатура для выбора платформы"""
-    button1 = KeyboardButton(text="Steam")
-    button2 = KeyboardButton(text="EpicGames")
-    button3 = KeyboardButton(text="Rockstar")
+    button1 = KeyboardButton(text="steam")
+    button2 = KeyboardButton(text="epicgames")
+    button3 = KeyboardButton(text="rockstar")
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(button1, button2, button3)
     return markup
@@ -38,7 +38,7 @@ async def choosing_platform(message):
 
         await bot.reply_to(
             message,
-            "Какая платформа игры? (Steam, EpicGames, Rockstar)",
+            "Какая платформа игры? (steam, epicgames, rockstar)",
             reply_markup=get_on_start_kb()
         )
     except Exception as e:
@@ -49,7 +49,7 @@ async def choosing_platform(message):
 
 @bot.message_handler(
     func=lambda m: common.get_customer(m.chat.id).get_step() == "choose_platform"
-                   and m.text in ["Steam", "EpicGames", "Rockstar"]
+                   and m.text in ["steam", "epicgames", "rockstar"]
 )
 async def platform_choice(message):
     """Обработка выбора платформы"""

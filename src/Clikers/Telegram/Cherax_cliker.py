@@ -1,165 +1,284 @@
+import os
+import time
+import ctypes
+from pygetwindow import PyGetWindowException
 from src.Clikers.Telegram.input_utils import *
 import pyautogui
-
-from pynput.keyboard import KeyCode
+from pynput.keyboard import Key
+from src.common import bot
 import src.common as common
-from src.common import *
+from src.Handlers.Telegram.rules import error_handler
+import traceback
 
 
 async def c_cliker(message):
-    os.startfile(r"C:\Users\gamePC\Desktop\CheraxLoader.exe", 'runas')
-    win = await wait_for_open("Cherax Loader", 100)
+    """Cherax Clicker - основная функция"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
 
-    if win:
-        win_top = win.top
-        win_left = win.left
+        os.startfile(r"C:\Users\gamePC\Desktop\CheraxLoader.exe", 'runas')
+        win = await wait_for_open("Cherax Loader", 5) or \
+              await find_window_by_size(900, 600, timeout=100)
 
-        time.sleep(10)
-        click(x=win_left + 127, y=win_top + 175)
-        if common.order_des[message.chat.id]["version"] == "Enhanced":
-            click(x=win_left + 83, y=win_top + 207)
+        if win:
+            win_top = win.top
+            win_left = win.left
+            time.sleep(3)
 
-            click(x=win_left + 94, y=win_top + 207)
-            if common.platform == "Steam":
-                click(x=win_left + 96, y=win_top + 239)
-            elif common.platform == "Rockstar":
-                click(x=win_left + 108, y=win_top + 267, times=1, t=3)
-        elif common.order_des[message.chat.id]["version"] == "Legacy":
-            click(x=win_left + 117, y=win_top + 222)
+            click(x=win_left + 127, y=win_top + 175)
 
-            click(x=win_left + 94, y=win_top + 207)
-            if common.platform == "Steam":
-                click(x=win_left + 106, y=win_top + 238)
-            elif common.platform == "Rockstar":
-                click(x=win_left + 110, y=win_top + 303, times=1, t = 3)
+            if customer.order_des["version"].lower() == "enhanced":
+                click(x=win_left + 83, y=win_top + 207)
+                click(x=win_left + 94, y=win_top + 207)
 
-        click(x=win_left + 91, y=win_top + 265, times=3, t = 0.2)
+                if customer.platform.lower() == "steam":
+                    click(x=win_left + 96, y=win_top + 239)
+                elif customer.platform.lower() == "rockstar":
+                    click(x=win_left + 72, y=win_top + 263, times=1, t=3)
 
-        await common.clicker.rockstar_search(message)
+            elif customer.order_des["version"].lower() == "legacy":
+                click(x=win_left + 117, y=win_top + 222)
+                click(x=win_left + 94, y=win_top + 207)
 
-        win_rock = await wait_for_open("Rockstar Games Launcher", 100)
-        if win_rock:
-            win_left = win_rock.left
-            win_top = win_rock.top
+                if customer.platform.lower() == "steam":
+                    click(x=win_left + 99, y=win_top + 246)
+                elif customer.platform.lower() == "rockstar":
+                    click(x=win_left + 50, y=win_top + 305, times=1, t=3)
 
-            win.resizeTo(1024, 600)
-            time.sleep(1)
-            win.activate()
+            click(x=win_left + 91, y=win_top + 265, times=3, t=0.2)
             time.sleep(5)
-            click(x=win_left + 905, y=win_top + 395, times=1, t = 3)
 
-        #запускается игра
-        time.sleep(10)
-        await gta_cliker(message)
+            if customer.platform.lower() == "steam":
+                await customer.clicker.steam_EULA()
+                await customer.clicker.rockstar_search(message, 10, True)
+
+            win_rock = await wait_for_open("Rockstar Games Launcher", 100)
+
+            try:
+                if win_rock:
+                    win_left = win_rock.left
+                    win_top = win_rock.top
+                    win_rock.resizeTo(1024, 600)
+                    time.sleep(1)
+                    win_rock.activate()
+                    time.sleep(5)
+                    click(x=win_left + 905, y=win_top + 395, times=1, t=3)
+            except PyGetWindowException as e:
+                if "Error code from Windows: 0" in str(e):
+                    print("Окно успешно активировано (ложная ошибка)")
+                    click(x=win_left + 905, y=win_top + 395, times=1, t=3)
+                else:
+                    raise e
+
+            time.sleep(10)
+            await gta_cliker(message)
+    except Exception as e:
+        print(f"Ошибка в c_cliker: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)
+
 
 async def gta_cliker(message):
-    win_cherax = await wait_for_open("Cherax Loader", 5)
-    if win_cherax:
-        win_cherax.minimize()
-        print("Скрыли cherax")
-    if order_des[message.chat.id]["version"] == "Enhanced":
-        while True:
-            r, g, b = pyautogui.pixel(2362, 334)
-            print(f"Текущий цвет: {r}, {g}, {b}")
-            if not await is_green(r, g, b):
-                print("Цвет стал целевым!")
-                break
-        time.sleep(2)
-        click(511, 95, 10, 0.2)
+    """GTA Clicker для Cherax"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
 
-        time.sleep(2)
-        keyboard_press_key("enter", 3)
+        win_cherax = await wait_for_open("Cherax Loader", 5) or \
+                     await find_window_by_size(900, 600, timeout=100)
+        win_g = await wait_for_open("Google Chrome", 20)
+        win_c = await wait_for_open("Console Window Host", 10)
 
-        time.sleep(30)
-        await cherax_cliker(message)
-    else:
-        click(2355, 1358, 2, 0.2)
+        if win_cherax:
+            win_cherax.minimize()
+            print("Скрыли cherax")
 
-        time.sleep(30)
-        await cherax_cliker(message)
+        if win_g:
+            win_g.minimize()
+            print("Скрыли google")
 
-async def cherax_cliker(message):
-    keyboard_press_key(KeyCode.from_vk(0x61))#numpad 1
+        if win_c:
+            win_c.minimize()
+            print("Console Window Host")
 
-    time.sleep(4)
-    click(x=72, y=506)
-    click(x=141, y=200)
-    keyboard_press_key('u')
-    print("Загрузка в сессию")
+        if customer.order_des["version"].lower() == "enhanced":
+            time.sleep(2)
+            found = False
+            end_time = time.time() + 30
 
-    time.sleep(25)
-    keyboard_press_key('y')
-    time.sleep(4)
-    click(x=1304, y=776, times=1, t=3)
-    click(x=510, y=151)
-    click(x=414, y=340)
-    click(x=407, y=149)
-    click(x=492, y=178)
-
-    #крутим деньги
-    if common.order_des[message.chat.id]["amount"].isdigit():
-        r, g, b = pyautogui.pixel(161, 411)
-        order = int(common.order_des[message.chat.id]["amount"])
-        if r == g == b == 255:
-            click(x=492, y=178, times=1, t=1)
-            pyautogui.hotkey('ctrl', 'a')
-            time.sleep(1)
-            write_text(order)
-            time.sleep(1)
-            click(x=120, y=571, times=1, t=3)#start
-            ctypes.windll.user32.ShowCursor(False)
-
-            #проверка снятия start
             while True:
-                r, g, b = pyautogui.pixel(161, 411)
+                search_gray_window(found)
+                r, g, b = pyautogui.pixel(2213, 211)
                 print(f"Текущий цвет: {r}, {g}, {b}")
-                if r == 46 and g == 00 and b == 78:
+
+                if await is_green(r, g, b):
                     print("Цвет стал целевым!")
-                    ctypes.windll.user32.ShowCursor(True)
                     break
 
-    time.sleep(1)
-    #крутим уровень
-    if common.order_des[message.chat.id]["levels"].isdigit():
-        order = int(common.order_des[message.chat.id]["levels"])
-        click(x=88, y=344)
+                if time.time() > end_time:
+                    keyboard_press_key("e", 1)
+                    end_time = time.time() + 30
 
-        click(x=130, y=167)
-        pyautogui.hotkey('ctrl', 'a')
+            time.sleep(8)
+            click(1508, 88, 5, 1)
+            keyboard_press_key(Key.right, 2)
+            keyboard_press_key(Key.down, 3)
+            keyboard_press_key("enter", 1)
+            time.sleep(5)
+            keyboard_press_key("enter", 3)
+
+        elif customer.order_des["version"].lower() == "legacy":
+            time.sleep(115)
+            click(2417, 1395, 10, 0.2)
+            time.sleep(40)
+
+        await cherax_cliker(message)
+    except Exception as e:
+        print(f"Ошибка в gta_cliker: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)
+
+
+async def cherax_cliker(message):
+    """Cherax Clicker - работа с меню"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
+
+        keyboard_press_key('k', 1, 3)
+        keyboard_press_key('y', 1, 10)
+        click(1278, 779, 1, 3)
+        keyboard_press_key('o')
+
+        print("Загрузка в сессию")
+
+        if customer.order_des["version"].lower() == "enhanced":
+            time.sleep(10)
+        elif customer.order_des["version"].lower() == "legacy":
+            time.sleep(100)
+
+        keyboard_press_key('n', 1, 3)
+
+        # Обработка денег
+        if customer.order_des["amount"] is not None:
+            if customer.order_des["amount"].isdigit():
+                click(x=527, y=162, times=2, t=2)
+                click(x=418, y=351, times=2, t=2)
+                click(x=408, y=164, times=2, t=2)
+                click(x=496, y=189, times=2, t=2)
+
+                nightclub = False
+                time.sleep(5)
+                r, g, b = pyautogui.pixel(120, 570)
+
+                if r == 70 and g == 0 and 120 <= b <= 121:
+                    print("Nightclub есть")
+                    nightclub = True
+                    click(x=220, y=570, times=2, t=0.5)
+
+                if nightclub:
+                    await night_club(message)
+                else:
+                    click(141, 238, 2, 3)
+                    keyboard_press_key(Key.end, 1, 1)
+                    keyboard_press_key(Key.up, 1, 1)
+                    keyboard_press_key(Key.down, 1, 1)
+                    keyboard_press_key('enter', 1, 1)
+
+                    # Серия кликов
+                    click32(1376, 792, 10, 0.2)
+                    time.sleep(1)
+                    click32(1488, 1194, 10, 0.2)
+                    time.sleep(1)
+                    click32(1801, 401, 10, 0.2)
+                    time.sleep(1)
+                    click32(1604, 1360, 10, 0.2)
+                    time.sleep(1)
+                    click32(976, 1144, 10, 0.2)
+                    time.sleep(1)
+                    click32(964, 1316, 10, 0.2)
+                    time.sleep(1)
+                    click32(2079, 1310, 10, 0.2)
+                    time.sleep(5)
+                    click32(2101, 144, 10, 0.2)
+                    keyboard_press_key(Key.end)
+
+                    await night_club(message)
+
+        # Обработка уровней
+        if customer.order_des["levels"] is not None:
+            if customer.order_des["levels"].isdigit():
+                click(81, 357, 2)
+                click(136, 175)
+                write_text(customer.order_des["levels"])
+                click(140, 197, 2)
+
+        # Обработка unlocks
+        if customer.order_des["unlocks"] is not None:
+            if customer.order_des["unlocks"].lower() == "standard unlocks":
+                keyboard_press_key('u', 1, 5)
+                time.sleep(1)
+                keyboard_press_key('o', 1, 15)
+                keyboard_press_key('enter', 2)
+                time.sleep(70)
+                keyboard_press_key('n', 1, 1)
+                keyboard_press_key('x', 1, 1)
+                keyboard_press_key('i', 1, 1)
+                keyboard_press_key('l', 1, 3)
+                keyboard_press_key('z', 1, 1)
+
+        await send_screen(message)
+    except Exception as e:
+        print(f"Ошибка в cherax_cliker: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)
+
+
+async def night_club(message):
+    """Обработка nightclub"""
+    try:
+        customer = common.get_customer(message.chat.id)
+
+        click(181, 371, 1)
+        write_text(customer.order_des["amount"])
+        click(125, 574)
         time.sleep(1)
-        write_text(order)
+        ctypes.windll.user32.ShowCursor(False)
+        click(220, 570)
         time.sleep(1)
-        click(x=133, y=192)
-        keyboard_press_key('y')#смена сессии
 
         while True:
-            r, g, b = pyautogui.pixel(1368, 620)
+            r, g, b = pyautogui.pixel(120, 570)
             print(f"Текущий цвет: {r}, {g}, {b}")
-            if r == 240 and g == 201 and b == 80:
+            if r == 70 and g == 0 and 120 <= b <= 121:
                 print("Цвет стал целевым!")
+                ctypes.windll.user32.ShowCursor(True)
                 break
+            time.sleep(1)
+    except Exception as e:
+        print(f"Ошибка в night_club: {e}")
 
-        keyboard_press_key('enter', 1, 8)
 
-    time.sleep(1)
-    click(77, 356)
-    if common.order_des[message.chat.id]["unlocks"] == "Standard Unlocks":
-        print("Делаем unlocks")
-    elif common.order_des[message.chat.id]["unlocks"] == "Super Unlocks":
-        print("Делаем unlocks")
+async def send_screen(message):
+    """Отправка скриншота в Telegram"""
+    try:
+        chat_id = message.chat.id
+        customer = common.get_customer(chat_id)
 
-    time.sleep(1)
-    keyboard_press_key('i', 1, 3)
-    keyboard_press_key('o', 1, 3)
-    keyboard_press_key('z', 1, 3)
-    # Скрин окна GTA:
-    screenshot = pyautogui.screenshot()
-    screenshot.save('gta_screen.png')
-    time.sleep(1)
-    await send_screenshot(message)
+        # Делаем скриншот
+        screenshot = pyautogui.screenshot()
+        screenshot_path = r"D:\Repos\gta_screen.png"
+        screenshot.save(screenshot_path)
 
-async def send_screenshot(message):
-    with open(r'D:\Repos\gta_screen.png', 'rb') as photo:
-        await bot.send_photo(message.chat.id, photo)
-    # platform = "Rockstar"
-    await common.clicker.close_apps()
+        # Отправляем в телеграм
+        with open(screenshot_path, 'rb') as photo:
+            await bot.send_photo(chat_id, photo, caption="✅ Работа выполнена!")
+
+        # Закрываем приложения
+        if customer.clicker:
+            await customer.clicker.close_apps(message)
+    except Exception as e:
+        print(f"Ошибка в send_screen: {e}")
+        print(traceback.format_exc())
+        await error_handler(message.chat.id)
