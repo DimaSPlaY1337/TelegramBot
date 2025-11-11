@@ -30,6 +30,19 @@ async def wrap_handler(handler_func, message):
 async def restart_handler(message):
     """Команда для перезагрузки состояния бота"""
     try:
+        processes = [
+            "Launcher.exe",
+            "LauncherPatcher.exe",
+            "RockstarErrorHandler.exe",
+            "RockstarService.exe",
+            "SocialClubHelper.exe",
+            "steam.exe",
+            "steamservice.exe",
+            "steamwebhelper.exe"
+        ]
+
+        for process in processes:
+            subprocess.run(f"taskkill /IM {process} /F", shell=True)
         chat_id = message.chat.id
         common.clear_customer(chat_id)
         await bot.send_message(chat_id, "✅ Бот перезагружен. Введите /start для начала")

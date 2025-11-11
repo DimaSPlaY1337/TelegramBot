@@ -64,7 +64,7 @@ async def is_green(r, g, b, min_g=119, max_g=160, diff_rg=30, diff_bg=15):
     return b1
 
 def search_gray_window(found):
-    r, g, b = pyautogui.pixel(840, 1075)
+    r, g, b = pyautogui.pixel(2183, 1097)
     if is_gray(r, g, b) and found == False:
         click(2369, 148)
         keyboard_press_key('enter')

@@ -119,14 +119,11 @@ class RockstarClicker(PlatformClicker):
         win_gta = await wait_for_open("Grand Theft Auto V", 200)
         gta = win_gta
 
-        win_rock = await wait_for_open("Rockstar Games Launcher", 100)
+        await rockstar_acceptance(token, dialog_id, message_text, customer, False)
+        # win_rock = await wait_for_open("Rockstar Games Launcher", 100)
 
-        if customer.order_des["version"] == "enhanced":
-            os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-        elif customer.order_des["version"] == "legacy":
-            os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
-        else:
-            print("Ошибка выбора версии Sunrise")
+        #запуск чита
+        os.startfile(r"C:\Users\gamePC\Desktop\Sunrise.exe")
 
         win_sun = await wait_for_open("Sunrise", 40)
 

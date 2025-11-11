@@ -121,6 +121,7 @@ class SteamClicker(PlatformClicker):
 
     async def steam_EULA(self):
         win = await wait_for_open("Steam", 15) or None
+        time.sleep(1)
         if win:
             win.resizeTo(1280, 800)
             time.sleep(10)

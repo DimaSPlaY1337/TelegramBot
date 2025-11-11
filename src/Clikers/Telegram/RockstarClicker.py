@@ -139,15 +139,11 @@ class RockstarClicker(PlatformClicker):
 
             win_gta = await wait_for_open("Grand Theft Auto V", 200)
             self.gta = win_gta
-            win_rock = await wait_for_open("Rockstar Games Launcher", 100)
+            await rockstar_acceptance(messge, False)
+            # win_rock = await wait_for_open("Rockstar Games Launcher", 10)
 
             # Запуск читов
-            if customer.order_des["version"].lower() == "enhanced":
-                os.startfile(r"C:\Users\gamePC\Desktop\Enhanced.exe")
-            elif customer.order_des["version"].lower() == "legacy":
-                os.startfile(r"C:\Users\gamePC\Desktop\Legacy.exe")
-            else:
-                print("Ошибка выбора версии Sunrise")
+            os.startfile(r"C:\Users\gamePC\Desktop\Sunrise.exe")
 
             win_sun = await wait_for_open("Sunrise", 40)
             found = False
@@ -155,13 +151,7 @@ class RockstarClicker(PlatformClicker):
 
             if win_gta and win_sun:
                 end_time = time.time() + 90
-                while time.time() < end_time:
-                    r, g, b = pyautogui.pixel(2183, 1097)
-                    if is_gray(r, g, b) and found == False:
-                        keyboard_press_key('enter')
-                        print("Нашли серое окно GTA")
-                        found = True
-
+                await search_gray_window(found)
                 win_gta.activate()
                 win_sun.minimize()
                 time.sleep(2.5)
