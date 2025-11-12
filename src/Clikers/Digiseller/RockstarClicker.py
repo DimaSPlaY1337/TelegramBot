@@ -116,11 +116,11 @@ class RockstarClicker(PlatformClicker):
         else:
             print("Ошибка выбора версии GTA")
 
+        await self.rockstar_acceptance(token, dialog_id, message_text, customer, False)
+        # win_rock = await wait_for_open("Rockstar Games Launcher", 100)
+
         win_gta = await wait_for_open("Grand Theft Auto V", 200)
         gta = win_gta
-
-        await rockstar_acceptance(token, dialog_id, message_text, customer, False)
-        # win_rock = await wait_for_open("Rockstar Games Launcher", 100)
 
         #запуск чита
         os.startfile(r"C:\Users\gamePC\Desktop\Sunrise.exe")
