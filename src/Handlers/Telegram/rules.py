@@ -1,6 +1,7 @@
 from src.common import bot
 import src.common as common
 import traceback
+import subprocess
 
 async def error_handler(chat_id: int, error: str):
     """Обработчик ошибок - уведомляет пользователя и очищает данные"""
