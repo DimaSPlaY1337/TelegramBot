@@ -32,6 +32,7 @@ async def restart_handler(message):
     """Команда для перезагрузки состояния бота"""
     try:
         processes = [
+            "Sunrise.exe"
             "Launcher.exe",
             "LauncherPatcher.exe",
             "RockstarErrorHandler.exe",
