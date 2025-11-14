@@ -137,7 +137,7 @@ class RockstarClicker(PlatformClicker):
             else:
                 print("Ошибка выбора версии GTA")
 
-            await self.rockstar_acceptance(messge, False)
+            await self.rockstar_acceptance(message, False)
             # win_rock = await wait_for_open("Rockstar Games Launcher", 10)
 
             win_gta = await wait_for_open("Grand Theft Auto V", 200)
