@@ -153,7 +153,7 @@ class RockstarClicker(PlatformClicker):
 
             if win_gta and win_sun:
                 end_time = time.time() + 90
-                await search_gray_window(found)
+                search_gray_window(found)
                 win_gta.activate()
                 win_sun.minimize()
                 time.sleep(2.5)
