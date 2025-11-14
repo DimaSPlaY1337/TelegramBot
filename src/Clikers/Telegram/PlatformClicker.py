@@ -158,6 +158,10 @@ class PlatformClicker(ABC):
                 win_rock.activate()
                 time.sleep(0.5)
                 pyautogui.click(x=win_rock.left + 831, y=win_rock.top + 412)
+                time.sleep(7)
+                pyautogui.click(x=win_rock.left + 831, y=win_rock.top + 412)
+                time.sleep(7)
+                pyautogui.click(x=win_rock.left + 831, y=win_rock.top + 412)
 
                 if not ignore_launch:
                     time.sleep(5)
