@@ -5,7 +5,7 @@ import win32api
 import win32con
 import pygetwindow as gw
 import pyautogui
-
+from pynput.keyboard import Controller, Key
 from src import common
 
 def write_text(text, interval=0.2):
