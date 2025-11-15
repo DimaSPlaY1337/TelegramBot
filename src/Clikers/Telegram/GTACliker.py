@@ -1,6 +1,3 @@
-import pyautogui
-import time
-from pynput.keyboard import Controller, Key
 from src.Clikers.Telegram.input_utils import *
 from src.common import bot
 import src.common as common
@@ -133,7 +130,6 @@ async def gta_cliker_exp(message):
         time.sleep(1.5)
         keyboard_press_key('z')
         time.sleep(1)
-
         print("Кликер закончил работу")
         await send_screens(message)
     except Exception as e:
