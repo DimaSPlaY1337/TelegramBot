@@ -10,6 +10,7 @@ import traceback
 async def gta_cliker_exp(message):
     """GTA Clicker для расширенной версии"""
     try:
+        print("Кликер начал работу")
         chat_id = message.chat.id
         customer = common.get_customer(chat_id)
         keyboard = Controller()
@@ -133,6 +134,7 @@ async def gta_cliker_exp(message):
         keyboard_press_key('z')
         time.sleep(1)
 
+        print("Кликер закончил работу")
         await send_screens(message)
     except Exception as e:
         print(f"Ошибка в gta_cliker_exp: {e}")

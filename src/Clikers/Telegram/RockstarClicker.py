@@ -159,6 +159,7 @@ class RockstarClicker(PlatformClicker):
                 time.sleep(2.5)
 
                 from src.Clikers.Telegram.GTACliker import gta_cliker_exp
+                print("Запускаем кликер")
                 await gta_cliker_exp(message)
         except Exception as e:
             print(f"Ошибка в launch_prog (Rockstar): {e}")
@@ -200,9 +201,11 @@ class RockstarClicker(PlatformClicker):
         """Закрытие всех приложений Rockstar"""
         try:
             # Выход из GTA
-            pyautogui.hotkey('alt', 'f4')
-            if self.gta is not None:
-                self.gta.activate()
+            win_gta = await wait_for_open("Grand Theft Auto V", 10)
+            if win_gta:
+                win_gta.activate()
+                time.sleep(1)
+                pyautogui.hotkey('alt', 'f4')
                 time.sleep(7)
                 keyboard_press_key('enter')
                 print("Вышли из GTA")
