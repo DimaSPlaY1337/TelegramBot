@@ -192,7 +192,7 @@ class PlatformClicker(ABC):
             chat_id = message.chat.id
             customer = common.get_customer(chat_id)
 
-            if customer.clicker and isinstance(customer.clicker, RockstarClicker):
+            if customer.clicker:
                 await customer.clicker.plat_guard(message)
         except Exception as e:
             print(f"Ошибка в handle_rockstar_guard: {e}")
