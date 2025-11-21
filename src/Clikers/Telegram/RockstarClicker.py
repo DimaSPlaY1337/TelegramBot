@@ -226,18 +226,3 @@ class RockstarClicker(PlatformClicker):
             print(f"Ошибка в close_apps (Rockstar): {e}")
             print(traceback.format_exc())
             await error_handler(message.chat.id, traceback.format_exc())
-
-
-# Обработчик для Rockstar Guard
-@bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "rockstar_guard")
-async def handle_rockstar_guard(message):
-    """Обработчик ввода Rockstar Guard"""
-    try:
-        chat_id = message.chat.id
-        customer = common.get_customer(chat_id)
-
-        if customer.clicker and isinstance(customer.clicker, RockstarClicker):
-            await customer.clicker.plat_guard(message)
-    except Exception as e:
-        print(f"Ошибка в handle_rockstar_guard: {e}")
-        await error_handler(message.chat.id, traceback.format_exc())
