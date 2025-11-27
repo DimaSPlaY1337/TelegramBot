@@ -33,7 +33,7 @@ class PlatformClicker(ABC):
             else:
                 customer.type_of_soft = "Free"
 
-            if customer.order_des["unlocks"] == "Super Unlocks":
+            if customer.order_des["unlocks"] == "super unlocks":
                 customer.type_of_soft = "Exp"
 
             # Запускаем beSkip
