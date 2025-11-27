@@ -153,10 +153,11 @@ class RockstarClicker(PlatformClicker):
 
             if win_gta and win_sun:
                 end_time = time.time() + 90
-                search_gray_window(found)
-                win_gta.activate()
-                win_sun.minimize()
-                time.sleep(2.5)
+                while time.time() < end_time:
+                    search_gray_window(found)
+                    win_gta.activate()
+                    win_sun.minimize()
+                    time.sleep(2.5)
 
                 from src.Clikers.Telegram.GTACliker import gta_cliker_exp
                 print("Запускаем кликер")
