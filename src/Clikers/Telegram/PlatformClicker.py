@@ -197,3 +197,31 @@ class PlatformClicker(ABC):
         except Exception as e:
             print(f"Ошибка в handle_rockstar_guard: {e}")
             await error_handler(message.chat.id, traceback.format_exc())
+
+    async def create_json(self, message):
+        # --------------------------
+        # file_path = r"C:\Users\%USERNAME%\Documents\Cherax\Lua\GTA5SERVICE\Boosting.json"
+        file_path = r"C:\Users\%USERNAME%\Documents\Boosting.json"
+        # os.path.expandvars(), который автоматически заменит переменную окружения на имя текущего пользователя
+        expanded_path = os.path.expandvars(file_path)
+
+        # Загрузка JSON
+        with open(expanded_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            # if "amount": "100000000" ==  cash + chips ( где cash<= 25000000, chips = amount-cash)
+            data['Chips']['Loop_Amount'] = int(customer.order_des["amount"])
+            data['Chips']['Limiter'] = 500000000
+            data['Ranks']['Player'] = customer.order_des["levels"]
+            data['Unlocks']['Weapons'] = True
+            data['Unlocks']['Vehicles'] = True
+        # self.order_des = {
+        #     "version": "не задано",
+        #     "amount": "не задано",
+        #     "levels": "не задано",
+        #     "unlocks": "не задано"
+        # }
+        # Изменение значений в разных секциях
+        # Сохранение обратно в тот же файл
+        with open(expanded_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=3)
+        # -------------------------------

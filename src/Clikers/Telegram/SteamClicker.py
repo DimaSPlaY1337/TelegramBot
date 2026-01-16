@@ -159,25 +159,27 @@ class SteamClicker(PlatformClicker):
             pyautogui.press('enter')
             time.sleep(2)
 
-            if customer.type_of_soft == "Exp":
-                if not await is_error(customer, 266, 151, 293, 161):
-                    self.start_game(customer)
-                    await self.steam_EULA()
-                    time.sleep(5)
-                    await self.rockstar_search(message)
-                else:
-                    await bot.send_message(chat_id, "Код введен неверно, введите еще раз.")
-                    pyautogui.click(x=self.win_left + 469, y=self.win_top + 185)
-                    pyautogui.press('backspace', presses=5)
-                    customer.set_step("steam_guard")
-            else:
-                if not await is_error(customer, 266, 151, 293, 161):
-                    await c_cliker(message)
-                else:
-                    await bot.send_message(chat_id, "Код введен неверно, введите еще раз.")
-                    pyautogui.click(x=self.win_left + 469, y=self.win_top + 185)
-                    pyautogui.press('backspace', presses=5)
-                    customer.set_step("steam_guard")
+            self.create_json()
+
+            # if customer.type_of_soft == "Exp":
+            #     if not await is_error(customer, 266, 151, 293, 161):
+            #         self.start_game(customer)#здесь делаем json
+            #         await self.steam_EULA()
+            #         time.sleep(5)
+            #         await self.rockstar_search(message)
+            #     else:
+            #         await bot.send_message(chat_id, "Код введен неверно, введите еще раз.")
+            #         pyautogui.click(x=self.win_left + 469, y=self.win_top + 185)
+            #         pyautogui.press('backspace', presses=5)
+            #         customer.set_step("steam_guard")
+            # else:
+            #     if not await is_error(customer, 266, 151, 293, 161):
+            #         await c_cliker(message)#здесь делаем json
+            #     else:
+            #         await bot.send_message(chat_id, "Код введен неверно, введите еще раз.")
+            #         pyautogui.click(x=self.win_left + 469, y=self.win_top + 185)
+            #         pyautogui.press('backspace', presses=5)
+            #         customer.set_step("steam_guard")
         except Exception as e:
             print(f"Ошибка в plat_guard (Steam): {e}")
             print(traceback.format_exc())

@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import ctypes
@@ -10,8 +11,7 @@ import src.common as common
 from src.Handlers.Telegram.rules import error_handler
 import traceback
 
-
-async def c_cliker(message):
+async def c_cliker():
     """Cherax Clicker - основная функция"""
     try:
         chat_id = message.chat.id
