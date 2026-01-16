@@ -38,11 +38,11 @@ class PlatformClicker(ABC):
 
             # Запускаем beSkip
             win_be = None
-            if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
-                os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
-                win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
-            else:
-                win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+            # if not await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe", 3):
+            #     os.startfile(r"C:\Users\gamePC\Desktop\beSkip.exe", 'runas')
+            #     win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
+            # else:
+            #     win_be = await wait_for_open("C:\\Users\\gamePC\\Desktop\\beSkip.exe")
         except Exception as e:
             print(f"Ошибка в plat_clicker: {e}")
             print(traceback.format_exc())
