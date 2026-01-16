@@ -159,7 +159,7 @@ class SteamClicker(PlatformClicker):
             pyautogui.press('enter')
             time.sleep(2)
 
-            self.create_json()
+            self.create_json(message)
 
             # if customer.type_of_soft == "Exp":
             #     if not await is_error(customer, 266, 151, 293, 161):
