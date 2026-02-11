@@ -1,5 +1,6 @@
 import time
 import os
+import asyncio
 from src.common import bot
 import src.common as common
 from src.Clikers.Telegram.PlatformClicker import PlatformClicker
@@ -95,8 +96,10 @@ class SteamClicker(PlatformClicker):
                         customer.set_step("steam_guard")
                         await bot.send_message(
                             chat_id,
-                            "Введите код Steam Guard:"
+                            "Введите код Steam Guard или впустите через приложение:"
                         )
+
+                        asyncio.create_task(self.check_steam_window_closed(customer, message))
                     else:
                         # Guard не нужен
                         if customer.type_of_soft == "Exp":
@@ -150,6 +153,7 @@ class SteamClicker(PlatformClicker):
 
             print(f"Получили steam guard: {guard}")
             await bot.send_message(chat_id, "Спасибо! Код получен.")
+            customer.set_step("")
 
             time.sleep(1)
             pyautogui.click(x=self.win_left + 353, y=self.win_top + 320)
@@ -161,6 +165,14 @@ class SteamClicker(PlatformClicker):
 
             await self.create_json(message)
 
+            #тут теперь все делает c_cliker
+            if not await is_error(customer, 266, 151, 293, 161):
+                await c_cliker(message)#здесь делаем json
+            else:
+                await bot.send_message(chat_id, "Код введен неверно, введите еще раз.")
+                pyautogui.click(x=self.win_left + 469, y=self.win_top + 185)
+                pyautogui.press('backspace', presses=5)
+                customer.set_step("steam_guard")
             # if customer.type_of_soft == "Exp":
             #     if not await is_error(customer, 266, 151, 293, 161):
             #         self.start_game(customer)#здесь делаем json
@@ -298,16 +310,57 @@ class SteamClicker(PlatformClicker):
             await error_handler(message.chat.id, traceback.format_exc())
 
 
-# Обработчик для Steam Guard
-@bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "steam_guard")
-async def handle_steam_guard(message):
-    """Обработчик ввода Steam Guard"""
-    try:
-        chat_id = message.chat.id
-        customer = common.get_customer(chat_id)
+    # Обработчик для Steam Guard
+    @bot.message_handler(func=lambda m: common.get_customer(m.chat.id).get_step() == "steam_guard")
+    async def handle_steam_guard(message):
+        """Обработчик ввода Steam Guard"""
+        try:
+            chat_id = message.chat.id
+            customer = common.get_customer(chat_id)
 
-        if customer.clicker and isinstance(customer.clicker, SteamClicker):
-            await customer.clicker.plat_guard(message)
-    except Exception as e:
-        print(f"Ошибка в handle_steam_guard: {e}")
-        await error_handler(message.chat.id, traceback.format_exc())
+            if customer.clicker and isinstance(customer.clicker, SteamClicker):
+                await customer.clicker.plat_guard(message)
+        except Exception as e:
+            print(f"Ошибка в handle_steam_guard: {e}")
+            await error_handler(message.chat.id, traceback.format_exc())
+
+    async def check_steam_window_closed(self, customer, message):
+        """Проверяет, не закрылось ли окно Steam (подтверждение через приложение)"""
+        try:
+            timeout = 1200  # 20 минуты ждём
+            check_interval = 3  # Проверяем каждые 3 секунды
+            elapsed = 0
+
+            while elapsed < timeout and customer.get_step() == "steam_guard":
+                await asyncio.sleep(check_interval)
+                elapsed += check_interval
+
+                # Проверяем, есть ли ещё окно
+                win = await wait_for_open("Sign in to Steam", 1) or \
+                      await wait_for_open("Войти в Steam", 1)
+
+                if win is None:
+                    # Окно закрылось - пользователь подтвердил через приложение
+                    print("Окно Steam закрылось - авторизация через приложение")
+                    customer.set_step("")  # Сбрасываем step
+                    await bot.send_message(
+                        message.chat.id,
+                        "✅ Авторизация успешна через приложение!"
+                    )
+
+                    await c_cliker(message)
+                    break
+
+            # Если таймаут истёк
+            if elapsed >= timeout and customer.get_step() == "steam_guard":
+                customer.set_step("")
+                await bot.send_message(
+                    message.chat.id,
+                    "⏱ Время ожидания истекло. Попробуйте снова."
+                )
+                await error_handler(message.chat.id, traceback.format_exc())
+
+        except Exception as e:
+            print(f"Ошибка в check_steam_window_closed: {e}")
+            print(traceback.format_exc())
+            await error_handler(message.chat.id, traceback.format_exc())

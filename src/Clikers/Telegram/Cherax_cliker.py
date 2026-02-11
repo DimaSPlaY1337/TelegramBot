@@ -9,8 +9,9 @@ from src.common import bot
 import src.common as common
 from src.Handlers.Telegram.rules import error_handler
 import traceback
+import json
 
-async def c_cliker():
+async def c_cliker(message):
     """Cherax Clicker - основная функция"""
     try:
         chat_id = message.chat.id
@@ -125,138 +126,184 @@ async def gta_cliker(message):
             keyboard_press_key(Key.down, 3)
             keyboard_press_key("enter", 1)
             time.sleep(5)
-            keyboard_press_key("enter", 3)
+            keyboard_press_key("enter", 3)#сюжетный режим предпологаемый
 
         elif customer.order_des["version"].lower() == "legacy":
             time.sleep(115)
-            click(2417, 1395, 10, 0.2)
+            click(2417, 1395, 10, 0.2)#сюжетный режим предпологаемый
             time.sleep(40)
 
-        await cherax_cliker(message)
+        # await cherax_cliker(message) начало кликера в игре
+
+        await customer.clicker.create_json(message)
+        await reading_logs(message)
+
     except Exception as e:
         print(f"Ошибка в gta_cliker: {e}")
         print(traceback.format_exc())
         await error_handler(message.chat.id, traceback.format_exc())
 
 
-async def cherax_cliker(message):
-    """Cherax Clicker - работа с меню"""
+# async def cherax_cliker(message):
+#     """Cherax Clicker - работа с меню"""
+#     try:
+#         chat_id = message.chat.id
+#         customer = common.get_customer(chat_id)
+#
+#         keyboard_press_key('k', 1, 3)
+#         keyboard_press_key('y', 1, 10)
+#         click(1278, 779, 1, 3)
+#         keyboard_press_key('o')
+#
+#         print("Загрузка в сессию")
+#
+#         if customer.order_des["version"].lower() == "enhanced":
+#             time.sleep(10)
+#         elif customer.order_des["version"].lower() == "legacy":
+#             time.sleep(100)
+#
+#         keyboard_press_key('n', 1, 3)
+#
+#         # Обработка денег
+#         if customer.order_des["amount"] is not None:
+#             if customer.order_des["amount"].isdigit():
+#                 click(x=527, y=162, times=2, t=2)
+#                 click(x=418, y=351, times=2, t=2)
+#                 click(x=408, y=164, times=2, t=2)
+#                 click(x=496, y=189, times=2, t=2)
+#
+#                 nightclub = False
+#                 time.sleep(5)
+#                 r, g, b = pyautogui.pixel(120, 570)
+#
+#                 if r == 70 and g == 0 and 120 <= b <= 121:
+#                     print("Nightclub есть")
+#                     nightclub = True
+#                     click(x=220, y=570, times=2, t=0.5)
+#
+#                 if nightclub:
+#                     await night_club(message)
+#                 else:
+#                     click(141, 238, 2, 3)
+#                     keyboard_press_key(Key.end, 1, 1)
+#                     keyboard_press_key(Key.up, 1, 1)
+#                     keyboard_press_key(Key.down, 1, 1)
+#                     keyboard_press_key('enter', 1, 1)
+#
+#                     # Серия кликов
+#                     click32(1376, 792, 10, 0.2)
+#                     time.sleep(1)
+#                     click32(1488, 1194, 10, 0.2)
+#                     time.sleep(1)
+#                     click32(1801, 401, 10, 0.2)
+#                     time.sleep(1)
+#                     click32(1604, 1360, 10, 0.2)
+#                     time.sleep(1)
+#                     click32(976, 1144, 10, 0.2)
+#                     time.sleep(1)
+#                     click32(964, 1316, 10, 0.2)
+#                     time.sleep(1)
+#                     click32(2079, 1310, 10, 0.2)
+#                     time.sleep(5)
+#                     click32(2101, 144, 10, 0.2)
+#                     keyboard_press_key(Key.end)
+#
+#                     await night_club(message)
+#
+#         # Обработка уровней
+#         if customer.order_des["levels"] is not None:
+#             if customer.order_des["levels"].isdigit():
+#                 click(81, 357, 2)
+#                 click(136, 175)
+#                 write_text(customer.order_des["levels"])
+#                 click(140, 197, 2)
+#
+#         # Обработка unlocks
+#         if customer.order_des["unlocks"] is not None:
+#             if customer.order_des["unlocks"].lower() == "standard unlocks":
+#                 keyboard_press_key('u', 1, 5)
+#                 time.sleep(1)
+#                 keyboard_press_key('o', 1, 15)
+#                 keyboard_press_key('enter', 2)
+#                 time.sleep(70)
+#                 keyboard_press_key('n', 1, 1)
+#                 keyboard_press_key('x', 1, 1)
+#                 keyboard_press_key('i', 1, 1)
+#                 keyboard_press_key('l', 1, 3)
+#                 keyboard_press_key('z', 1, 1)
+#
+#         await send_screen(message)
+#     except Exception as e:
+#         print(f"Ошибка в cherax_cliker: {e}")
+#         print(traceback.format_exc())
+#         await error_handler(message.chat.id, traceback.format_exc())
+
+# async def night_club(message):
+#     """Обработка nightclub"""
+#     try:
+#         customer = common.get_customer(message.chat.id)
+#
+#         click(181, 371, 1)
+#         write_text(customer.order_des["amount"])
+#         click(125, 574)
+#         time.sleep(1)
+#         ctypes.windll.user32.ShowCursor(False)
+#         click(220, 570)
+#         time.sleep(1)
+#
+#         while True:
+#             r, g, b = pyautogui.pixel(120, 570)
+#             print(f"Текущий цвет: {r}, {g}, {b}")
+#             if r == 70 and g == 0 and 120 <= b <= 121:
+#                 print("Цвет стал целевым!")
+#                 ctypes.windll.user32.ShowCursor(True)
+#                 break
+#             time.sleep(1)
+#     except Exception as e:
+#         print(f"Ошибка в night_club: {e}")
+
+async def reading_logs(message):
     try:
-        chat_id = message.chat.id
-        customer = common.get_customer(chat_id)
+        file_path = r"C:\Users\%USERNAME%\Documents\Cherax\Lua\GTA5SERVICE\Boosting\Logs.json"
+        expanded_path = os.path.expandvars(file_path)
 
-        keyboard_press_key('k', 1, 3)
-        keyboard_press_key('y', 1, 10)
-        click(1278, 779, 1, 3)
-        keyboard_press_key('o')
+        # Ждем, пока файл появится
+        while not os.path.exists(expanded_path):
+            print("Ожидаем создания файла Logs.json")
+            time.sleep(5)
 
-        print("Загрузка в сессию")
+        # Ждем Online == True
+        while True:
+            with open(expanded_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
 
-        if customer.order_des["version"].lower() == "enhanced":
-            time.sleep(10)
-        elif customer.order_des["version"].lower() == "legacy":
-            time.sleep(100)
+            if data["Online"] == True:
+                print("Online == True")
+                break
 
-        keyboard_press_key('n', 1, 3)
+            print("Ожидаем Online == True")
+            time.sleep(5)
 
-        # Обработка денег
-        if customer.order_des["amount"] is not None:
-            if customer.order_des["amount"].isdigit():
-                click(x=527, y=162, times=2, t=2)
-                click(x=418, y=351, times=2, t=2)
-                click(x=408, y=164, times=2, t=2)
-                click(x=496, y=189, times=2, t=2)
+        keyboard_press_key('*', 1, 1)
 
-                nightclub = False
-                time.sleep(5)
-                r, g, b = pyautogui.pixel(120, 570)
+        # Ждем Boosting_Completed == True
+        while True:
+            with open(expanded_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
 
-                if r == 70 and g == 0 and 120 <= b <= 121:
-                    print("Nightclub есть")
-                    nightclub = True
-                    click(x=220, y=570, times=2, t=0.5)
+            if data["Boosting_Completed"] == True:
+                print("Boosting_Completed == True")
+                break
 
-                if nightclub:
-                    await night_club(message)
-                else:
-                    click(141, 238, 2, 3)
-                    keyboard_press_key(Key.end, 1, 1)
-                    keyboard_press_key(Key.up, 1, 1)
-                    keyboard_press_key(Key.down, 1, 1)
-                    keyboard_press_key('enter', 1, 1)
-
-                    # Серия кликов
-                    click32(1376, 792, 10, 0.2)
-                    time.sleep(1)
-                    click32(1488, 1194, 10, 0.2)
-                    time.sleep(1)
-                    click32(1801, 401, 10, 0.2)
-                    time.sleep(1)
-                    click32(1604, 1360, 10, 0.2)
-                    time.sleep(1)
-                    click32(976, 1144, 10, 0.2)
-                    time.sleep(1)
-                    click32(964, 1316, 10, 0.2)
-                    time.sleep(1)
-                    click32(2079, 1310, 10, 0.2)
-                    time.sleep(5)
-                    click32(2101, 144, 10, 0.2)
-                    keyboard_press_key(Key.end)
-
-                    await night_club(message)
-
-        # Обработка уровней
-        if customer.order_des["levels"] is not None:
-            if customer.order_des["levels"].isdigit():
-                click(81, 357, 2)
-                click(136, 175)
-                write_text(customer.order_des["levels"])
-                click(140, 197, 2)
-
-        # Обработка unlocks
-        if customer.order_des["unlocks"] is not None:
-            if customer.order_des["unlocks"].lower() == "standard unlocks":
-                keyboard_press_key('u', 1, 5)
-                time.sleep(1)
-                keyboard_press_key('o', 1, 15)
-                keyboard_press_key('enter', 2)
-                time.sleep(70)
-                keyboard_press_key('n', 1, 1)
-                keyboard_press_key('x', 1, 1)
-                keyboard_press_key('i', 1, 1)
-                keyboard_press_key('l', 1, 3)
-                keyboard_press_key('z', 1, 1)
+            print("Ожидаем Boosting_Completed == True")
+            time.sleep(5)
 
         await send_screen(message)
+
     except Exception as e:
-        print(f"Ошибка в cherax_cliker: {e}")
+        print(f"Ошибка в reading_logs: {e}")
         print(traceback.format_exc())
         await error_handler(message.chat.id, traceback.format_exc())
-
-
-async def night_club(message):
-    """Обработка nightclub"""
-    try:
-        customer = common.get_customer(message.chat.id)
-
-        click(181, 371, 1)
-        write_text(customer.order_des["amount"])
-        click(125, 574)
-        time.sleep(1)
-        ctypes.windll.user32.ShowCursor(False)
-        click(220, 570)
-        time.sleep(1)
-
-        while True:
-            r, g, b = pyautogui.pixel(120, 570)
-            print(f"Текущий цвет: {r}, {g}, {b}")
-            if r == 70 and g == 0 and 120 <= b <= 121:
-                print("Цвет стал целевым!")
-                ctypes.windll.user32.ShowCursor(True)
-                break
-            time.sleep(1)
-    except Exception as e:
-        print(f"Ошибка в night_club: {e}")
 
 
 async def send_screen(message):

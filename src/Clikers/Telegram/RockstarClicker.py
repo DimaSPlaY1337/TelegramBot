@@ -74,10 +74,11 @@ class RockstarClicker(PlatformClicker):
                             "Введите код RockStar Guard:"
                         )
                     else:
-                        if customer.type_of_soft == "Exp":
-                            await self.launch_prog(message)
-                        else:
-                            await c_cliker(message)
+                        await c_cliker(message)
+                        # if customer.type_of_soft == "Exp":
+                        #     await self.launch_prog(message)
+                        # else:
+                        #     await c_cliker(message)
                 else:
                     win.close()
                     await self.change_pass_and_login(message)
@@ -106,18 +107,25 @@ class RockstarClicker(PlatformClicker):
             # 2-step verification
             pyautogui.click(x=customer.clicker.win_left + 522, y=customer.clicker.win_top + 517)
 
-            if customer.type_of_soft == "Exp":
-                if not await is_error(customer, 430, 650, 440, 660):
-                    await self.launch_prog(message)
-                else:
-                    await bot.send_message(chat_id, "Код введен неверно, введите еще раз.")
-                    customer.set_step("rockstar_guard")
+            await self.create_json(message)
+
+            if not await is_error(customer, 430, 650, 440, 660):
+                await c_cliker(message)
             else:
-                if not await is_error(customer, 430, 650, 440, 660):
-                    await c_cliker(message)
-                else:
-                    await bot.send_message(chat_id, "Код введен неверно, введите еще раз.")
-                    customer.set_step("rockstar_guard")
+                await bot.send_message(chat_id, "Код введен неверно, введите еще раз.")
+                customer.set_step("rockstar_guard")
+            # if customer.type_of_soft == "Exp":
+            #     if not await is_error(customer, 430, 650, 440, 660):
+            #         await self.launch_prog(message)
+            #     else:
+            #         await bot.send_message(chat_id, "Код введен неверно, введите еще раз.")
+            #         customer.set_step("rockstar_guard")
+            # else:
+            #     if not await is_error(customer, 430, 650, 440, 660):
+            #         await c_cliker(message)
+            #     else:
+            #         await bot.send_message(chat_id, "Код введен неверно, введите еще раз.")
+            #         customer.set_step("rockstar_guard")
         except Exception as e:
             print(f"Ошибка в plat_guard (Rockstar): {e}")
             print(traceback.format_exc())

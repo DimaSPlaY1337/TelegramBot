@@ -3,9 +3,10 @@ import os
 from src.Clikers.Telegram.input_utils import *
 from src.common import bot
 import src.common as common
-from src.Handlers.Telegram.rules import error_handler
+from src.Handlers.Telegram.rules import error_handler, kill_all_processes
 import traceback
 import time
+import json
 
 
 class PlatformClicker(ABC):
@@ -69,9 +70,7 @@ class PlatformClicker(ABC):
             chat_id = message.chat.id
             customer = common.get_customer(chat_id)
 
-            if customer.type_of_soft == "Exp":
-                await self.close_sunrise()
-
+            await kill_all_processes(message)
             await bot.send_message(chat_id, "✅ Процесс завершен!")
         except Exception as e:
             print(f"Ошибка в close_apps: {e}")
@@ -199,29 +198,150 @@ class PlatformClicker(ABC):
             await error_handler(message.chat.id, traceback.format_exc())
 
     async def create_json(self, message):
-        # --------------------------
-        # file_path = r"C:\Users\%USERNAME%\Documents\Cherax\Lua\GTA5SERVICE\Boosting.json"
-        file_path = r"C:\Users\%USERNAME%\Documents\Boosting.json"
-        # os.path.expandvars(), который автоматически заменит переменную окружения на имя текущего пользователя
-        expanded_path = os.path.expandvars(file_path)
+        try:
+            # --------------------------
+            file_path = r"C:\Users\%USERNAME%\Documents\Cherax\Lua\GTA5SERVICE\Boosting.json"
+            chat_id = message.chat.id
+            customer = common.get_customer(chat_id)
+            # file_path = r"C:\Users\%USERNAME%\Documents\Boosting.json" путь на моем пк
 
-        # Загрузка JSON
-        with open(expanded_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            # if "amount": "100000000" ==  cash + chips ( где cash<= 25000000, chips = amount-cash)
-            data['Chips']['Loop_Amount'] = int(customer.order_des["amount"])
-            data['Chips']['Limiter'] = 500000000
-            data['Ranks']['Player'] = customer.order_des["levels"]
-            data['Unlocks']['Weapons'] = True
-            data['Unlocks']['Vehicles'] = True
-        # self.order_des = {
-        #     "version": "не задано",
-        #     "amount": "не задано",
-        #     "levels": "не задано",
-        #     "unlocks": "не задано"
-        # }
-        # Изменение значений в разных секциях
-        # Сохранение обратно в тот же файл
-        with open(expanded_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=3)
-        # -------------------------------
+            # os.path.expandvars(), который автоматически заменит переменную окружения на имя текущего пользователя
+            expanded_path = os.path.expandvars(file_path)
+
+            # Загрузка JSON
+            with open(expanded_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                money_limiter = int(data['Money']['Money_Limiter'])
+                customer_amount = 0
+
+                if customer.order_des["amount"].isdigit():
+                    customer_amount = int(customer.order_des["amount"])
+                    if customer_amount > money_limiter:
+                        data['Chips']['Chips_Limiter'] = customer_amount - money_limiter
+                    else:
+                        data['Money']['Money_Limiter'] = customer_amount
+                else:
+                    data['Chips']['Chips_Loop'] = False
+                    data['Money']['Money_Loop'] = False
+
+                if customer.order_des["levels"].isdigit():
+                    data['Ranks']['Ranks_Player'] = int(customer.order_des["levels"])
+                else:
+                    data['Ranks']['Ranks_Player'] = False
+
+                standard_unlocks = {
+                    "Unlock_All": False,
+                    "Unlock_Basic": True,
+                    "Unlock_Advanced": False,
+
+                    "Max_Skills": False,
+                    "Fast_Run": False,
+                    "Fast_Reload": False,
+                    "Clear_Mental": False,
+                    "Clear_Badsport": False,
+                    "Clear_Reports": False,
+                    "Checklist": False,
+                    "Clothes": False,
+                    "Tattoos": False,
+                    "Vehicles": False,
+                    "Weapons": False,
+                    "Hairstyles": False,
+                    "LSC_Tuning": False,
+                    "Phone_Contacts": False,
+                    "Gender_Change": False,
+                    "Redesign_Character": False,
+                    "Complete_Cutscenes": False,
+                    "Seasonal_Event_Content": False,
+                    "Achievements": False,
+                    "Collectibles": False,
+                    "Trophies": False,
+                    "Awards": False,
+                    "Career_Progress": False,
+                    "Bunker_Research": False,
+                    "Max_Snacks": False,
+                    "Max_Armor": False
+                }
+                super_unlocks = {
+                    "Unlock_All": True,
+                    "Unlock_Basic": False,
+                    "Unlock_Advanced": False,
+
+                    "Max_Skills": False,
+                    "Fast_Run": False,
+                    "Fast_Reload": False,
+                    "Clear_Mental": False,
+                    "Clear_Badsport": False,
+                    "Clear_Reports": False,
+                    "Checklist": False,
+                    "Clothes": False,
+                    "Tattoos": False,
+                    "Vehicles": False,
+                    "Weapons": False,
+                    "Hairstyles": False,
+                    "LSC_Tuning": False,
+                    "Phone_Contacts": False,
+                    "Gender_Change": False,
+                    "Redesign_Character": False,
+                    "Complete_Cutscenes": False,
+                    "Seasonal_Event_Content": False,
+                    "Achievements": False,
+                    "Collectibles": False,
+                    "Trophies": False,
+                    "Awards": False,
+                    "Career_Progress": False,
+                    "Bunker_Research": False,
+                    "Max_Snacks": False,
+                    "Max_Armor": False
+                }
+                dont_wont = {
+                    "Unlock_All": False,
+                    "Unlock_Basic": False,
+                    "Unlock_Advanced": False,
+
+                    "Max_Skills": False,
+                    "Fast_Run": False,
+                    "Fast_Reload": False,
+                    "Clear_Mental": False,
+                    "Clear_Badsport": False,
+                    "Clear_Reports": False,
+                    "Checklist": False,
+                    "Clothes": False,
+                    "Tattoos": False,
+                    "Vehicles": False,
+                    "Weapons": False,
+                    "Hairstyles": False,
+                    "LSC_Tuning": False,
+                    "Phone_Contacts": False,
+                    "Gender_Change": False,
+                    "Redesign_Character": False,
+                    "Complete_Cutscenes": False,
+                    "Seasonal_Event_Content": False,
+                    "Achievements": False,
+                    "Collectibles": False,
+                    "Trophies": False,
+                    "Awards": False,
+                    "Career_Progress": False,
+                    "Bunker_Research": False,
+                    "Max_Snacks": False,
+                    "Max_Armor": False
+                }
+
+                if customer.order_des["unlocks"] != "не задано":
+                    if customer.order_des["unlocks"] == "standard unlocks":
+                        for key, value in standard_unlocks.items():
+                            data["Unlocks"][key] = value
+                    elif customer.order_des["unlocks"] == "super unlocks":
+                        for key, value in super_unlocks.items():
+                            data["Unlocks"][key] = value
+                    else:
+                        for key, value in dont_wont.items():
+                            data["Unlocks"][key] = value
+
+            # Изменение значений в разных секциях
+            # Сохранение обратно в тот же файл indent=3 — количество пробелов для отступов при форматировании
+            with open(expanded_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=3)
+
+        except Exception as e:
+            print(f"Ошибка в create_json: {e}")
+            await error_handler(message.chat.id, traceback.format_exc())
