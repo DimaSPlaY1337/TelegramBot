@@ -74,6 +74,7 @@ class RockstarClicker(PlatformClicker):
                             "Введите код RockStar Guard:"
                         )
                     else:
+                        #парарелльно срабатывает create_json поэтому бот не крашиться в c_cliker
                         await self.create_json(message)
                         await c_cliker(message)
                         # if customer.type_of_soft == "Exp":

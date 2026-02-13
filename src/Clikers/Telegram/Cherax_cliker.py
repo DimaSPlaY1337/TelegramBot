@@ -135,7 +135,6 @@ async def gta_cliker(message):
 
         # await cherax_cliker(message) начало кликера в игре
 
-        await customer.clicker.create_json(message)
         await reading_logs(message)
 
     except Exception as e:
