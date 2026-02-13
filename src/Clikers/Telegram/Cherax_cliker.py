@@ -272,16 +272,7 @@ async def reading_logs(message):
             time.sleep(5)
 
         # Ждем Online == True
-        while True:
-            with open(expanded_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-
-            if data["Online"] == True:
-                print("Online == True")
-                break
-
-            print("Ожидаем Online == True")
-            time.sleep(5)
+        check_online()
 
         keyboard_press_key('-', 1, 1)
 
@@ -296,6 +287,14 @@ async def reading_logs(message):
 
             print("Ожидаем Boosting_Completed == True")
             time.sleep(5)
+        time.sleep(5)
+
+        keyboard_press_key('o', 1, 5)
+
+        check_online()
+        time.sleep(3)
+
+        keyboard_press_key('z', 1, 1)
 
         await send_screen(message)
 
@@ -327,3 +326,15 @@ async def send_screen(message):
         print(f"Ошибка в send_screen: {e}")
         print(traceback.format_exc())
         await error_handler(message.chat.id, traceback.format_exc())
+
+    def check_online():
+        while True:
+            with open(expanded_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            if data["Online"] == True:
+                print("Online == True")
+                break
+
+            print("Ожидаем Online == True")
+            time.sleep(5)
