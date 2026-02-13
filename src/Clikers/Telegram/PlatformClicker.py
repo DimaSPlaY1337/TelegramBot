@@ -200,7 +200,7 @@ class PlatformClicker(ABC):
     async def create_json(self, message):
         try:
             # --------------------------
-            file_path = r"C:\Users\%USERNAME%\Documents\Cherax\Lua\GTA5SERVICE\Boosting.json"
+            file_path = r"C:\Users\%USERNAME%\Documents\Cherax\Lua\GTA5SERVICE\Boosting\Boosting.json"
             chat_id = message.chat.id
             customer = common.get_customer(chat_id)
             # file_path = r"C:\Users\%USERNAME%\Documents\Boosting.json" путь на моем пк
