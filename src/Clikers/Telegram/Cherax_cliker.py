@@ -1,6 +1,5 @@
 import os
 import time
-import ctypes
 from pygetwindow import PyGetWindowException
 from src.Clikers.Telegram.input_utils import *
 import pyautogui
@@ -327,14 +326,14 @@ async def send_screen(message):
         print(traceback.format_exc())
         await error_handler(message.chat.id, traceback.format_exc())
 
-    def check_online():
-        while True:
-            with open(expanded_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+def check_online():
+    while True:
+        with open(expanded_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
 
-            if data["Online"] == True:
-                print("Online == True")
-                break
+        if data["Online"] == True:
+            print("Online == True")
+            break
 
-            print("Ожидаем Online == True")
-            time.sleep(5)
+        print("Ожидаем Online == True")
+        time.sleep(5)
