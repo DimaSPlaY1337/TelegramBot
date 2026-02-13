@@ -284,7 +284,7 @@ async def reading_logs(message):
             print("Ожидаем Online == True")
             time.sleep(5)
 
-        keyboard_press_key('*', 1, 1)
+        keyboard_press_key('-', 1, 1)
 
         # Ждем Boosting_Completed == True
         while True:
