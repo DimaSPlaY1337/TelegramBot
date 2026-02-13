@@ -74,6 +74,7 @@ class RockstarClicker(PlatformClicker):
                             "Введите код RockStar Guard:"
                         )
                     else:
+                        await self.create_json(message)
                         await c_cliker(message)
                         # if customer.type_of_soft == "Exp":
                         #     await self.launch_prog(message)
@@ -107,7 +108,7 @@ class RockstarClicker(PlatformClicker):
             # 2-step verification
             pyautogui.click(x=customer.clicker.win_left + 522, y=customer.clicker.win_top + 517)
 
-            await self.create_json(message)
+            # await self.create_json(message) old position
 
             if not await is_error(customer, 430, 650, 440, 660):
                 await c_cliker(message)

@@ -26,23 +26,23 @@ async def c_cliker(message):
             win_left = win.left
             time.sleep(3)
 
-            click(x=win_left + 127, y=win_top + 175)
+            click(x=win_left + 127, y=win_top + 175, times=1, t=2)
 
             if customer.order_des["version"].lower() == "enhanced":
-                click(x=win_left + 83, y=win_top + 207)
-                click(x=win_left + 94, y=win_top + 207)
+                click(x=win_left + 83, y=win_top + 207, times=1, t=2)
+                click(x=win_left + 94, y=win_top + 207, times=1, t=2)
 
                 if customer.platform.lower() == "steam":
-                    click(x=win_left + 96, y=win_top + 239)
+                    click(x=win_left + 96, y=win_top + 239, times=1, t=2)
                 elif customer.platform.lower() == "rockstar":
                     click(x=win_left + 72, y=win_top + 263, times=1, t=3)
 
             elif customer.order_des["version"].lower() == "legacy":
-                click(x=win_left + 117, y=win_top + 222)
-                click(x=win_left + 94, y=win_top + 207)
+                click(x=win_left + 117, y=win_top + 222, times=1, t=2)
+                click(x=win_left + 94, y=win_top + 207, times=1, t=2)
 
                 if customer.platform.lower() == "steam":
-                    click(x=win_left + 99, y=win_top + 246)
+                    click(x=win_left + 99, y=win_top + 246, times=1, t=2)
                 elif customer.platform.lower() == "rockstar":
                     click(x=win_left + 50, y=win_top + 305, times=1, t=3)
 
