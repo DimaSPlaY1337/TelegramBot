@@ -26,16 +26,16 @@ class PlatformClicker(ABC):
             customer = common.get_customer(chat_id)
 
             # Определяем тип софта
-            if customer.order_des["amount"].isdigit():
-                if int(customer.order_des["amount"]) >= 30000000:
-                    customer.type_of_soft = "Exp"
-                else:
-                    customer.type_of_soft = "Free"
-            else:
-                customer.type_of_soft = "Free"
-
-            if customer.order_des["unlocks"] == "super unlocks":
-                customer.type_of_soft = "Exp"
+            # if customer.order_des["amount"].isdigit():
+            #     if int(customer.order_des["amount"]) >= 30000000:
+            #         customer.type_of_soft = "Exp"
+            #     else:
+            #         customer.type_of_soft = "Free"
+            # else:
+            #     customer.type_of_soft = "Free"
+            #
+            # if customer.order_des["unlocks"] == "super unlocks":
+            #     customer.type_of_soft = "Exp"
 
             # Запускаем beSkip
             win_be = None
